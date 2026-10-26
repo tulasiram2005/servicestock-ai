@@ -256,3 +256,18 @@ are tracked within the related analytics, data, UI and documentation phases.
 - Installed local Mistral was tested twice: both requests hit the five-second timeout and
   correctly fell back. Evidence records both failed attempts, not a successful model test.
   No live Gemini call, key retrieval, model download or paid service was used.
+
+
+## P7 signed model-driver chart · 2026-10-27
+
+- Part Detail renders signed TreeSHAP feature bars and an exact-value table, ordered by
+  contribution magnitude. Base prediction is separate; negative contributions are preserved.
+  Labels explicitly describe the fitted LightGBM model rather than attributing its drivers
+  to a potentially different selected forecast. Missing/invalid artifacts are unavailable.
+- Component review: derived data without effects, stable feature keys, existing chart library,
+  semantic table, chart label, no added requests. Tests cover signed ordering, baseline
+  exclusion and nonnumeric/non-finite rejection.
+- Eight frontend tests, TypeScript, production Docker build and four browser tests passed;
+  the real Part Detail test verifies eight feature rows. API and web containers healthy.
+  Full backend: 139 passed, two dedicated-database tests skipped; Bandit medium/high passed.
+- Simulation histogram, lead-time sensitivity and other unfinished charts remain pending.
