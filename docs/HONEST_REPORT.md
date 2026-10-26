@@ -11,7 +11,7 @@ on-demand PDF endpoint and CLI BI export code.
 Latest local continuation (2026-10-27): ten synthetic extract families, inventory/sales
 warehouse migration, 11 CSV/Parquet exports, numeric/reference validation, streamed UI
 tool traces, manual administrator job monitor and configuration option impact comparison.
-123 backend tests passed (one dedicated-database test skipped), 4 frontend unit tests and
+129 backend tests passed (two dedicated-database tests skipped), 6 frontend unit tests and
 4 browser tests passed (two live flows, plus mocked user-edit and failed-job UI checks).
 TypeScript, production build and Bandit medium/high scan passed.
 Local Compose services are healthy. These checks do not establish full master-spec completion.
@@ -25,10 +25,11 @@ Evidence: phase tests are recorded in docs/PHASES.md; browser smoke and axe resu
 Results are regenerated with make results. Local runtime metrics are separate from cloud metrics.
 
 Remaining master-spec gaps:
-- Development-only local Ollama routing with Mock fallback, persistent shared-database daily caps,
+- Development-only native Ollama and local OpenAI-compatible routing with Mock fallback,
+  persistent shared-database daily caps,
   bounded response reads, user-isolated caching and failure cooldown is implemented and
-  tested with simulated HTTP responses. Live model quality is unmeasured. External Gemini/
-  compatible adapters, capability detection, provider token/cost accounting and per-tool deadlines
+  tested with simulated HTTP responses. Live model quality is unmeasured. External Gemini/community
+  adapters, capability detection, provider token/cost accounting and per-tool deadlines
   remain pending. See LLM_PROVIDERS.md for settings and exact limitations.
 - Transformer/zero-shot NLP comparison remains. Forecast intervals now use per-horizon
   rolling residual calibration; one-step coverage, interval width and service hit rate are
@@ -49,13 +50,15 @@ Remaining master-spec gaps:
   worker completion were verified. Selected job state is session-local.
 - Policy Lab includes baseline/optimized cost tables and a component waterfall for previews
   and completed jobs. Displayed totals were checked against API results; missing cost inputs
-  show unavailable. Other detailed frontend charts remain missing, along with
+  show unavailable. Part Detail now renders forecast intervals with a shaded band and
+  exact-value table. Other detailed frontend charts remain missing, along with
   optimistic feedback. The UI consumes SSE tool/answer events and
   provides a manual-refresh administrator job monitor; the server computes tools before
   emitting events, so this is not incremental model-token streaming.
 - Local Bandit medium/high scan and runtime pip-audit pass after upgrading PyJWT. Lighthouse
   and a short local Locust smoke are measured; full load capacity is not. CI security and SQL Server
-  workflow definitions exist but remote runs remain unverified; no claim that all gates pass.
+  workflow definitions exist; SQL Server schema/lock statements compile offline and its workflow
+  now runs migrations and derives its isolated connection settings, but runtime and remote runs remain unverified; no claim that all gates pass.
 - Concurrent account-seeding conflict handling is implemented and tested with independent
   instances against shared SQLite; account-seeding PostgreSQL/SQL Server validation remains.
   Concurrent login lockout is now serialized and tested with shared SQLite and live local

@@ -39,6 +39,8 @@ test('login, overview, part, scenario, assistant and configuration',async({page}
   await page.getByRole('button',{name:'Search',exact:true}).click();
   await page.getByRole('button',{name:'Open P0001',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Part detail',exact:true})).toBeVisible();
+  await expect(page.getByRole('region',{name:'Forecast intervals',exact:true})).toBeVisible();
+  await expect(page.getByRole('table',{name:'Forecast values in demand units'}).getByRole('row')).toHaveCount(13);
   await page.getByRole('button',{name:'Policy Lab',exact:true}).click();
   const scenarioResponse=page.waitForResponse(response=>response.url().includes('/api/whatif?')&&response.status()===200);
   await page.getByRole('button',{name:'Compare scenario',exact:true}).click();

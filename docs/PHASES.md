@@ -229,3 +229,16 @@ are tracked within the related analytics, data, UI and documentation phases.
   This host is ARM64; no SQL Server instance was provisioned and no remote workflow ran.
   A public repository, opt-in variable and SQLSERVER_TEST_PASSWORD secret are still needed
   for the free GitHub-hosted x86 CI path. No paid infrastructure or billing enabled.
+
+
+## P7 part forecast interval chart · 2026-10-27
+
+- Part detail now charts future demand with a shaded lower/upper interval and an accessible
+  table of all horizons. Values come directly from benchmark artifacts, with units and
+  empirical-coverage caveats. Missing, mismatched, inverted or non-finite bounds are rejected.
+- Component review: derived data outside effects, stable horizon keys, no new requests or
+  dependencies, semantic table and labeled chart. Two additional frontend tests cover
+  asymmetric interval alignment and invalid bounds.
+- Six frontend tests, TypeScript and production Docker build passed. All four browser tests
+  passed, including the real Part Detail interval section and its 12 forecast rows. Both
+  local app containers are healthy. No claim of full chart accessibility certification.
