@@ -15,8 +15,14 @@ validation origins, excluding the final 12 validation/test periods. The final si
 held out. Displayed current demand patterns still use full history and do not control model
 selection. A regression test changes future test demand and verifies unchanged selection
 patterns and validation scores. MASE is undefined when
-the training naive denominator is zero. No MAPE is used. Forecast interval radii are empirical
-historical absolute changes; nominal coverage is not calibrated. TreeSHAP contributions explain
+the training naive denominator is zero. No MAPE is used. Forecast intervals use empirical
+historical forecast residual quantiles computed separately by horizon, using at most 24
+past rolling origins and a minimum training history of 14 periods. Central 90% intervals
+and a one-sided 95% upper bound are issued; insufficient history is explicitly null.
+Actual one-step interval coverage, width and service hit rate are measured over six held-out origins
+with calibration using only information available at issuance. Service hit rate here means
+one-month demand within the upper forecast bound, not inventory fill rate. Temporal dependence,
+small samples and model selection mean nominal coverage is not guaranteed. TreeSHAP contributions explain
 the LightGBM model, which need not be the selected forecasting model.
 
 Policy uses independent monthly empirical resampling over a lognormal lead time, capped at

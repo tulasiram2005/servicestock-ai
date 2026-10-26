@@ -76,3 +76,16 @@ are tracked within the related analytics, data, UI and documentation phases.
 - Verification: 86 backend tests passed, one dedicated-database test skipped; 2 frontend
   tests passed; TypeScript/build and Bandit medium/high passed; Compose healthy. Three
   browser tests passed: two live flows and one form test mocking only user endpoints.
+
+## P2 interval calibration and service-hit evaluation · 2026-10-26
+
+- Replaced final published rough interval ranges with per-horizon rolling residual quantiles,
+  using only historical observations and at most 24 origins. Missing calibration is null.
+- Added six-origin held-out one-step coverage, mean width and service-hit evaluation for
+  each selected model/part. A target-spike test verifies calibration cannot see the target.
+- Regenerated the 24-part benchmark and surfaced measured values in the Results UI.
+  Service hit is forecast-bound coverage, explicitly distinguished from inventory fill rate.
+- Verification: 89 backend tests passed, one dedicated-database test skipped; 2 frontend
+  tests and 3 browser tests passed, including Results table visibility. TypeScript/build,
+  Bandit medium/high scan and local Compose startup passed.
+- GitHub destination is pending creation; all implementation commits are preserved locally.

@@ -27,7 +27,7 @@ Source: results/bandit.json
 Source: results/benchmark.json
 
 - Parts: 24
-- Runtime seconds: 1.9776042909943499
+- Runtime seconds: 2.034867000009399
 - naive: MAE 0.03472222222222222, RMSE 0.06512286786846311
 - seasonal_naive: MAE 0.041666666666666664, RMSE 0.09209764296021157
 - croston: MAE 0.2062493782015649, RMSE 0.22167877002468536
@@ -115,7 +115,7 @@ Source: results/ui.json
 
 ```json
 {
-  "measured_at": "2026-10-26T17:46:15.185Z",
+  "measured_at": "2026-10-26T17:51:05.897Z",
   "page": "Configurations",
   "axe_violations": [],
   "lighthouse": {

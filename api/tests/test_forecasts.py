@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from app.analytics.forecast import abc, classify, predict, error_metrics, backtest
+from app.analytics.forecast import calibrated_intervals, interval_backtest
 
 
 def test_croston_constant_and_zero():
@@ -45,3 +46,29 @@ def test_future_test_demand_cannot_change_selection_pattern_or_validation():
     assert before["selected_model"] == after["selected_model"]
     assert {key: value["validation_mae"] for key, value in before["models"].items()} == {
         key: value["validation_mae"] for key, value in after["models"].items()}
+
+
+def test_calibrated_constant_demand_and_heldout_coverage():
+    bounds = calibrated_intervals([5]*40, 'naive', 12)
+    assert bounds['lower'] == bounds['upper'] == bounds['service_upper'] == [5]*12
+    assert bounds['calibration_counts'][0] == 24
+    assert bounds['calibration_counts'][-1] == 13
+    measured = interval_backtest([5]*40, 'naive')
+    assert measured['evaluated_origins'] == 6
+    assert measured['interval_coverage'] == measured['service_level_hit_rate'] == 1
+    assert measured['mean_interval_width'] == 0
+
+
+def test_interval_backtest_does_not_use_target_observation_for_calibration():
+    measured = interval_backtest([5]*39+[1000], 'naive')
+    assert measured['interval_coverage'] == pytest.approx(5/6)
+    assert measured['service_level_hit_rate'] == pytest.approx(5/6)
+    assert measured['mean_interval_width'] == 0
+
+
+def test_insufficient_interval_history_is_explicitly_unmeasured():
+    bounds = calibrated_intervals([5]*14, 'naive', 3)
+    assert bounds['lower'] == [None]*3
+    assert bounds['calibration_counts'] == [0]*3
+    with pytest.raises(ValueError):
+        calibrated_intervals([5]*40, 'naive', coverage=1)

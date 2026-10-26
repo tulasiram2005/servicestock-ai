@@ -58,6 +58,9 @@ test('login, overview, part, scenario, assistant and configuration',async({page}
   writeFileSync('../results/ui.json',JSON.stringify({measured_at:new Date().toISOString(),page:'Configurations',axe_violations:results.violations.map(v=>({id:v.id,impact:v.impact,description:v.description})),lighthouse:previous.lighthouse||'not measured'},null,2));
   expect(results.violations).toEqual([]);
   await page.screenshot({path:'../results/workspace.png',fullPage:true});
+  await page.getByRole('button',{name:'Results',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'Forecast interval validation',exact:true})).toBeVisible();
+  await expect(page.getByRole('columnheader',{name:'service level hit rate',exact:true})).toBeVisible();
 });
 
 test('administrator can inspect jobs and users',async({page})=>{

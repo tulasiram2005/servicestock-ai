@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 import numpy as np
 
 from app.ingest.loader import load
-from .forecast import abc, backtest, classify, predict, intervals, explain_ml
+from .forecast import abc, backtest, classify, predict, intervals, explain_ml, calibrated_intervals, interval_backtest
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -30,7 +30,8 @@ def run():
             part["selected_model"] = selected
             predictions = predict(part["history"], selected, 12)
             part["forecast"] = predictions.tolist()
-            part["intervals"] = intervals(part["history"], predictions)
+            part["intervals"] = calibrated_intervals(part["history"], selected, 12)
+            part["interval_backtest"] = interval_backtest(part["history"], selected)
     summary = {model: {"mae": float(np.mean([part["models"][model]["mae"] for part in parts])),
                        "rmse": float(np.mean([part["models"][model]["rmse"] for part in parts]))}
                for model in parts[0]["models"]}

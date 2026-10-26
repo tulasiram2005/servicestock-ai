@@ -80,6 +80,50 @@ def intervals(values, predictions):
             "method": "empirical historical absolute-change radius; coverage not guaranteed"}
 
 
+def calibrated_intervals(values, model, horizon=12, coverage=0.9):
+    """Rolling residual calibration using only observations available at issuance."""
+    values = np.asarray(values, dtype=float)
+    if not 0 < coverage < 1:
+        raise ValueError("Coverage must be between zero and one")
+    predictions = predict(values, model, horizon)
+    residuals = [[] for _ in range(horizon)]
+    for origin in range(max(14, len(values) - 24), len(values)):
+        available = min(horizon, len(values) - origin)
+        estimate = predict(values[:origin], model, available)
+        for step in range(available):
+            residuals[step].append(float(values[origin + step] - estimate[step]))
+    lower, upper, service_upper, counts = [], [], [], []
+    for point, errors in zip(predictions, residuals):
+        counts.append(len(errors))
+        if not errors:
+            lower.append(None); upper.append(None); service_upper.append(None)
+            continue
+        lo, hi = np.quantile(errors, [(1-coverage)/2, 1-(1-coverage)/2], method="higher")
+        lower.append(max(0.0, float(point + lo)))
+        upper.append(max(lower[-1], float(point + hi)))
+        service_upper.append(max(0.0, float(point + np.quantile(errors, 0.95, method="higher"))))
+    return {"lower": lower, "upper": upper, "service_upper": service_upper,
+            "nominal_coverage": coverage, "service_target": 0.95, "calibration_counts": counts,
+            "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"}
+
+
+def interval_backtest(values, model):
+    values = np.asarray(values, dtype=float)
+    covered, service_hits, widths = [], [], []
+    for origin in range(len(values)-6, len(values)):
+        bounds = calibrated_intervals(values[:origin], model, 1)
+        if bounds["lower"][0] is None:
+            continue
+        covered.append(bounds["lower"][0] <= values[origin] <= bounds["upper"][0])
+        service_hits.append(values[origin] <= bounds["service_upper"][0])
+        widths.append(bounds["upper"][0]-bounds["lower"][0])
+    return {"evaluated_origins": len(covered), "interval_coverage": float(np.mean(covered)) if covered else None,
+            "mean_interval_width": float(np.mean(widths)) if widths else None,
+            "service_level_hit_rate": float(np.mean(service_hits)) if service_hits else None,
+            "service_target": 0.95,
+            "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"}
+
+
 def explain_ml(values):
     from lightgbm import LGBMRegressor
     design = np.asarray([features(values[:end]) for end in range(6, len(values))])

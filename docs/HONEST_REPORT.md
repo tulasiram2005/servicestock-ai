@@ -11,7 +11,7 @@ on-demand PDF endpoint and CLI BI export code.
 Latest local continuation (2026-10-26): ten synthetic extract families, inventory/sales
 warehouse migration, 11 CSV/Parquet exports, numeric/reference validation, streamed UI
 tool traces, manual administrator job monitor and configuration option impact comparison.
-86 backend tests passed (one dedicated-database test skipped), 2 frontend unit tests and
+89 backend tests passed (one dedicated-database test skipped), 2 frontend unit tests and
 3 browser tests passed (two live flows plus a user-edit form test with mocked user endpoints).
 TypeScript, production build and Bandit medium/high scan passed.
 Local Compose services are healthy. These checks do not establish full master-spec completion.
@@ -26,7 +26,10 @@ Results are regenerated with make results. Local runtime metrics are separate fr
 
 Remaining master-spec gaps:
 - Optional external LLM chain, capability detection, distributed daily quotas and per-tool deadlines.
-- Transformer/zero-shot NLP comparison; calibrated forecast intervals and service-level backtest metric.
+- Transformer/zero-shot NLP comparison remains. Forecast intervals now use per-horizon
+  rolling residual calibration; one-step coverage, interval width and service hit rate are
+  measured over six held-out origins per part. Coverage is empirical, not guaranteed;
+  multi-step coverage validation remains outstanding.
 - Physical staging schema and reverse purchase/BOM ETL: ten synthetic extract families now
   exist, with inventory/sales ETL and 11 CSV/Parquet export tables including KPIs/finance.
 - Parts Explorer now supports server-side ABC filters, ascending/descending ID order,
@@ -45,6 +48,8 @@ Remaining master-spec gaps:
 - Multi-process safe login seeding, external worker notifications, fully enforced audit privileges,
   provider quotas and deployment wake-up behavior need further validation.
 - No live deployment, paid service, billing enablement or no-card account verification occurred.
+- GitHub access was checked; no ServiceStock remote exists and the user confirmed no repository
+  has been created. All commits remain local; nothing has been pushed to GitHub.
 
 The local source subset is 24 series. All costs, lead times and business attributes are synthetic.
 Negative capital freed is retained honestly. Pooling is theoretical, not empirical stock savings.

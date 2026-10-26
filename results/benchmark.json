@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-26T16:40:38.974819+00:00",
+  "generated_at": "2026-10-26T17:49:38.980374+00:00",
   "dataset": {
     "kind": "public",
     "url": "https://zenodo.org/records/4656021/files/car_parts_dataset_without_missing_values.zip?download=1",
@@ -59,7 +59,37 @@
           0.0,
           0.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         0.0,
@@ -223,7 +253,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 1.0,
+        "mean_interval_width": 0.0,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0002",
@@ -275,7 +313,37 @@
           0.0,
           0.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         0.0,
@@ -439,7 +507,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 1.0,
+        "mean_interval_width": 0.0,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0003",
@@ -478,20 +554,50 @@
           0.0
         ],
         "upper": [
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         0.0,
@@ -655,7 +761,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 1.0,
+        "mean_interval_width": 0.0,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0004",
@@ -707,7 +821,37 @@
           0.0,
           0.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         0.0,
@@ -871,7 +1015,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 1.0,
+        "mean_interval_width": 0.0,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0005",
@@ -910,20 +1062,50 @@
           0.0
         ],
         "upper": [
-          0.10000000000000142,
-          0.10000000000000142,
-          0.10000000000000142,
-          0.10000000000000142,
-          0.10000000000000142,
-          0.10000000000000142,
-          0.10000000000000142,
-          0.10000000000000142,
-          0.10000000000000142,
-          0.10000000000000142,
-          0.10000000000000142,
-          0.10000000000000142
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         1.0,
@@ -1087,7 +1269,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 1.0,
+        "mean_interval_width": 0.0,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0006",
@@ -1126,20 +1316,50 @@
           0.0
         ],
         "upper": [
-          0.10000000000000142,
-          0.10000000000000142,
-          0.10000000000000142,
-          0.10000000000000142,
-          0.10000000000000142,
-          0.10000000000000142,
-          0.10000000000000142,
-          0.10000000000000142,
-          0.10000000000000142,
-          0.10000000000000142,
-          0.10000000000000142,
-          0.10000000000000142
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         1.0,
@@ -1303,7 +1523,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 1.0,
+        "mean_interval_width": 0.0,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0007",
@@ -1355,7 +1583,37 @@
           0.0,
           0.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         0.0,
@@ -1519,7 +1777,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 1.0,
+        "mean_interval_width": 0.0,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0008",
@@ -1571,7 +1837,37 @@
           1.0,
           1.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         0.0,
@@ -1735,7 +2031,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 1.0,
+        "mean_interval_width": 1.0,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0009",
@@ -1774,20 +2078,50 @@
           0.0
         ],
         "upper": [
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         0.0,
@@ -1951,7 +2285,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 1.0,
+        "mean_interval_width": 0.0,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0010",
@@ -2003,7 +2345,37 @@
           0.0,
           0.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         0.0,
@@ -2167,7 +2539,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 1.0,
+        "mean_interval_width": 0.0,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0011",
@@ -2219,7 +2599,37 @@
           0.0,
           0.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         0.0,
@@ -2383,7 +2793,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 1.0,
+        "mean_interval_width": 0.0,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0012",
@@ -2426,16 +2844,46 @@
           0.0,
           1.0,
           0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         0.0,
@@ -2599,7 +3047,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 1.0,
+        "mean_interval_width": 0.0,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0013",
@@ -2651,7 +3107,37 @@
           0.0,
           0.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         0.0,
@@ -2815,7 +3301,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 1.0,
+        "mean_interval_width": 0.0,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0014",
@@ -2854,20 +3348,50 @@
           0.0
         ],
         "upper": [
+          2.0,
           1.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
+          1.0,
+          1.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          1.0,
+          1.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          1.0,
+          1.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         0.0,
@@ -3031,7 +3555,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 0.8333333333333334,
+        "mean_interval_width": 1.0,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0015",
@@ -3070,20 +3602,50 @@
           0.0
         ],
         "upper": [
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         0.0,
@@ -3247,7 +3809,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 1.0,
+        "mean_interval_width": 0.6666666666666666,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0016",
@@ -3290,16 +3860,46 @@
           0.0,
           0.0,
           0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         0.0,
@@ -3463,7 +4063,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 1.0,
+        "mean_interval_width": 0.0,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0017",
@@ -3489,9 +4097,9 @@
       "intervals": {
         "lower": [
           0.0,
+          1.0,
           0.0,
-          0.0,
-          0.0,
+          1.0,
           0.0,
           0.0,
           0.0,
@@ -3515,7 +4123,37 @@
           1.0,
           1.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          1.0,
+          2.0,
+          1.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         0.0,
@@ -3679,7 +4317,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 1.0,
+        "mean_interval_width": 1.0,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0018",
@@ -3706,7 +4352,7 @@
         "lower": [
           0.0,
           0.0,
-          0.0,
+          1.0,
           0.0,
           0.0,
           0.0,
@@ -3731,7 +4377,37 @@
           1.0,
           1.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          1.0,
+          1.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         0.0,
@@ -3895,7 +4571,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 0.8333333333333334,
+        "mean_interval_width": 1.0,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0019",
@@ -3947,7 +4631,37 @@
           0.0,
           0.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         0.0,
@@ -4111,7 +4825,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 1.0,
+        "mean_interval_width": 0.0,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0020",
@@ -4139,7 +4861,7 @@
           0.0,
           0.0,
           0.0,
-          0.0,
+          1.0,
           0.0,
           0.0,
           0.0,
@@ -4150,10 +4872,10 @@
           0.0
         ],
         "upper": [
+          0.0,
+          0.0,
+          0.0,
           1.0,
-          1.0,
-          1.0,
-          2.0,
           1.0,
           1.0,
           1.0,
@@ -4163,7 +4885,37 @@
           1.0,
           1.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         0.0,
@@ -4327,7 +5079,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 1.0,
+        "mean_interval_width": 0.3333333333333333,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0021",
@@ -4370,16 +5130,46 @@
           0.0,
           0.0,
           0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "service_upper": [
           0.0,
           0.0,
           0.0,
           0.0,
           1.0,
-          0.0,
-          0.0,
-          0.0
+          1.0,
+          1.0,
+          1.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         0.0,
@@ -4543,7 +5333,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 0.8333333333333334,
+        "mean_interval_width": 0.5,
+        "service_level_hit_rate": 0.8333333333333334,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0022",
@@ -4586,16 +5384,46 @@
           0.0,
           0.0,
           0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         0.0,
@@ -4759,7 +5587,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 1.0,
+        "mean_interval_width": 0.0,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0023",
@@ -4802,16 +5638,46 @@
           0.0,
           0.0,
           0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         0.0,
@@ -4975,7 +5841,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 0.6666666666666666,
+        "mean_interval_width": 0.8333333333333334,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     },
     {
       "part_id": "P0024",
@@ -5007,7 +5881,7 @@
           0.0,
           0.0,
           0.0,
-          0.0,
+          1.0,
           0.0,
           0.0,
           0.0,
@@ -5016,18 +5890,48 @@
         "upper": [
           1.0,
           1.0,
-          1.0,
-          1.0,
+          0.0,
+          0.0,
           1.0,
           1.0,
           1.0,
           2.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0
+          0.0,
+          0.0,
+          0.0,
+          0.0
         ],
-        "method": "empirical historical absolute-change radius; coverage not guaranteed"
+        "service_upper": [
+          1.0,
+          1.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          2.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "nominal_coverage": 0.9,
+        "service_target": 0.95,
+        "calibration_counts": [
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13
+        ],
+        "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"
       },
       "history": [
         0.0,
@@ -5191,7 +6095,15 @@
       },
       "selection_periods": 6,
       "test_periods": 6,
-      "selection_pattern": "intermittent"
+      "selection_pattern": "intermittent",
+      "interval_backtest": {
+        "evaluated_origins": 6,
+        "interval_coverage": 1.0,
+        "mean_interval_width": 1.0,
+        "service_level_hit_rate": 1.0,
+        "service_target": 0.95,
+        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+      }
     }
   ],
   "model_errors": {
@@ -5220,7 +6132,7 @@
       "rmse": 0.07900683755117686
     }
   },
-  "runtime_seconds": 1.9776042909943499,
+  "runtime_seconds": 2.034867000009399,
   "selection": "Per-pattern aggregate validation MAE; patterns frozen before validation; final six rolling origins held out.",
   "segment_selection": "ADI/CV2 on history excluding the final 12 validation/test periods; displayed current pattern uses full history"
 }
