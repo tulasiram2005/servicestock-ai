@@ -1,0 +1,49 @@
+name: Local-stack browser verification
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    # Heavy checks use standard public-repository runners only; never provision services.
+    if: github.event.repository.private == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: npm ci
+        working-directory: web
+      - run: npx playwright install --with-deps chromium
+        working-directory: web
+      - run: make up
+      - run: npm run test:e2e
+        working-directory: web
+        env:
+          TEST_BASE_URL: http://localhost:3000
+      - name: Measure Lighthouse login page
+        working-directory: web
+        env:
+          TEST_BASE_URL: http://localhost:3000
+          MEASUREMENT_ENVIRONMENT: GitHub Actions local Docker stack
+        run: |
+          export CHROME_PATH="$(node -e "console.log(require('@playwright/test').chromium.executablePath())")"
+          node scripts/lighthouse.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-measurements
+          retention-days: 7
+          path: |
+            results/ui.json
+            results/workspace.png
+      - if: always()
+        run: docker compose down --volumes

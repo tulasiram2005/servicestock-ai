@@ -28,3 +28,8 @@ are tracked within the related analytics, data, UI and documentation phases.
   unit tests passed; TypeScript and production build passed; both Docker browser flows
   passed, with zero axe violations on the tested Configurations screen. Compose healthy.
 - Separate PostgreSQL concurrency smoke passed earlier; SQL Server remains unverified.
+- Follow-up validation: 74 backend tests passed, one dedicated-database test skipped.
+  Synthetic extracts reject non-finite/negative numeric values, invalid months and duplicate
+  fact keys before writing. Browser/axe/Lighthouse CI workflow added for public repositories;
+  YAML parsed locally, remote execution not measured. Lighthouse login scores: performance
+  0.97, accessibility 1.00, best practices 0.74 and SEO 1.00 (see results/ui.json).
