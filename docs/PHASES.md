@@ -202,3 +202,15 @@ are tracked within the related analytics, data, UI and documentation phases.
   counter removed after testing; redacted security audit entries retained.
 - SQL Server runtime behavior remains unverified. Same-account decisions now serialize;
   broad login throughput has not been measured. Per-process request throttling remains.
+
+
+## P6 local OpenAI-compatible protocol · 2026-10-27
+
+- Added opt-in `openai-local,mock` against fixed loopback Ollama chat completions, using
+  the existing explicit model setting. Default remains Mock with zero budgets. No cloud
+  calls, API key discovery, model downloads or paid endpoints were used.
+- Strict validated JSON routing, quota reservation, output limits, cooldown and fallback
+  are shared with native Ollama. Empty choices and unavailable capabilities safely fall back.
+- Verification: 15 provider tests passed with HTTP mocks; combined backend suite passed
+  129 tests with two dedicated-database tests skipped. Bandit medium/high passed.
+- Live model quality, Gemini/community providers and native capability negotiation remain.

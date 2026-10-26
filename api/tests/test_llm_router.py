@@ -69,3 +69,29 @@ def test_parallel_requests_cannot_exceed_global_cap(settings):
 def test_cloud_models_rejected(settings):
     with pytest.raises(ValueError, match='local model'):
         replace(configured(settings),ollama_model='example-cloud')
+
+
+def test_openai_compatible_local_protocol_and_limits(settings):
+    enabled = replace(configured(settings), llm_provider_order='openai-local,mock')
+    def compatible(request):
+        assert str(request.url) == 'http://127.0.0.1:11434/v1/chat/completions'
+        body = json.loads(request.content)
+        assert body['response_format'] == {'type': 'json_object'}
+        assert body['max_tokens'] == 1024
+        assert body['stream'] is False
+        assert 'authorization' not in request.headers
+        return httpx.Response(200, json={'choices':[{'message':{'content':json.dumps({'calls':[{'tool':'get_kpis','arguments':{}}]})}}]})
+    router = LocalToolRouter(enabled,httpx.MockTransport(compatible))
+    assert router.route('a','KPIs',REGISTRY)[0] == [('get_kpis',{'scope':'all','period':None})]
+    assert router.usage()['provider'] == 'openai-local'
+    assert router.usage()['external_calls'] == 0
+    assert router.usage()['native_tool_calling'] is False
+
+
+@pytest.mark.parametrize('envelope', [{'choices':[]},{'choices':[{'message':{'content':None}}]},
+    {'choices':[{'message':{'content':'{"calls":[{"tool":"generate_review_pack","arguments":{}}]}'}}]}])
+def test_openai_compatible_unusable_capability_falls_back(settings,envelope):
+    enabled = replace(configured(settings), llm_provider_order='openai-local,mock')
+    router = LocalToolRouter(enabled,httpx.MockTransport(lambda request:httpx.Response(200,json=envelope)))
+    assert router.route('a','KPIs',REGISTRY)[0] is None
+    assert 'cooling' in router.route('a','other',REGISTRY)[1]

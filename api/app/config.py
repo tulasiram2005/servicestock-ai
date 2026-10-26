@@ -34,8 +34,8 @@ class Settings:
     ollama_model: str = ''
 
     def __post_init__(self):
-        if self.llm_provider_order not in {'mock', 'ollama,mock'}:
-            raise ValueError('Supported provider order: mock or ollama,mock')
+        if self.llm_provider_order not in {'mock', 'ollama,mock', 'openai-local,mock'}:
+            raise ValueError('Supported provider order: mock, ollama,mock or openai-local,mock')
         if self.llm_provider_order != 'mock' and (not self.ollama_model or 'cloud' in self.ollama_model.lower() or len(self.ollama_model) > 120):
             raise ValueError('Ollama requires an explicitly configured local model')
         if self.environment == 'production' and self.llm_provider_order != 'mock':

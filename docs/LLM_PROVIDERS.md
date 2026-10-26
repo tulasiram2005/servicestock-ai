@@ -26,11 +26,24 @@ available to administrators at `/api/admin/llm-usage`.
 
 Offline tests use HTTP mock responses for valid/invalid tool plans, 429/500/redirect failures,
 cache isolation, concurrent cap enforcement and day rollover. A live Ollama model has not
-been run or quality-evaluated. Native tool capability negotiation, Gemini/OpenAI-compatible
-adapters, provider token/cost accounting and per-tool cancellation remain pending.
+been run or quality-evaluated. Native tool capability negotiation, external Gemini/community adapters, provider token/cost
+accounting and per-tool cancellation remain pending.
 Local PostgreSQL concurrency verification is in results/llm_budget_postgres.json; SQL Server
 quota concurrency remains unverified. No background quota polling occurs.
 
 Protocol reference checked 2026-10-27:
 [Ollama official API](https://github.com/ollama/ollama/blob/main/docs/api.md).
 The implementation uses `/api/chat`, non-streaming JSON mode and bounded generation.
+
+
+OpenAI-compatible local mode (2026-10-27): `LLM_PROVIDER_ORDER=openai-local,mock`
+uses the same explicitly installed `OLLAMA_MODEL` at the fixed loopback endpoint
+`http://127.0.0.1:11434/v1/chat/completions`. The request uses JSON object response mode,
+non-streaming output, and a 1,024-token output cap. No API key is sent. This mode inherits
+shared daily attempt budgets, strict tool validation, bounded response reads, cooldown,
+and deterministic fallback. It is rejected in production, like the native Ollama mode.
+Empty choices, missing/invalid content and disallowed tool plans fall back safely.
+Usage reports explicitly identify `openai-local` and do not claim native tool calling.
+Protocol checked against [Ollama's official compatibility documentation](https://github.com/ollama/ollama/blob/main/docs/api/openai-compatibility.mdx).
+Tests use simulated HTTP responses; no actual model was downloaded or invoked. This is
+not certification of arbitrary hosted endpoints, free-tier billing, or live model quality.
