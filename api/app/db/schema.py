@@ -81,3 +81,5 @@ for name in ("forecast_runs", "forecasts", "policies", "simulation_runs", "recom
                             Column("payload", JSON, nullable=False), Column("created_at", Float, nullable=False, index=True))
 results = Table("results", metadata, identity(), Column("payload", JSON, nullable=False),
                 Column("created_at", Float, nullable=False))
+login_attempts = Table("login_attempts", metadata, identity(), Column("failures", Integer, nullable=False),
+                       Column("locked_until", Float, nullable=False))

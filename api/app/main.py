@@ -2,6 +2,9 @@ import hashlib
 import json
 import logging
 import time
+import secrets
+import sys
+import uuid
 
 from fastapi import Depends, FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,6 +14,8 @@ from pydantic import BaseModel, ConfigDict, Field
 from .auth import Auth
 from .config import Settings
 from .runtime import MemoryRateLimiter, Metrics, TTLCache
+from .db.store import Store
+from sqlalchemy.exc import SQLAlchemyError
 
 
 class Prompt(BaseModel):
@@ -36,16 +41,27 @@ def create_app(settings=None):
     settings = settings or Settings.from_env()
     app = FastAPI(title="ServiceStock AI", version="0.2.0", docs_url=None, redoc_url=None, openapi_url=None)
     app.add_middleware(CORSMiddleware, allow_origins=list(settings.allowed_origins),
-                       allow_methods=["GET", "POST"], allow_headers=["Authorization", "Content-Type", "If-None-Match"],
+                       allow_methods=["GET", "POST"], allow_headers=["Authorization", "Content-Type", "If-None-Match", "X-CSRF-Token"],
                        expose_headers=["ETag", "Retry-After"])
     bearer = HTTPBearer(auto_error=False)
-    auth = Auth(settings)
+    store = Store(settings.database_url, settings.statement_timeout_ms) if settings.database_url else None
+    auth = Auth(settings, store)
     limiter = MemoryRateLimiter(limit=settings.rate_limit)
     login_limiter = MemoryRateLimiter(limit=settings.login_rate_limit)
+    ip_limiter = MemoryRateLimiter(limit=settings.rate_limit * 3)
     cache = TTLCache(settings.cache_entries, settings.cache_seconds)
     metrics = Metrics()
     provider = MockLLM()
     logger = logging.getLogger("servicestock")
+    if not logger.handlers:
+        logger.addHandler(logging.StreamHandler(sys.stdout))
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    @app.exception_handler(SQLAlchemyError)
+    async def database_unavailable(request, error):
+        return Response(json.dumps({"detail": "Database is waking up; please retry shortly"}), status_code=503,
+                        media_type="application/json", headers={"Retry-After": "5"})
 
     def authorize(credentials: HTTPAuthorizationCredentials | None = Depends(bearer)):
         if credentials is None:
@@ -63,10 +79,26 @@ def create_app(settings=None):
     @app.middleware("http")
     async def security_headers(request, call_next):
         started = time.monotonic()
+        if request.url.path.startswith("/api/") and not ip_limiter.allow(request.client.host if request.client else "unknown"):
+            return Response(status_code=429, headers={"Retry-After": "60"})
+        if settings.environment == "production" and request.url.scheme != "https":
+            return Response(status_code=400)
+        if request.method in {"POST", "PUT", "PATCH"}:
+            body = bytearray()
+            async for chunk in request.stream():
+                body.extend(chunk)
+                if len(body) > 16384:
+                    return Response(status_code=413)
+            request._body = bytes(body)
         response = await call_next(request)
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers.setdefault("Cache-Control", "no-store")
         response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'"
+        response.headers["Referrer-Policy"] = "no-referrer"
+        response.headers["X-Request-ID"] = uuid.uuid4().hex
+        if settings.environment == "production":
+            response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         elapsed = time.monotonic() - started
         metrics.observe(response.status_code, elapsed)
         route = request.scope.get("route")
@@ -80,11 +112,39 @@ def create_app(settings=None):
         return {"status": "ok"}
 
     @app.post("/api/auth/login")
-    def login(body: Login):
+    def login(body: Login, response: Response):
         if not login_limiter.allow():
             raise HTTPException(429, "Please wait before signing in again", headers={"Retry-After": "60"})
-        return {"access_token": auth.login(body.username, body.password), "token_type": "bearer",
+        token = auth.login(body.username, body.password)
+        set_cookies(response, auth.create_refresh(body.username))
+        return {"access_token": token, "token_type": "bearer",
                 "expires_in": settings.token_minutes * 60}
+
+    def set_cookies(response, refresh):
+        response.set_cookie("refresh", refresh, httponly=True, secure=settings.environment == "production",
+                            samesite="strict", path="/api/auth", max_age=604800)
+        response.set_cookie("csrf", secrets.token_urlsafe(24), httponly=False, secure=settings.environment == "production",
+                            samesite="strict", path="/", max_age=604800)
+
+    def csrf(request):
+        cookie, header = request.cookies.get("csrf", ""), request.headers.get("x-csrf-token", "")
+        if not cookie or not secrets.compare_digest(cookie, header) or request.headers.get("origin") not in settings.allowed_origins:
+            raise HTTPException(403, "CSRF validation failed")
+
+    @app.post("/api/auth/refresh")
+    def refresh(request: Request, response: Response):
+        csrf(request)
+        token, replacement = auth.rotate(request.cookies.get("refresh", ""))
+        set_cookies(response, replacement)
+        return {"access_token": token, "token_type": "bearer", "expires_in": settings.token_minutes * 60}
+
+    @app.post("/api/auth/logout")
+    def logout(request: Request, response: Response):
+        csrf(request)
+        auth.logout(request.cookies.get("refresh", ""))
+        response.delete_cookie("refresh", path="/api/auth")
+        response.delete_cookie("csrf", path="/")
+        return {"status": "signed_out"}
 
     @app.get("/api/me")
     def me(principal=Depends(authorize)):
@@ -117,4 +177,6 @@ def create_app(settings=None):
 
     app.state.authorize = authorize
     app.state.administrator = administrator
+    app.state.store = store
+    app.state.auth = auth
     return app

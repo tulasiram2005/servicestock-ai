@@ -73,7 +73,7 @@ def test_secret_is_not_in_settings_repr(settings):
 
 
 def test_demo_cannot_read_admin_metrics(client, demo_headers, admin_headers):
-    assert client.get("/api/me", headers=demo_headers).json()["role"] == "demo"
+    assert client.get("/api/me", headers=demo_headers).json()["role"] == "viewer"
     assert client.get("/metrics", headers=demo_headers).status_code == 403
     response = client.get("/metrics", headers=admin_headers)
     assert response.status_code == 200
@@ -90,7 +90,7 @@ def test_wrong_credentials_are_generic(client, username):
 
 @pytest.mark.parametrize("change", [{"exp": 1}, {"aud": "other"}, {"role": "admin"}, {"sub": "unknown"}])
 def test_jwt_claims_are_enforced(client, settings, change):
-    claims = {"sub": "demo", "role": "demo", "iat": int(time.time()), "nbf": int(time.time()),
+    claims = {"sub": "demo", "role": "viewer", "iat": int(time.time()), "nbf": int(time.time()),
               "exp": int(time.time()) + 60, "iss": "servicestock", "aud": "servicestock-api", **change}
     token = jwt.encode(claims, settings.jwt_secret, algorithm="HS256")
     assert client.get("/api/me", headers={"Authorization": "Bearer " + token}).status_code == 401

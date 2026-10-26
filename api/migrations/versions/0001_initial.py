@@ -1,5 +1,5 @@
 from alembic import op
-from app.db.schema import metadata
+from migrations.schema_v1 import metadata
 
 revision = "0001"
 down_revision = None

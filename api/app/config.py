@@ -12,7 +12,7 @@ class Settings:
     environment: str = "local"
     demo_username: str = "demo"
     admin_username: str = "admin"
-    token_minutes: int = 30
+    token_minutes: int = 15
     rate_limit: int = 60
     login_rate_limit: int = 10
     cache_seconds: int = 30
