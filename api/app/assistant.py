@@ -5,7 +5,7 @@ import uuid
 from typing import Literal
 
 from fastapi import HTTPException
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 from sqlalchemy import select
 
 from .db import schema as db
@@ -30,6 +30,12 @@ class History(Part):
     from_period: str | None = Field(default=None, pattern=r"^\d{4}-(0[1-9]|1[0-2])$")
     to_period: str | None = Field(default=None, pattern=r"^\d{4}-(0[1-9]|1[0-2])$")
 
+    @model_validator(mode="after")
+    def ordered_range(self):
+        if self.from_period and self.to_period and self.from_period > self.to_period:
+            raise ValueError("from_period must not follow to_period")
+        return self
+
 
 class Forecast(Part):
     horizon_months: int = Field(default=6, ge=1, le=12)
@@ -49,9 +55,18 @@ class Scope(Arguments):
 class Scenario(Arguments):
     scope: Literal["part", "segment"] = "part"
     part_id: str | None = Field(default=None, pattern=r"^P[0-9]{4}$")
+    segment: Literal["A", "B", "C"] | None = None
     service_level: float = Field(default=0.95, ge=0.8, le=0.999)
     holding_cost_rate: float = Field(default=0.2, ge=0.01, le=1)
     lead_time_multiplier: float = Field(default=1, ge=0.5, le=3)
+
+    @model_validator(mode="after")
+    def require_exact_scope(self):
+        if self.scope == "part" and (not self.part_id or self.segment):
+            raise ValueError("Part scope requires part_id and forbids segment")
+        if self.scope == "segment" and (not self.segment or self.part_id):
+            raise ValueError("Segment scope requires segment and forbids part_id")
+        return self
 
 
 REGISTRY = {
@@ -77,19 +92,23 @@ class Assistant:
         self.store, self.queue, self.wake = store, queue, wake
 
     def execute(self, principal, session_id, name, arguments):
-        if name not in REGISTRY:
-            raise HTTPException(400, "Tool is not allowlisted")
-        validated = REGISTRY[name].model_validate(arguments)
-        if principal.role not in {"viewer", "planner", "admin"}:
-            raise HTTPException(403, "Role is not allowed")
-        if name == "generate_review_pack" and principal.role not in {"planner", "admin"}:
-            raise HTTPException(403, "Planner access required")
         with self.store.transaction() as connection:
             owner = connection.scalar(select(db.assistant_sessions.c.owner).where(db.assistant_sessions.c.id == session_id))
         if owner != principal.username:
+            self.store.audit(principal.username, "tool_session_denied", {})
             raise HTTPException(404, "Session not found")
-        call_id, started, status = uuid.uuid4().hex, time.monotonic(), "error"
+        call_id, started, status = uuid.uuid4().hex, time.monotonic(), "rejected"
+        logged_args = {}
         try:
+            if name not in REGISTRY:
+                raise HTTPException(400, "Tool is not allowlisted")
+            if principal.role not in {"viewer", "planner", "admin"}:
+                raise HTTPException(403, "Role is not allowed")
+            if name == "generate_review_pack" and principal.role not in {"planner", "admin"}:
+                raise HTTPException(403, "Planner access required")
+            validated = REGISTRY[name].model_validate(arguments)
+            logged_args = validated.model_dump()
+            status = "error"
             result = self.dispatch(name, validated, principal)
             result = sanitize(result)
             serialized = json.dumps(result, default=str)
@@ -101,10 +120,12 @@ class Assistant:
         finally:
             with self.store.transaction() as connection:
                 connection.execute(db.tool_call_log.insert().values(id=call_id, session_id=session_id,
-                    owner=principal.username, tool=name, args=validated.model_dump(), status=status,
+                    owner=principal.username, tool=name if name in REGISTRY else "unknown", args=logged_args, status=status,
                     latency_ms=(time.monotonic() - started) * 1000, created_at=time.time()))
 
     def dispatch(self, name, args, principal):
+        if isinstance(args, Scope) and args.period:
+            raise HTTPException(422, "Period-scoped results are not available for this tool")
         if name == "search_parts":
             with self.store.transaction() as connection:
                 statement = select(db.parts.c.id, db.parts.c.description).where(
@@ -131,9 +152,14 @@ class Assistant:
                 return detail["policy"]["drivers"]
             return {"part": detail["part"], "policy": detail["policy"]}
         if name == "run_what_if":
-            if args.scope == "part" and not args.part_id:
-                raise HTTPException(422, "Part scope requires part_id")
-            return services.whatif(self.store, args.model_dump(exclude={"scope"}))
+            result = services.whatif(self.store, args.model_dump(exclude={"scope", "segment"}))
+            if args.scope == "segment":
+                members = {part["part_id"] for part in services.artifact(self.store, "benchmark")["parts"] if part["abc"] == args.segment}
+                result["parts"] = [part for part in result["parts"] if part["part_id"] in members]
+                for metric in ("annual_savings", "working_capital_freed"):
+                    result[metric] = sum(part[metric] for part in result["parts"])
+            result["requested"] = args.model_dump()
+            return result
         if name == "get_data_quality_report":
             with self.store.transaction() as connection:
                 result = connection.scalar(select(db.artifacts["dq_runs"].c.payload).order_by(db.artifacts["dq_runs"].c.created_at.desc()).limit(1))
