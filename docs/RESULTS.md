@@ -115,7 +115,7 @@ Source: results/ui.json
 
 ```json
 {
-  "measured_at": "2026-10-26T16:31:14.811Z",
+  "measured_at": "2026-10-26T16:42:42.576Z",
   "page": "Configurations",
   "axe_violations": [],
   "lighthouse": {
