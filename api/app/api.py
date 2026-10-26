@@ -43,6 +43,16 @@ def router(store, settings, authorize, admin, queue, wake, cache):
             raise HTTPException(403, "Planner access required")
         return principal
 
+    @route.get("/reports/review.pdf")
+    def download_review(principal=Depends(planner), database=Depends(database)):
+        from .reports import review_pack
+        from fastapi.responses import StreamingResponse
+        from io import BytesIO
+        content = review_pack(database)
+        database.audit(principal.username, "export_review", {"bytes": len(content)})
+        return StreamingResponse(BytesIO(content), media_type="application/pdf", headers={
+            "Content-Disposition": 'attachment; filename="servicestock-review.pdf"', "Cache-Control": "no-store"})
+
     @route.get("/configurations")
     def configurations(principal=Depends(authorize), database=Depends(database)):
         from .configurations import catalog, pooling

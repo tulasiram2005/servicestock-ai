@@ -1,0 +1,12 @@
+{
+  "environment": "local Docker Compose",
+  "tool": "Locust",
+  "requests": 9,
+  "failures": 0,
+  "p50_ms": 24,
+  "p95_ms": 66,
+  "requests_per_second": 0.5183519913800464,
+  "users": 0,
+  "deployed": "not measured",
+  "note": "Short low-load local smoke; not capacity proof"
+}

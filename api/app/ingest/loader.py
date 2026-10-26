@@ -3,7 +3,7 @@ import io
 import json
 from pathlib import Path
 import random
-import urllib.request
+import httpx
 import zipfile
 
 PUBLIC_URL = "https://zenodo.org/records/4656021/files/car_parts_dataset_without_missing_values.zip?download=1"
@@ -22,8 +22,13 @@ def load(count=24, cache=None, download=False):
         return payload["series"][:count], payload["provenance"]
     if download:
         try:
-            with urllib.request.urlopen(PUBLIC_URL, timeout=20) as response:
-                raw = response.read(1_000_001)
+            with httpx.stream("GET", PUBLIC_URL, timeout=20, follow_redirects=False) as response:
+                response.raise_for_status()
+                raw = bytearray()
+                for chunk in response.iter_bytes():
+                    raw.extend(chunk)
+                    if len(raw) > 1_000_000:
+                        raise ValueError("Download exceeds cap")
             if len(raw) > 1_000_000:
                 raise ValueError("Download exceeds cap")
             with zipfile.ZipFile(io.BytesIO(raw)) as archive:
@@ -40,7 +45,7 @@ def load(count=24, cache=None, download=False):
                 cache.parent.mkdir(parents=True, exist_ok=True)
                 cache.write_text(json.dumps({"series": series, "provenance": provenance}))
             return series[:count], provenance
-        except (OSError, ValueError, StopIteration, zipfile.BadZipFile):
+        except (OSError, ValueError, StopIteration, zipfile.BadZipFile, httpx.HTTPError):
             pass
     return synthetic(count), {"kind": "synthetic", "seed": 42,
                               "note": "Seeded intermittent generator; public dataset unavailable or offline mode."}

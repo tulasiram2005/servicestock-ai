@@ -1,0 +1,40 @@
+name: Scheduled SQL Server compatibility
+on:
+  schedule:
+    - cron: '37 4 * * 0'
+permissions:
+  contents: read
+jobs:
+  sqlserver:
+    if: github.event.repository.private == false && vars.SQLSERVER_TESTS_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: Y
+          MSSQL_PID: Developer
+          MSSQL_SA_PASSWORD: ${{ secrets.SQLSERVER_TEST_PASSWORD }}
+        ports:
+          - 1433:1433
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install ODBC driver
+        run: |
+          curl -sSL https://packages.microsoft.com/config/ubuntu/24.04/packages-microsoft-prod.deb -o packages-microsoft-prod.deb
+          sudo dpkg -i packages-microsoft-prod.deb
+          sudo apt-get update
+          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev
+      - run: pip install -r api/requirements-dev.txt pyodbc
+      - name: Create isolated test database
+        env:
+          SQLSERVER_TEST_PASSWORD: ${{ secrets.SQLSERVER_TEST_PASSWORD }}
+        run: python scripts/sqlserver_setup.py
+      - name: Run database integration
+        env:
+          TEST_DATABASE_URL: ${{ secrets.SQLSERVER_TEST_DATABASE_URL }}
+        run: python -m pytest api/tests/test_database_integration.py -q

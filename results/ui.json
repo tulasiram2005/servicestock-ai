@@ -1,6 +1,16 @@
 {
-  "measured_at": "2026-10-26T11:17:21.914Z",
+  "measured_at": "2026-10-26T11:22:30.845Z",
   "page": "Configurations",
   "axe_violations": [],
-  "lighthouse": "not measured"
+  "lighthouse": {
+    "page": "Login",
+    "measured_at": "2026-10-26T11:26:30.560Z",
+    "scores": {
+      "performance": 0.97,
+      "accessibility": 1,
+      "best-practices": 0.74,
+      "seo": 1
+    },
+    "environment": "local Docker Chrome"
+  }
 }
