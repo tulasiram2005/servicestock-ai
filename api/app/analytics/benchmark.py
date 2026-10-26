@@ -8,7 +8,7 @@ import numpy as np
 from app.ingest.loader import load
 from .forecast import abc, backtest, classify, predict, intervals, explain_ml
 
-ROOT = Path(__file__).resolve().parents[4]
+ROOT = Path(__file__).resolve().parents[3]
 
 
 def run():
