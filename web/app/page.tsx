@@ -1,0 +1,111 @@
+'use client';
+
+import {FormEvent, useState} from 'react';
+import {Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
+
+type Json = null | boolean | number | string | Json[] | {[key: string]: Json};
+type RecordData = {[key: string]: Json};
+const pages = ['Overview', 'Parts', 'Policy Lab', 'Data Quality', 'Assistant', 'Configurations', 'Results', 'Reports', 'Admin'];
+const money = (value: unknown) => typeof value === 'number' ? new Intl.NumberFormat('en-US', {style:'currency',currency:'USD'}).format(value) : 'Not measured';
+const record = (value: Json | undefined): RecordData => value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+const rows = (value: Json | undefined): RecordData[] => Array.isArray(value) ? value.map(record) : [];
+
+function Table({data}: {data: RecordData[]}) {
+  if (!data.length) return <p className="empty">No records available.</p>;
+  const keys = Object.keys(data[0]).filter(key => data.every(row => row[key] === null || typeof row[key] !== 'object'));
+  return <div className="table-wrap"><table><thead><tr>{keys.map(key=><th key={key}>{key.replaceAll('_',' ')}</th>)}</tr></thead><tbody>{data.map((row,index)=><tr key={index}>{keys.map(key=><td key={key}>{typeof row[key] === 'number' ? Number(row[key]).toLocaleString('en-US',{maximumFractionDigits:3}) : String(row[key] ?? 'Not measured')}</td>)}</tr>)}</tbody></table></div>;
+}
+
+function Details({data}: {data: Json}) {
+  return <details><summary>View source data</summary><pre>{JSON.stringify(data,null,2)}</pre></details>;
+}
+
+export default function Home() {
+  const [token,setToken]=useState('');
+  const [role,setRole]=useState('');
+  const [page,setPage]=useState('Overview');
+  const [data,setData]=useState<RecordData>({});
+  const [busy,setBusy]=useState(false);
+  const [notice,setNotice]=useState('');
+  const [query,setQuery]=useState('');
+  const [part,setPart]=useState<RecordData|null>(null);
+  const [answer,setAnswer]=useState<RecordData|null>(null);
+  const [service,setService]=useState(0.95);
+  const [holding,setHolding]=useState(0.2);
+  const [lead,setLead]=useState(1);
+  const [options,setOptions]=useState(['AC']);
+  const [configuration,setConfiguration]=useState<RecordData|null>(null);
+  const [dark,setDark]=useState(true);
+
+  async function request(path:string, init:RequestInit={}, access=token):Promise<Json> {
+    for(let attempt=0;attempt<4;attempt++){
+      try {
+        const response=await fetch('/api'+path,{...init,headers:{'Content-Type':'application/json',...(access?{Authorization:'Bearer '+access}:{}),...init.headers},signal:AbortSignal.timeout(20000)});
+        if([502,503,504].includes(response.status)) throw new Error('wake');
+        if(response.status===401){setToken('');throw new Error('Your session expired. Please sign in again.');}
+        if(response.status===429) throw new Error('Request limit reached. Please wait a minute before retrying.');
+        if(!response.ok){const body=await response.json().catch(()=>({}));throw new Error(typeof body.detail==='string'?body.detail:'This action is not available.');}
+        return await response.json() as Json;
+      }catch(error){
+        const message=error instanceof Error?error.message:'Unable to connect';
+        if(message!=='wake' && !(error instanceof TypeError) && !(error instanceof DOMException)) throw error;
+        if(attempt===3) throw new Error('The server is unavailable. Please retry shortly.');
+        setNotice('Waking up the server, this can take up to a minute');
+        await new Promise(resolve=>setTimeout(resolve,1000*2**attempt));
+      }
+    }
+    throw new Error('Please retry.');
+  }
+  async function action(work:()=>Promise<void>){
+    setBusy(true);setNotice('');
+    try{await work();}catch(error){setNotice(error instanceof Error?error.message:'Please retry.');}finally{setBusy(false);}
+  }
+  async function navigate(next:string,access=token){
+    setPage(next);setPart(null);setData({});
+    const endpoint:Record<string,string>={Overview:'/kpis',Parts:'/parts', 'Data Quality':'/dq',Configurations:'/configurations',Results:'/results',Admin:'/admin/usage'};
+    if(endpoint[next]) setData(record(await request(endpoint[next],{},access)));
+  }
+  async function login(event:FormEvent<HTMLFormElement>){
+    event.preventDefault();const form=new FormData(event.currentTarget);
+    await action(async()=>{
+      const result=record(await request('/auth/login',{method:'POST',body:JSON.stringify({username:form.get('username'),password:form.get('password')})},''));
+      const access=String(result.access_token);setToken(access);
+      const identity=record(await request('/me',{},access));setRole(String(identity.role));
+      await navigate('Overview',access);
+    });
+  }
+  async function logout(){
+    const csrf=document.cookie.split('; ').find(value=>value.startsWith('csrf='))?.split('=')[1] || '';
+    await action(async()=>{await request('/auth/logout',{method:'POST',headers:{'X-CSRF-Token':csrf}});setToken('');setData({});setAnswer(null);});
+  }
+  async function downloadReport(){
+    await action(async()=>{
+      const response=await fetch('/api/reports/review.pdf',{headers:{Authorization:'Bearer '+token}});
+      if(!response.ok) throw new Error(response.status===403?'Planner or administrator access is required.':'Report is unavailable; please retry.');
+      const url=URL.createObjectURL(await response.blob());
+      const link=document.createElement('a');link.href=url;link.download='servicestock-review.pdf';link.click();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+    });
+  }
+  const kpis=record(data.kpis), finance=record(data.finance);
+  return <main data-theme={dark?'dark':'light'}>
+    <header><a href="/">S<span>ServiceStock AI</span></a><div className="badges"><span className="badge">Free-tier demo</span><span className="badge">Synthetic cost assumptions</span><button onClick={()=>setDark(!dark)} aria-label="Toggle color theme">{dark?'Light':'Dark'}</button>{token&&<button onClick={logout}>Sign out</button>}</div></header>
+    <p className="provenance">Public car-parts demand · Synthetic costs, suppliers, lead times and comments · No SAP system was used.</p>
+    <div role="status" aria-live="polite">{busy?<p className="loading">{notice||'Loading verified data…'}</p>:notice&&<p className="notice">{notice}</p>}</div>
+    {!token?<section className="login"><p className="eyebrow">INVENTORY DECISION SUPPORT</p><h1>Stock with<br/><span>evidence.</span></h1><p>Explore demand, compare service policies, and understand the cost of your decisions.</p><form onSubmit={login}><label>Username<input name="username" autoComplete="username" required maxLength={64}/></label><label>Password<input name="password" type="password" autoComplete="current-password" required maxLength={256}/></label><button className="primary" disabled={busy}>Sign in</button></form><p>Local credentials are in your generated .env file. Demo access is read-only.</p></section>:<>
+    <nav aria-label="Workspace">{pages.filter(item=>item!=='Admin'||role==='admin').map(item=><button key={item} aria-current={page===item?'page':undefined} onClick={()=>action(()=>navigate(item))}>{item}</button>)}</nav>
+    <section><p className="eyebrow">WORKSPACE / {role}</p><h1 className="page-title">{part?'Part detail':page}</h1>
+    {page==='Overview'&&<><div className="cards">{[['Inventory value',kpis.inventory_value],['Annual cost savings',kpis.annual_savings],['Working capital freed',kpis.working_capital_freed]].map(([label,value])=><article key={String(label)}><h2>{String(label)}</h2><strong>{money(value)}</strong></article>)}</div><p>Negative working capital freed means the recommendation requires more capital. These are simulated outcomes, not realized business savings.</p><h2>Service and risk</h2><Table data={[kpis]}/><h2>Monthly finance · USD</h2><Table data={rows(finance.monthly)}/><Details data={finance}/></>}
+    {page==='Parts'&&!part&&<><form onSubmit={event=>{event.preventDefault();action(async()=>setData(record(await request('/parts?query='+encodeURIComponent(query)))));}} className="inline"><label>Search parts<input value={query} onChange={event=>setQuery(event.target.value)} maxLength={80}/></label><button disabled={busy}>Search</button></form><Table data={rows(data.items)}/><div className="part-links">{rows(data.items).map(item=><button key={String(item.id)} onClick={()=>action(async()=>setPart(record(await request('/parts/'+item.id))))}>Open {String(item.id)}</button>)}</div>{data.next_cursor&&<button onClick={()=>action(async()=>setData(record(await request('/parts?cursor='+data.next_cursor+'&query='+encodeURIComponent(query)))))}>Next page</button>}</>}
+    {part&&<><button onClick={()=>setPart(null)}>Back to parts</button><h2>{String(record(part.part).description)}</h2><Table data={[record(part.part)]}/><h2>Monthly demand · units</h2><div className="chart"><ResponsiveContainer width="100%" height={260}><LineChart data={rows(part.history)}><CartesianGrid strokeDasharray="3 3"/><XAxis dataKey="period"/><YAxis/><Tooltip/><Line dataKey="qty" stroke="#4197db" dot={false}/></LineChart></ResponsiveContainer></div><details><summary>Demand table</summary><Table data={rows(part.history)}/></details><h2>Policy comparison</h2><Table data={[{policy:'Baseline',...record(record(part.policy).baseline)},{policy:'Optimized',...record(record(part.policy).optimized)}]}/><h2>Forecast and drivers</h2><Details data={part.forecast}/><Details data={part.policy}/></>}
+    {page==='Policy Lab'&&<><p>Explore precomputed scenarios. Every request shows the nearest grid settings actually used.</p><form onSubmit={event=>{event.preventDefault();action(async()=>setData(record(await request('/whatif?service_level='+service+'&holding_cost_rate='+holding+'&lead_time_multiplier='+lead))));}}>{[['Service level',service,setService,0.8,0.999,0.001],['Holding cost rate',holding,setHolding,0.01,1,0.01],['Lead-time multiplier',lead,setLead,0.5,3,0.1]].map(([label,value,setter,min,max,step])=><label key={String(label)}>{String(label)}: {String(value)}<input type="range" value={Number(value)} min={Number(min)} max={Number(max)} step={Number(step)} onChange={event=>(setter as (value:number)=>void)(Number(event.target.value))}/></label>)}<button disabled={busy}>Compare scenario</button></form>{data.notice&&<p>{String(data.notice)}</p>}<Table data={data.used?[record(data.used)]:[]}/><Table data={rows(data.parts).map(item=>({part_id:item.part_id,annual_savings:item.annual_savings,working_capital_freed:item.working_capital_freed}))}/></>}
+    {page==='Data Quality'&&<><Table data={[data]}/><h2>Flagged and quarantined rows</h2><Table data={rows(data.issues)}/><Details data={data}/></>}
+    {page==='Assistant'&&<><p>Offline, verified tool summaries. No external AI account is required.</p><form onSubmit={event=>{event.preventDefault();const form=new FormData(event.currentTarget);action(async()=>setAnswer(record(await request('/assistant',{method:'POST',body:JSON.stringify({text:form.get('question')})}))));}}><label>Ask about KPIs, a part ID, or data quality<textarea name="question" maxLength={4000} required defaultValue="Show inventory KPIs"/></label><button disabled={busy}>Ask assistant</button></form>{answer&&<article><p>{String(answer.notice)}</p><p>{String(answer.answer)}</p>{rows(answer.trace).map(trace=><details key={String(trace.tool_call_id)}><summary>{String(trace.tool)} · {String(trace.tool_call_id)}</summary><pre>{JSON.stringify(trace.data,null,2)}</pre></details>)}</article>}</>}
+    {page==='Configurations'&&<><p>Select options to validate compatibility and calculate the component bill of materials.</p><form onSubmit={event=>{event.preventDefault();action(async()=>setConfiguration(record(await request('/configurations/evaluate',{method:'POST',body:JSON.stringify({model_id:'MODEL-1',options})}))));}}>{rows(data.options).map(option=><label className="checkbox" key={String(option.id)}><input type="checkbox" checked={options.includes(String(option.id))} onChange={event=>setOptions(event.target.checked?[...options,String(option.id)]:options.filter(item=>item!==option.id))}/>{String(option.name)}</label>)}<button disabled={busy}>Validate configuration</button></form>{configuration&&<><p>{configuration.valid?'Configuration valid':String(configuration.errors)}</p><Table data={rows(configuration.bom)}/><p>Total: {money(configuration.cost_usd)}</p></>}<h2>Commonality and pooling estimate</h2><p>{String(record(data.pooling).assumption||'')}</p><Table data={rows(record(data.pooling).parts)}/></>}
+    {page==='Results'&&<><p>Rendered from persisted run artifacts. Unmeasured fields remain explicitly unavailable.</p><h2>Forecast MAE · units</h2><div className="chart"><ResponsiveContainer width="100%" height={260}><BarChart data={Object.entries(record(record(data.benchmark).model_errors)).map(([model,value])=>({model,...record(value)}))}><CartesianGrid strokeDasharray="3 3"/><XAxis dataKey="model"/><YAxis/><Tooltip/><Bar dataKey="mae" fill="#4197db"/></BarChart></ResponsiveContainer></div><Table data={Object.entries(record(record(data.benchmark).model_errors)).map(([model,value])=>({model,...record(value)}))}/><h2>Lead-time regression</h2><Details data={record(data.analytics).regression}/><h2>Synthetic comment classification</h2><Details data={record(data.analytics).nlp}/></>}
+    {page==='Reports'&&<><p>Review packs include verified run KPIs, recommendations, synthetic assumptions, methodology and limitations. Generated on demand without persistent report storage.</p>{role==='viewer'?<p>Read-only demo accounts cannot export. Sign in as a planner or administrator.</p>:<button disabled={busy} onClick={downloadReport}>Download PDF review pack</button>}</>}
+    {page==='Admin'&&<><h2>Measured database usage</h2><Table data={[data]}/><Details data={data}/><button onClick={()=>action(async()=>setData(record({audit:await request('/admin/audit')})))}>Audit log</button><button onClick={()=>action(async()=>setData(record({users:await request('/admin/users')})))}>Users</button></>}
+    </section></>}
+    <footer>ServiceStock AI · Scale-ready design; production capacity has not been proven.</footer>
+  </main>;
+}

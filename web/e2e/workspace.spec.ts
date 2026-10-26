@@ -1,0 +1,33 @@
+import {test,expect} from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import {resolve} from 'node:path';
+
+const env=Object.fromEntries(readFileSync(resolve('../.env'),'utf8').trim().split('\n').map(line=>line.split('=')));
+test('login, overview, part, scenario, assistant and configuration',async({page})=>{
+  await page.goto('/');
+  await expect(page.getByText('Synthetic cost assumptions',{exact:true})).toBeVisible();
+  await page.getByLabel('Username',{exact:true}).fill('demo');
+  await page.getByLabel('Password',{exact:true}).fill(env.DEMO_PASSWORD);
+  await page.getByRole('button',{name:'Sign in',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'Overview',exact:true})).toBeVisible();
+  const inventory=JSON.parse(readFileSync('../results/analytics.json','utf8')).kpis.inventory_value;
+  await expect(page.getByText(new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(inventory),{exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Parts',exact:true}).click();
+  await page.getByRole('button',{name:'Open P0001',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'Part detail',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Policy Lab',exact:true}).click();
+  await page.getByRole('button',{name:'Compare scenario',exact:true}).click();
+  await expect(page.getByText(/Snapped to the nearest/)).toBeVisible();
+  await page.getByRole('button',{name:'Assistant',exact:true}).click();
+  await page.getByRole('button',{name:'Ask assistant',exact:true}).click();
+  await expect(page.getByText(/Inventory value: USD/)).toBeVisible();
+  await page.getByRole('button',{name:'Configurations',exact:true}).click();
+  await page.getByRole('button',{name:'Validate configuration',exact:true}).click();
+  await expect(page.getByText('Configuration valid',{exact:true})).toBeVisible();
+  const results=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa']).analyze();
+  mkdirSync('../results',{recursive:true});
+  writeFileSync('../results/ui.json',JSON.stringify({measured_at:new Date().toISOString(),page:'Configurations',axe_violations:results.violations.map(v=>({id:v.id,impact:v.impact,description:v.description})),lighthouse:'not measured'},null,2));
+  expect(results.violations).toEqual([]);
+  await page.screenshot({path:'../results/workspace.png',fullPage:true});
+});

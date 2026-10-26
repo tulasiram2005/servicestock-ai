@@ -10,3 +10,5 @@ out/
 *.tsbuildinfo
 .DS_Store
 .hypothesis/
+test-results/
+playwright-report/
