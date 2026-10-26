@@ -112,3 +112,14 @@ are tracked within the related analytics, data, UI and documentation phases.
 - Commit history and source backup are saved outside the repository as a Git bundle and
   source ZIP. These include committed code, tests, docs and run artifacts; ignored credentials,
   dependencies and live Docker database volumes are intentionally not exported.
+
+## P0/P4 startup reliability · 2026-10-27
+
+- Account initialization now handles competing inserts with savepoints, accepting only
+  confirmed existing identities. Four independent Auth instances initialize and log in
+  against one file-backed SQLite database with exactly two users and three roles.
+- Production GET liveness probes allow internal HTTP; readiness and API routes retain
+  HTTPS enforcement. A test rejects any database query during liveness checks.
+- Backend suite: 104 passed, one dedicated-database test skipped; Bandit medium/high passed.
+  Changes are committed and backed up. Running Docker images have not been rebuilt in this
+  checkpoint; no new browser or live cloud verification is claimed.

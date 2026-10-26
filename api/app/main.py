@@ -107,7 +107,8 @@ def create_app(settings=None, store_override=None):
         started = time.monotonic()
         if request.url.path.startswith("/api/") and not ip_limiter.allow(request.client.host if request.client else "unknown"):
             return Response(status_code=429, headers={"Retry-After": "60"})
-        if settings.environment == "production" and request.url.scheme != "https":
+        liveness_probe = request.method == "GET" and request.url.path in {"/health", "/health/live"}
+        if settings.environment == "production" and request.url.scheme != "https" and not liveness_probe:
             return Response(status_code=400)
         if request.method in {"POST", "PUT", "PATCH"}:
             body = bytearray()

@@ -49,3 +49,56 @@ def test_refresh_cookie_is_httponly_and_strict(client, settings):
     response = client.post("/api/auth/login", json={"username": settings.demo_username, "password": settings.demo_password})
     cookie = response.headers.get_list("set-cookie")[0]
     assert "HttpOnly" in cookie and "SameSite=strict" in cookie
+
+
+def test_independent_auth_instances_seed_same_database_safely(settings, tmp_path):
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+    from sqlalchemy import func
+    from app.auth import Auth
+    from app.db.store import Store
+    url = 'sqlite:///' + str(tmp_path / 'shared.db')
+    store = Store(url)
+    db.metadata.create_all(store.engine)
+    instances = [Auth(settings, Store(url)) for _ in range(4)]
+    barrier = Barrier(4)
+    def initialize(instance):
+        barrier.wait()
+        instance.ensure_accounts()
+        return instance.login(settings.demo_username, settings.demo_password)
+    try:
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            tokens = list(executor.map(initialize, instances))
+        assert len(tokens) == 4
+        with store.transaction() as connection:
+            assert connection.scalar(select(func.count()).select_from(db.users)) == 2
+            assert connection.scalar(select(func.count()).select_from(db.roles)) == 3
+    finally:
+        for instance in instances:
+            instance.store.engine.dispose()
+        store.engine.dispose()
+
+
+def test_production_liveness_is_db_free_and_only_liveness_allows_http(settings):
+    from dataclasses import replace
+    from fastapi.testclient import TestClient
+    from sqlalchemy import event
+    from app.db.store import Store
+    from app.main import create_app
+    production = replace(settings, environment='production',
+        database_url='postgresql+psycopg://unused:unused@demo-pooler.example/db?sslmode=require',
+        allowed_origins=('https://demo.example',))
+    store = Store('sqlite://')
+    def forbid_queries(*args):
+        raise AssertionError('Liveness must not query the database')
+    event.listen(store.engine, 'before_cursor_execute', forbid_queries)
+    try:
+        with TestClient(create_app(production, store_override=store)) as client:
+            for path in ('/health', '/health/live'):
+                assert client.get(path).json() == {'status': 'ok'}
+            for path in ('/ready', '/api/status', '/health/other'):
+                assert client.get(path).status_code == 400
+            assert client.get('https://testserver/api/status').status_code == 401
+    finally:
+        event.remove(store.engine, 'before_cursor_execute', forbid_queries)
+        store.engine.dispose()

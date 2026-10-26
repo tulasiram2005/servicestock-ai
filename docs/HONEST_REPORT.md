@@ -11,7 +11,7 @@ on-demand PDF endpoint and CLI BI export code.
 Latest local continuation (2026-10-26): ten synthetic extract families, inventory/sales
 warehouse migration, 11 CSV/Parquet exports, numeric/reference validation, streamed UI
 tool traces, manual administrator job monitor and configuration option impact comparison.
-102 backend tests passed (one dedicated-database test skipped), 2 frontend unit tests and
+104 backend tests passed (one dedicated-database test skipped), 2 frontend unit tests and
 3 browser tests passed (two live flows plus a user-edit form test with mocked user endpoints).
 TypeScript, production build and Bandit medium/high scan passed.
 Local Compose services are healthy. These checks do not establish full master-spec completion.
@@ -47,7 +47,9 @@ Remaining master-spec gaps:
 - Local Bandit medium/high scan and runtime pip-audit pass after upgrading PyJWT. Lighthouse
   and a short local Locust smoke are measured; full load capacity is not. CI security and SQL Server
   workflow definitions exist but remote runs remain unverified; no claim that all gates pass.
-- Multi-process safe login seeding, external worker notifications, fully enforced audit privileges,
+- Concurrent account-seeding conflict handling is implemented and tested with independent
+  instances against shared SQLite; PostgreSQL/SQL Server validation and concurrent lockout
+  hardening remain. External worker notifications, fully enforced audit privileges,
   provider quotas and deployment wake-up behavior need further validation.
 - No live deployment, paid service, billing enablement or no-card account verification occurred.
 - GitHub access was checked; no ServiceStock remote exists and the user confirmed no repository

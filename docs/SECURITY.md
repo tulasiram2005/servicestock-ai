@@ -13,6 +13,12 @@ come from environment only. Public uploads are disabled; no upload endpoint exis
 Assistant output is text, not raw HTML. Only 11 typed tools exist and no SQL/shell tool exists.
 PDF generation is planner/admin only.
 
+Account initialization handles duplicate-identity races using transaction savepoints and
+rechecks the identity before accepting a competing insert. Four independent Auth instances
+against a shared SQLite file are tested; PostgreSQL/SQL Server concurrency validation remains.
+Production permits plain HTTP only for GET /health and /health/live, returning static status
+without database access so internal host probes work. Other routes still require HTTPS.
+
 Limitations: rate limits are per process, not distributed. API audit writes are append-only
 through normal application routes but the database role is not restricted by append-only
 privileges. Retention is an explicit administrative exception. Signing-key rotation currently

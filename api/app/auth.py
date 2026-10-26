@@ -10,6 +10,7 @@ from argon2 import PasswordHasher
 from argon2.exceptions import VerificationError
 from fastapi import HTTPException
 from sqlalchemy import select, update
+from sqlalchemy.exc import IntegrityError
 
 from .db import schema as db
 from .db.store import Store
@@ -37,13 +38,23 @@ class Auth:
             if self.initialized:
                 return
             with self.store.transaction() as connection:
+                def insert_missing(table, key, values):
+                    if connection.scalar(select(table.c.id).where(key)):
+                        return
+                    try:
+                        with connection.begin_nested():
+                            connection.execute(table.insert().values(**values))
+                    except IntegrityError:
+                        # A competing process may have seeded this same identity.
+                        # Keep the outer transaction usable and do not hide other errors.
+                        if not connection.scalar(select(table.c.id).where(key)):
+                            raise
                 for role in ("viewer", "planner", "admin"):
-                    if not connection.scalar(select(db.roles.c.id).where(db.roles.c.id == role)):
-                        connection.execute(db.roles.insert().values(id=role, name=role))
+                    insert_missing(db.roles, db.roles.c.id == role, {"id": role, "name": role})
                 for username, password, role in ((self.settings.demo_username, self.settings.demo_password, "viewer"),
                                                    (self.settings.admin_username, self.settings.admin_password, "admin")):
                     if not connection.scalar(select(db.users.c.id).where(db.users.c.email == username)):
-                        connection.execute(db.users.insert().values(id=uuid.uuid4().hex, email=username,
+                        insert_missing(db.users, db.users.c.email == username, dict(id=uuid.uuid4().hex, email=username,
                             password_hash=self.hasher.hash(password), role_id=role, disabled=False))
             self.initialized = True
 
