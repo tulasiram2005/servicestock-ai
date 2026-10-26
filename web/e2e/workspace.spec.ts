@@ -40,8 +40,19 @@ test('login, overview, part, scenario, assistant and configuration',async({page}
   await page.getByRole('button',{name:'Open P0001',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Part detail',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Policy Lab',exact:true}).click();
+  const scenarioResponse=page.waitForResponse(response=>response.url().includes('/api/whatif?')&&response.status()===200);
   await page.getByRole('button',{name:'Compare scenario',exact:true}).click();
   await expect(page.getByText(/Snapped to the nearest/)).toBeVisible();
+  const scenario=await (await scenarioResponse).json();
+  const baseline=scenario.parts.reduce((sum:number,part:{baseline:{expected_annual_cost:number}})=>sum+part.baseline.expected_annual_cost,0);
+  const optimized=scenario.parts.reduce((sum:number,part:{optimized:{expected_annual_cost:number}})=>sum+part.optimized.expected_annual_cost,0);
+  const currency=(value:number)=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(value);
+  const comparison=page.getByRole('region',{name:'Scenario cost comparison'});
+  await expect(comparison.getByRole('row').filter({has:page.getByRole('rowheader',{name:'Total',exact:true})})).toContainText(currency(baseline));
+  await expect(comparison.getByRole('img')).toHaveAccessibleName(new RegExp('Annual cost waterfall: baseline'));
+  await expect(comparison.getByText('Annual savings: '+currency(baseline-optimized)+'. Negative savings indicate a cost increase.',{exact:true})).toBeVisible();
+  expect((await new AxeBuilder({page}).include('section[aria-label="Scenario cost comparison"]').withTags(['wcag2a','wcag2aa']).analyze()).violations).toEqual([]);
+
   await page.getByRole('button',{name:'Assistant',exact:true}).click();
   await page.getByRole('button',{name:'Ask assistant',exact:true}).click();
   await expect(page.getByText(/Inventory value: USD/)).toBeVisible();

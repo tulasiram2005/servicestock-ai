@@ -165,3 +165,21 @@ are tracked within the related analytics, data, UI and documentation phases.
   axe scan reported zero violations; this does not establish application-wide accessibility.
 - Still pending: baseline/optimized waterfall and broader chart coverage. Scenario state is
   session-local and a full browser reload loses the selected job; admins can use the job monitor.
+
+
+## P7 scenario cost comparison and waterfall · 2026-10-27
+
+- Preview and completed jobs show aggregated baseline/optimized holding, stockout and
+  expedite costs, total annual cost, and savings. A floating-bar waterfall reconciles
+  component changes to the optimized total. Capital investment remains separate.
+- Native SVG uses an accessible title and an adjacent semantic table, with signed labels
+  so direction does not depend on color. Invalid/missing costs show unavailable, not zero.
+  Negative savings remain visible. No new dependencies or requests were added.
+- React review: extracted component, derived values without effects, stable keys and unique
+  accessible IDs, no shared mutable state. Unit tests cover multi-part reconciliation,
+  negative savings, missing/non-finite/negative/string cost inputs.
+- Verification: 120 backend passed, one dedicated-database test skipped; four frontend
+  tests, TypeScript, production Docker build and four browser tests passed. Browser checks
+  reconcile displayed totals against API annual costs and run axe on the comparison region
+  (zero WCAG A/AA violations); this is not a full application accessibility certification.
+- Other master-spec charts and model/integration gaps remain in HONEST_REPORT.md.

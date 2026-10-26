@@ -11,7 +11,7 @@ on-demand PDF endpoint and CLI BI export code.
 Latest local continuation (2026-10-27): ten synthetic extract families, inventory/sales
 warehouse migration, 11 CSV/Parquet exports, numeric/reference validation, streamed UI
 tool traces, manual administrator job monitor and configuration option impact comparison.
-120 backend tests passed (one dedicated-database test skipped), 2 frontend unit tests and
+120 backend tests passed (one dedicated-database test skipped), 4 frontend unit tests and
 4 browser tests passed (two live flows, plus mocked user-edit and failed-job UI checks).
 TypeScript, production build and Bandit medium/high scan passed.
 Local Compose services are healthy. These checks do not establish full master-spec completion.
@@ -47,7 +47,9 @@ Remaining master-spec gaps:
 - Policy Lab now submits jobs for planners/admins, displays manually refreshed progress and
   errors, and renders completed precomputed-grid results. Local HTTP submission and a real
   worker completion were verified. Selected job state is session-local.
-- Detailed frontend features still missing include full charts/waterfalls and
+- Policy Lab includes baseline/optimized cost tables and a component waterfall for previews
+  and completed jobs. Displayed totals were checked against API results; missing cost inputs
+  show unavailable. Other detailed frontend charts remain missing, along with
   optimistic feedback. The UI consumes SSE tool/answer events and
   provides a manual-refresh administrator job monitor; the server computes tools before
   emitting events, so this is not incremental model-token streaming.
