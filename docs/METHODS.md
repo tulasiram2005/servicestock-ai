@@ -10,7 +10,11 @@ Pattern cutoffs are 1.32 and 0.49. Zero-demand series have undefined ADI/CV2.
 
 Forecasts: last-observation naive, period-12 seasonal naive, Croston, SBA (0.95 correction
 with alpha 0.1), TSB, and LightGBM lag/rolling features. Six validation origins select a model
-by demand-pattern aggregate MAE; the final six origins are held out. MASE is undefined when
+by demand-pattern aggregate MAE; selection patterns are frozen using history before those
+validation origins, excluding the final 12 validation/test periods. The final six origins are
+held out. Displayed current demand patterns still use full history and do not control model
+selection. A regression test changes future test demand and verifies unchanged selection
+patterns and validation scores. MASE is undefined when
 the training naive denominator is zero. No MAPE is used. Forecast interval radii are empirical
 historical absolute changes; nominal coverage is not calibrated. TreeSHAP contributions explain
 the LightGBM model, which need not be the selected forecasting model.

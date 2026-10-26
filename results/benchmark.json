@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-26T10:56:53.567947+00:00",
+  "generated_at": "2026-10-26T16:40:38.974819+00:00",
   "dataset": {
     "kind": "public",
     "url": "https://zenodo.org/records/4656021/files/car_parts_dataset_without_missing_values.zip?download=1",
@@ -222,7 +222,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0002",
@@ -437,7 +438,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0003",
@@ -652,7 +654,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0004",
@@ -867,7 +870,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0005",
@@ -1082,7 +1086,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0006",
@@ -1297,7 +1302,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0007",
@@ -1512,7 +1518,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0008",
@@ -1727,7 +1734,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0009",
@@ -1942,7 +1950,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0010",
@@ -2157,7 +2166,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0011",
@@ -2372,7 +2382,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0012",
@@ -2587,7 +2598,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0013",
@@ -2802,7 +2814,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0014",
@@ -3017,7 +3030,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0015",
@@ -3232,7 +3246,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0016",
@@ -3447,7 +3462,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0017",
@@ -3662,7 +3678,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0018",
@@ -3877,7 +3894,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0019",
@@ -4092,7 +4110,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0020",
@@ -4307,7 +4326,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0021",
@@ -4522,7 +4542,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0022",
@@ -4737,7 +4758,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0023",
@@ -4952,7 +4974,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     },
     {
       "part_id": "P0024",
@@ -5167,7 +5190,8 @@
         }
       },
       "selection_periods": 6,
-      "test_periods": 6
+      "test_periods": 6,
+      "selection_pattern": "intermittent"
     }
   ],
   "model_errors": {
@@ -5196,7 +5220,7 @@
       "rmse": 0.07900683755117686
     }
   },
-  "runtime_seconds": 1.8940413749951404,
-  "selection": "Per-pattern aggregate validation MAE; final six rolling origins held out.",
-  "segment_selection": "ADI/CV2 demand pattern"
+  "runtime_seconds": 1.9776042909943499,
+  "selection": "Per-pattern aggregate validation MAE; patterns frozen before validation; final six rolling origins held out.",
+  "segment_selection": "ADI/CV2 on history excluding the final 12 validation/test periods; displayed current pattern uses full history"
 }

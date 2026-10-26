@@ -23,8 +23,8 @@ def run():
         parts.append({"part_id": f"P{index + 1:04}", "abc": segments[index], **classify(values),
                       "forecast": predictions.tolist(), "intervals": intervals(values, predictions),
                       "history": values, "ml_explanation": explain_ml(values), **evaluation})
-    for pattern in {part["pattern"] for part in parts}:
-        members = [part for part in parts if part["pattern"] == pattern]
+    for pattern in {part["selection_pattern"] for part in parts}:
+        members = [part for part in parts if part["selection_pattern"] == pattern]
         selected = min(members[0]["models"], key=lambda model: sum(part["models"][model]["validation_mae"] for part in members))
         for part in members:
             part["selected_model"] = selected
@@ -37,8 +37,8 @@ def run():
     artifact = {"generated_at": datetime.now(timezone.utc).isoformat(), "dataset": provenance,
                 "synthetic_cost_assumptions": True, "parts_count": len(parts), "parts": parts,
                 "model_errors": summary, "runtime_seconds": time.perf_counter() - started,
-                "selection": "Per-pattern aggregate validation MAE; final six rolling origins held out.",
-                "segment_selection": "ADI/CV2 demand pattern"}
+                "selection": "Per-pattern aggregate validation MAE; patterns frozen before validation; final six rolling origins held out.",
+                "segment_selection": "ADI/CV2 on history excluding the final 12 validation/test periods; displayed current pattern uses full history"}
     target = ROOT / "results/benchmark.json"
     target.parent.mkdir(exist_ok=True)
     target.write_text(json.dumps(artifact, indent=2, allow_nan=False))

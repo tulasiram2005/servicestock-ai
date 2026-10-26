@@ -110,4 +110,5 @@ def backtest(values):
         results[model] = {"validation_mae": float(np.mean(np.abs(values[-12:-6] - validation))),
                           **error_metrics(values[-6:], test, values[:-6]), "predictions": [float(value) for value in test]}
     winner = min(results, key=lambda model: results[model]["validation_mae"])
-    return {"selected_model": winner, "models": results, "selection_periods": 6, "test_periods": 6}
+    return {"selected_model": winner, "models": results, "selection_periods": 6, "test_periods": 6,
+            "selection_pattern": classify(values[:-12])["pattern"]}

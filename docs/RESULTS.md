@@ -27,7 +27,7 @@ Source: results/bandit.json
 Source: results/benchmark.json
 
 - Parts: 24
-- Runtime seconds: 1.8940413749951404
+- Runtime seconds: 1.9776042909943499
 - naive: MAE 0.03472222222222222, RMSE 0.06512286786846311
 - seasonal_naive: MAE 0.041666666666666664, RMSE 0.09209764296021157
 - croston: MAE 0.2062493782015649, RMSE 0.22167877002468536

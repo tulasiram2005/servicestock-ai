@@ -34,3 +34,14 @@ def test_backtest_is_reproducible_and_has_held_out_origins():
 def test_negative_input_rejected():
     with pytest.raises(ValueError):
         predict([-1, 2])
+
+
+def test_future_test_demand_cannot_change_selection_pattern_or_validation():
+    original = [2] * 40
+    changed = original[:-6] + [0, 0, 0, 0, 0, 1000]
+    before, after = backtest(original), backtest(changed)
+    assert classify(original)["pattern"] != classify(changed)["pattern"]
+    assert before["selection_pattern"] == after["selection_pattern"] == "smooth"
+    assert before["selected_model"] == after["selected_model"]
+    assert {key: value["validation_mae"] for key, value in before["models"].items()} == {
+        key: value["validation_mae"] for key, value in after["models"].items()}

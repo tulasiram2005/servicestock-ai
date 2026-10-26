@@ -11,9 +11,14 @@ on-demand PDF endpoint and CLI BI export code.
 Latest local continuation (2026-10-26): ten synthetic extract families, inventory/sales
 warehouse migration, 11 CSV/Parquet exports, numeric/reference validation, streamed UI
 tool traces, manual administrator job monitor and configuration option impact comparison.
-76 backend tests passed (one dedicated-database test skipped), 2 frontend unit tests and
+83 backend tests passed (one dedicated-database test skipped), 2 frontend unit tests and
 2 browser flows passed. TypeScript, production build and Bandit medium/high scan passed.
 Local Compose services are healthy. These checks do not establish full master-spec completion.
+
+Assistant scope checks now prevent silently broadening segment or period requests, and
+rejected calls are logged without unvalidated arguments. Forecast selection patterns are
+frozen before validation/test observations; benchmark artifacts were regenerated after
+correcting the earlier use of full-history patterns for model-selection grouping.
 
 Evidence: phase tests are recorded in docs/PHASES.md; browser smoke and axe results in results/ui.json.
 Results are regenerated with make results. Local runtime metrics are separate from cloud metrics.

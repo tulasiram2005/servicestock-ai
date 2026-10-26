@@ -38,3 +38,14 @@ are tracked within the related analytics, data, UI and documentation phases.
   Invalid configurations omit impact values. Final suite: 76 backend tests passed, one
   dedicated-database test skipped; 2 frontend unit tests and 2 browser flows passed;
   TypeScript/build and Bandit medium/high scan passed; all Compose services healthy.
+
+## Assistant scope and benchmark correction · 2026-10-26
+
+- P6: segment scenarios now require an explicit ABC segment, filter returned parts and
+  recompute totals. Ambiguous scopes, reversed history ranges and unsupported periods fail
+  validation rather than silently returning broader results. Rejected calls are recorded
+  without storing unvalidated arguments; session ownership violations generate audit events.
+- P2: model-selection demand patterns now exclude validation/test observations. Previously
+  full-history patterns could leak held-out information into grouping. Benchmark regenerated
+  for all 24 series; per-model errors remain measured from the six held-out origins.
+- Backend verification: 83 passed, one dedicated-database test skipped.
