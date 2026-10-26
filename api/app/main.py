@@ -23,6 +23,7 @@ from .jobs import JobQueue, Worker
 from .services import handle_job
 from .api import router
 from .assistant import Assistant
+from .llm_router import LocalToolRouter
 from fastapi.responses import StreamingResponse
 
 
@@ -61,6 +62,7 @@ def create_app(settings=None, store_override=None):
     cache = TTLCache(settings.cache_entries, settings.cache_seconds)
     metrics = Metrics()
     provider = MockLLM()
+    model_router = LocalToolRouter(settings)
     queue = JobQueue(store, settings) if store else None
     worker = Worker(queue, lambda kind, payload: handle_job(store, settings, kind, payload)) if queue else None
 
@@ -201,10 +203,14 @@ def create_app(settings=None, store_override=None):
     def measured_metrics():
         return metrics.snapshot()
 
+    @app.get("/api/admin/llm-usage", dependencies=[Depends(administrator)])
+    def model_usage():
+        return model_router.usage()
+
     @app.post("/api/assistant")
     def assistant(prompt: Prompt, principal=Depends(authorize)):
         if store:
-            return Assistant(store, queue, lambda: app.state.wake()).conversation(principal, prompt.text, prompt.session_id)
+            return Assistant(store, queue, lambda: app.state.wake(), model_router).conversation(principal, prompt.text, prompt.session_id)
         key = hashlib.sha256((principal.username + "\0" + prompt.text).encode()).hexdigest()
         result = cache.get(key)
         if result is None:
@@ -226,6 +232,7 @@ def create_app(settings=None, store_override=None):
     app.state.administrator = administrator
     app.state.store = store
     app.state.auth = auth
+    app.state.model_router = model_router
     app.state.queue = queue
     app.include_router(router(store, settings, authorize, administrator, queue,
                               lambda: app.state.wake(), cache))

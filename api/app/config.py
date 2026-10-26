@@ -30,8 +30,16 @@ class Settings:
     allowed_origins: tuple[str, ...] = ("http://localhost:3000",)
     llm_global_daily_cap: int = 0
     llm_user_daily_cap: int = 0
+    llm_provider_order: str = 'mock'
+    ollama_model: str = ''
 
     def __post_init__(self):
+        if self.llm_provider_order not in {'mock', 'ollama,mock'}:
+            raise ValueError('Supported provider order: mock or ollama,mock')
+        if self.llm_provider_order != 'mock' and (not self.ollama_model or 'cloud' in self.ollama_model.lower() or len(self.ollama_model) > 120):
+            raise ValueError('Ollama requires an explicitly configured local model')
+        if self.environment == 'production' and self.llm_provider_order != 'mock':
+            raise ValueError('Local model routing is development-only')
         if len(self.jwt_secret) < 32:
             raise ValueError("JWT_SECRET must contain at least 32 characters")
         if min(len(self.demo_password), len(self.admin_password)) < 12:
@@ -76,6 +84,8 @@ class Settings:
             "demo_username": os.getenv("DEMO_USERNAME", "demo"),
             "admin_username": os.getenv("ADMIN_USERNAME", "admin"),
             "worker_mode": os.getenv("WORKER_MODE", "embedded"),
+            "llm_provider_order": os.getenv("LLM_PROVIDER_ORDER", "mock"),
+            "ollama_model": os.getenv("OLLAMA_MODEL", ""),
             "uploads_enabled": os.getenv("UPLOADS_ENABLED", "false").lower() == "true",
             "allowed_origins": tuple(filter(None, (value.strip() for value in os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")))),
         }

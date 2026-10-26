@@ -88,8 +88,9 @@ def sanitize(value):
 
 
 class Assistant:
-    def __init__(self, store, queue, wake):
+    def __init__(self, store, queue, wake, model_router=None):
         self.store, self.queue, self.wake = store, queue, wake
+        self.model_router = model_router
 
     def execute(self, principal, session_id, name, arguments):
         with self.store.transaction() as connection:
@@ -174,10 +175,15 @@ class Assistant:
         return analytics["kpis"] if name == "get_kpis" else analytics["policies"]
 
     def conversation(self, principal, question, session_id=None, calls=None):
+        routing_notice = 'offline default'
+        model_routed = False
         if session_id is None:
             session_id = uuid.uuid4().hex
             with self.store.transaction() as connection:
                 connection.execute(db.assistant_sessions.insert().values(id=session_id, owner=principal.username))
+        if calls is None and self.model_router is not None:
+            calls, routing_notice = self.model_router.route(principal.username, question, REGISTRY)
+            model_routed = calls is not None
         if calls is None:
             part = re.search(r"\bP\d{4}\b", question.upper())
             name, args = ("get_part_summary", {"part_id": part.group()}) if part else ("get_kpis", {})
@@ -194,6 +200,6 @@ class Assistant:
                 statements.append(f'Inventory value: USD {data["inventory_value"]:.2f}; annual cost savings: USD {data["annual_savings"]:.2f}; working capital freed: USD {data["working_capital_freed"]:.2f}. [{result["tool_call_id"]}]')
             else:
                 statements.append(f'Verified {result["tool"]} results are available in the tool trace. [{result["tool_call_id"]}]')
-        return {"session_id": session_id, "provider": "mock", "fallback": True, "is_mock": True,
-                "notice": "Deterministic tool summaries. Synthetic cost assumptions. No external model called.",
+        return {"session_id": session_id, "provider": "ollama-local" if model_routed else "mock", "fallback": not model_routed, "is_mock": not model_routed,
+                "notice": "Deterministic tool summaries. Synthetic cost assumptions. No external model called. Routing: " + routing_notice,
                 "answer": " ".join(statements), "trace": trace}

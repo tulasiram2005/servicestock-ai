@@ -123,3 +123,16 @@ are tracked within the related analytics, data, UI and documentation phases.
 - Backend suite: 104 passed, one dedicated-database test skipped; Bandit medium/high passed.
   Changes are committed and backed up. Running Docker images have not been rebuilt in this
   checkpoint; no new browser or live cloud verification is claimed.
+
+## P6 local model routing and fallback · 2026-10-27
+
+- Added optional development-only Ollama routing followed by deterministic Mock fallback.
+  Default remains mock, zero daily call caps, no external model requests. Proposed read-only
+  tool calls pass existing validation, ownership and role checks; answers remain cited
+  deterministic summaries, with no untrusted model prose rendered.
+- Added user-specific bounded caching, atomic in-process global/user daily attempt caps,
+  bounded HTTP responses/timeouts, failure circuit cooldown and admin-only usage endpoint.
+- Verification: 117 backend tests passed, one dedicated-database test skipped; Bandit
+  medium/high passed. Focused assistant/provider tests passed after final metrics-label fix.
+  No live model was called, cloud resources created or Docker images rebuilt this checkpoint.
+- Gemini/compatible providers and persistent cross-process budgets remain unfinished.

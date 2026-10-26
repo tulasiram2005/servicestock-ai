@@ -108,3 +108,22 @@ def test_unsupported_period_and_reversed_history_are_rejected(assistant):
         assistant.conversation(Principal("demo", "viewer"), "quality", calls=[
             ("get_data_quality_report", {"period": "2002-01"})])
     assert error.value.status_code == 422
+
+
+def test_model_proposed_calls_use_existing_citations_and_executor(assistant):
+    class Router:
+        def route(self, username, question, registry):
+            return [('get_kpis', {})], 'local model route'
+    assistant.model_router = Router()
+    result = assistant.conversation(Principal('demo', 'viewer'), 'KPIs')
+    assert result['provider'] == 'ollama-local'
+    assert result['trace'][0]['tool_call_id'] in result['answer']
+    assert result['fallback'] is False
+
+
+def test_llm_usage_is_admin_only(client, demo_headers, admin_headers):
+    assert client.get('/api/admin/llm-usage', headers=demo_headers).status_code == 403
+    result = client.get('/api/admin/llm-usage', headers=admin_headers).json()
+    assert result['attempts'] == 0
+    assert result['external_calls'] == 0
+    assert result['scope'] == 'current_process'

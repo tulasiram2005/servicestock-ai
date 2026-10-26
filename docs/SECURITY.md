@@ -23,4 +23,6 @@ Limitations: rate limits are per process, not distributed. API audit writes are 
 through normal application routes but the database role is not restricted by append-only
 privileges. Retention is an explicit administrative exception. Signing-key rotation currently
 invalidates all tokens; overlapping rotation is not implemented. External LLM adapters are
-disabled/unimplemented. Automated security scans and independent review remain required.
+disabled/unimplemented. Optional development-only local Ollama routing is described in
+LLM_PROVIDERS.md; model output cannot bypass tool validation or initiate report jobs.
+Automated security scans and independent review remain required.
