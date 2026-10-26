@@ -102,3 +102,88 @@ def test_production_liveness_is_db_free_and_only_liveness_allows_http(settings):
     finally:
         event.remove(store.engine, 'before_cursor_execute', forbid_queries)
         store.engine.dispose()
+
+
+def test_concurrent_failures_lock_account_across_auth_instances(settings, tmp_path):
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+    from fastapi import HTTPException
+    from app.auth import Auth
+    from app.db.store import Store
+    import hashlib
+    url = 'sqlite:///' + str(tmp_path / 'concurrent-login.db')
+    store = Store(url)
+    db.metadata.create_all(store.engine)
+    instances = [Auth(settings, Store(url)) for _ in range(8)]
+    for instance in instances:
+        instance.ensure_accounts()
+    barrier = Barrier(len(instances))
+    class SynchronizedHasher:
+        def __init__(self, delegate):
+            self.delegate = delegate
+        def verify(self, hashed, password):
+            barrier.wait(timeout=10)
+            return self.delegate.verify(hashed, password)
+    for instance in instances:
+        instance.hasher = SynchronizedHasher(instance.hasher)
+    def fail(instance):
+        try:
+            instance.login(settings.demo_username, 'incorrect')
+        except HTTPException as error:
+            return error.status_code
+        raise AssertionError('Incorrect password accepted')
+    try:
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            assert list(executor.map(fail, instances)) == [401] * 8
+        key = hashlib.sha256(settings.demo_username.encode()).hexdigest()
+        with store.transaction() as connection:
+            attempt = connection.execute(select(db.login_attempts).where(db.login_attempts.c.id == key)).mappings().one()
+            assert attempt['failures'] == 5
+            assert attempt['locked_until'] > 0
+        fresh = Auth(settings, store)
+        import pytest
+        with pytest.raises(HTTPException):
+            fresh.login(settings.demo_username, settings.demo_password)
+        with store.transaction() as connection:
+            after = connection.execute(select(db.login_attempts).where(db.login_attempts.c.id == key)).mappings().one()
+            assert dict(after) == dict(attempt)
+    finally:
+        for instance in instances:
+            instance.store.engine.dispose()
+        store.engine.dispose()
+
+
+def test_expired_lock_resets_failure_window_and_success_clears_it(client, settings):
+    import time
+    from fastapi import HTTPException
+    import pytest
+    auth = client.app.state.auth
+    for _ in range(5):
+        with pytest.raises(HTTPException):
+            auth.login(settings.demo_username, 'incorrect')
+    with auth.store.transaction() as connection:
+        connection.execute(update(db.login_attempts).values(locked_until=time.time()-1))
+    with pytest.raises(HTTPException):
+        auth.login(settings.demo_username, 'incorrect')
+    with auth.store.transaction() as connection:
+        attempt = connection.execute(select(db.login_attempts)).mappings().one()
+        assert attempt['failures'] == 1
+        assert attempt['locked_until'] == 0
+    assert auth.login(settings.demo_username, settings.demo_password)
+    with auth.store.transaction() as connection:
+        assert connection.execute(select(db.login_attempts)).first() is None
+
+
+def test_disabled_during_password_verification_cannot_login(client, settings, monkeypatch):
+    from fastapi import HTTPException
+    import pytest
+    auth = client.app.state.auth
+    auth.ensure_accounts()
+    class DisablingHasher:
+        def verify(self, hashed, password):
+            with auth.store.transaction() as connection:
+                connection.execute(update(db.users).where(db.users.c.email == settings.demo_username).values(disabled=True))
+            return True
+    monkeypatch.setattr(auth, 'hasher', DisablingHasher())
+    with pytest.raises(HTTPException):
+        auth.login(settings.demo_username, settings.demo_password)

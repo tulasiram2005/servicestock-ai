@@ -70,27 +70,42 @@ class Auth:
         key = hashlib.sha256(username.encode()).hexdigest()
         with self.store.transaction() as connection:
             account = connection.execute(select(db.users).where(db.users.c.email == username)).mappings().first()
-            attempt = connection.execute(select(db.login_attempts).where(db.login_attempts.c.id == key)).mappings().first()
         try:
             valid = self.hasher.verify(account["password_hash"] if account else self.dummy, password)
         except VerificationError:
             valid = False
-        locked = bool(attempt and attempt["locked_until"] > time.time())
-        if not valid or not account or account["disabled"] or locked:
-            if account:
-                failures = (attempt["failures"] if attempt else 0) + 1
-                with self.store.transaction() as connection:
-                    values = {"failures": failures, "locked_until": time.time() + 300 if failures >= 5 else 0}
-                    if attempt:
-                        connection.execute(update(db.login_attempts).where(db.login_attempts.c.id == key).values(**values))
-                    else:
-                        connection.execute(db.login_attempts.insert().values(id=key, **values))
-            self.store.audit("redacted", "login_failed", {})
-            raise HTTPException(401, "Invalid credentials")
+        accepted = False
         with self.store.transaction() as connection:
-            connection.execute(db.login_attempts.delete().where(db.login_attempts.c.id == key))
-        self.store.audit(account["id"], "login", {})
-        return self.issue_access(username, account["role_id"])
+            # Serialize decisions for this account across processes. A no-op UPDATE
+            # also locks on SQLite and SQL Server, which do not share FOR UPDATE syntax.
+            if account:
+                connection.execute(update(db.users).where(db.users.c.id == account["id"]).values(id=db.users.c.id))
+                current = connection.execute(select(db.users).where(db.users.c.id == account["id"])).mappings().first()
+            else:
+                current = None
+            now = time.time()
+            attempt = connection.execute(select(db.login_attempts).where(db.login_attempts.c.id == key)).mappings().first()
+            locked = bool(attempt and attempt["locked_until"] > now)
+            accepted = bool(valid and current and not current["disabled"] and not locked
+                            and current["password_hash"] == account["password_hash"])
+            if accepted:
+                connection.execute(db.login_attempts.delete().where(db.login_attempts.c.id == key))
+            elif current and not locked:
+                # An expired lock starts a fresh failure window; requests during a
+                # lock do not extend it indefinitely or reset it with a valid password.
+                previous = attempt["failures"] if attempt and not attempt["locked_until"] else 0
+                failures = previous + 1
+                values = {"failures": failures, "locked_until": now + 300 if failures >= 5 else 0}
+                if attempt:
+                    connection.execute(update(db.login_attempts).where(db.login_attempts.c.id == key).values(**values))
+                else:
+                    connection.execute(db.login_attempts.insert().values(id=key, **values))
+            connection.execute(db.audit_log.insert().values(id=uuid.uuid4().hex,
+                actor=current["id"] if accepted else "redacted",
+                action="login" if accepted else "login_failed", detail={}, created_at=now))
+        if not accepted:
+            raise HTTPException(401, "Invalid credentials")
+        return self.issue_access(username, current["role_id"])
 
     def authenticate(self, token):
         try:

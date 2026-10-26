@@ -1,0 +1,1 @@
+{"measured_at": "2026-10-26T23:21:58.337282+00:00", "environment": "local Docker PostgreSQL", "concurrent_attempts": 8, "rejected_attempts": 8, "lock_threshold": 5, "correct_password_rejected_during_lock": true, "locked_requests_do_not_extend_lock": true, "status": "passed"}

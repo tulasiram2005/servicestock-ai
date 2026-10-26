@@ -26,3 +26,11 @@ invalidates all tokens; overlapping rotation is not implemented. External LLM ad
 disabled/unimplemented. Optional development-only local Ollama routing is described in
 LLM_PROVIDERS.md; model output cannot bypass tool validation or initiate report jobs.
 Automated security scans and independent review remain required.
+
+
+Login lockout decisions serialize per account in the database after password verification.
+Five failures lock the account for five minutes; locked requests do not extend that period.
+After expiry, a new wrong password starts a fresh count; successful login clears it.
+Current password hash, role and disabled state are reread under the account lock, and
+login audits commit with counter changes. Local PostgreSQL and shared SQLite concurrency
+were tested on 2026-10-27; SQL Server runtime behavior is not yet verified.

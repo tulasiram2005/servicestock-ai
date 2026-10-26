@@ -11,7 +11,7 @@ on-demand PDF endpoint and CLI BI export code.
 Latest local continuation (2026-10-27): ten synthetic extract families, inventory/sales
 warehouse migration, 11 CSV/Parquet exports, numeric/reference validation, streamed UI
 tool traces, manual administrator job monitor and configuration option impact comparison.
-120 backend tests passed (one dedicated-database test skipped), 4 frontend unit tests and
+123 backend tests passed (one dedicated-database test skipped), 4 frontend unit tests and
 4 browser tests passed (two live flows, plus mocked user-edit and failed-job UI checks).
 TypeScript, production build and Bandit medium/high scan passed.
 Local Compose services are healthy. These checks do not establish full master-spec completion.
@@ -57,8 +57,10 @@ Remaining master-spec gaps:
   and a short local Locust smoke are measured; full load capacity is not. CI security and SQL Server
   workflow definitions exist but remote runs remain unverified; no claim that all gates pass.
 - Concurrent account-seeding conflict handling is implemented and tested with independent
-  instances against shared SQLite; PostgreSQL/SQL Server validation and concurrent lockout
-  hardening remain. External worker notifications, fully enforced audit privileges,
+  instances against shared SQLite; account-seeding PostgreSQL/SQL Server validation remains.
+  Concurrent login lockout is now serialized and tested with shared SQLite and live local
+  PostgreSQL (eight simultaneous failures). SQL Server lockout runtime remains unverified.
+  External worker notifications, fully enforced audit privileges,
   provider-specific quotas and deployment wake-up behavior need further validation.
 - No live deployment, paid service, billing enablement or no-card account verification occurred.
 - GitHub access was checked; no ServiceStock remote exists and the user confirmed no repository

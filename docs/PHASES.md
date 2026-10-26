@@ -183,3 +183,22 @@ are tracked within the related analytics, data, UI and documentation phases.
   reconcile displayed totals against API annual costs and run axe on the comparison region
   (zero WCAG A/AA violations); this is not a full application accessibility certification.
 - Other master-spec charts and model/integration gaps remain in HONEST_REPORT.md.
+
+
+## P4 concurrent login lockout hardening · 2026-10-27
+
+- Serialize account login decisions with a database write lock after password verification.
+  Recheck current disabled/password/role state under that lock; failure counters and audit
+  entries commit atomically. Concurrent failures cannot overwrite each other's counts.
+- Active locks reject even valid passwords without extending the lock; expired locks start
+  a new failure window and successful authentication clears failures. Unknown usernames
+  retain dummy password verification and generic errors.
+- Verification: 123 backend tests passed, one dedicated-database test skipped; Bandit
+  medium/high passed; API image rebuilt healthy; four browser tests passed. New tests use
+  independent Auth instances sharing SQLite, verify expiry/reset, and disable an account
+  during password verification. The separate local PostgreSQL probe used eight concurrent
+  attempts, reached the five-failure lock, and verified a valid password cannot bypass or
+  extend it. Evidence: results/login_lockout_postgres.json. Synthetic probe account and
+  counter removed after testing; redacted security audit entries retained.
+- SQL Server runtime behavior remains unverified. Same-account decisions now serialize;
+  broad login throughput has not been measured. Per-process request throttling remains.
