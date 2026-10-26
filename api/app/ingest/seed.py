@@ -72,4 +72,6 @@ if __name__ == "__main__":
     store = Store(os.environ["DATABASE_URL"])
     print(json.dumps(seed(store, download=os.getenv("DOWNLOAD_PUBLIC_DATA") == "true"), default=str))
     from app.services import publish
+    from app.ingest.staging import generate_and_transform
+    generate_and_transform(store)
     publish(store, os.getenv("RESULTS_DIR", str(Path(__file__).resolve().parents[3] / "results")))

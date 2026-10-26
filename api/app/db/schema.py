@@ -83,3 +83,9 @@ results = Table("results", metadata, identity(), Column("payload", JSON, nullabl
                 Column("created_at", Float, nullable=False))
 login_attempts = Table("login_attempts", metadata, identity(), Column("failures", Integer, nullable=False),
                        Column("locked_until", Float, nullable=False))
+warehouse_inventory = Table("warehouse_inventory", metadata, ref("part_id", "parts", primary_key=True),
+                            ref("location_id", "locations", primary_key=True), Column("quantity", Float, nullable=False),
+                            Column("standard_price", Numeric(14, 2), nullable=False), Column("lead_days", Float, nullable=False))
+warehouse_sales = Table("warehouse_sales", metadata, identity(), ref("part_id", "parts"),
+                        ref("location_id", "locations"), Column("period", String(7), nullable=False),
+                        Column("quantity", Float, nullable=False))
