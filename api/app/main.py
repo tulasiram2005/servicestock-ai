@@ -22,11 +22,14 @@ from sqlalchemy import text
 from .jobs import JobQueue, Worker
 from .services import handle_job
 from .api import router
+from .assistant import Assistant
+from fastapi.responses import StreamingResponse
 
 
 class Prompt(BaseModel):
     model_config = ConfigDict(extra="forbid")
     text: str = Field(min_length=1, max_length=4000)
+    session_id: str | None = Field(default=None, pattern=r"^[a-f0-9]{32}$")
 
 
 class Login(BaseModel):
@@ -199,12 +202,24 @@ def create_app(settings=None, store_override=None):
 
     @app.post("/api/assistant")
     def assistant(prompt: Prompt, principal=Depends(authorize)):
+        if store:
+            return Assistant(store, queue, lambda: app.state.wake()).conversation(principal, prompt.text, prompt.session_id)
         key = hashlib.sha256((principal.username + "\0" + prompt.text).encode()).hexdigest()
         result = cache.get(key)
         if result is None:
             result = provider.respond(prompt.text)
             cache.put(key, result)
         return result
+
+    @app.post("/api/assistant/stream")
+    def assistant_stream(prompt: Prompt, principal=Depends(authorize)):
+        result = assistant(prompt, principal)
+        def events():
+            for item in result.get("trace", []):
+                yield "event: tool\ndata: " + json.dumps(item, default=str) + "\n\n"
+            yield "event: answer\ndata: " + json.dumps(result, default=str) + "\n\n"
+            yield "event: done\ndata: {}\n\n"
+        return StreamingResponse(events(), media_type="text/event-stream", headers={"X-Accel-Buffering": "no", "Cache-Control": "no-store"})
 
     app.state.authorize = authorize
     app.state.administrator = administrator
