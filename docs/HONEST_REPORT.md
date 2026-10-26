@@ -11,8 +11,9 @@ on-demand PDF endpoint and CLI BI export code.
 Latest local continuation (2026-10-26): ten synthetic extract families, inventory/sales
 warehouse migration, 11 CSV/Parquet exports, numeric/reference validation, streamed UI
 tool traces, manual administrator job monitor and configuration option impact comparison.
-85 backend tests passed (one dedicated-database test skipped), 2 frontend unit tests and
-2 browser flows passed. TypeScript, production build and Bandit medium/high scan passed.
+86 backend tests passed (one dedicated-database test skipped), 2 frontend unit tests and
+3 browser tests passed (two live flows plus a user-edit form test with mocked user endpoints).
+TypeScript, production build and Bandit medium/high scan passed.
 Local Compose services are healthy. These checks do not establish full master-spec completion.
 
 Assistant scope checks now prevent silently broadening segment or period requests, and
@@ -31,8 +32,11 @@ Remaining master-spec gaps:
 - Parts Explorer now supports server-side ABC filters, ascending/descending ID order,
   cursor pagination, and five browser-local saved filter views. Saved views are shared by
   users of the browser, contain no credentials, and are not synchronized between devices.
-- Detailed frontend features still missing include full charts/waterfalls,
-  optimistic feedback and user role editing. The UI consumes SSE tool/answer events and
+- Admin role/disabled editing is implemented for existing non-environment-managed accounts.
+  Role changes and their audit entries are atomic; rollback on audit failure is tested.
+  Creating new accounts through the UI is not implemented.
+- Detailed frontend features still missing include full charts/waterfalls and
+  optimistic feedback. The UI consumes SSE tool/answer events and
   provides a manual-refresh administrator job monitor; the server computes tools before
   emitting events, so this is not incremental model-token streaming.
 - Local Bandit medium/high scan and runtime pip-audit pass after upgrading PyJWT. Lighthouse

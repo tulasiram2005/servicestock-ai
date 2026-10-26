@@ -72,4 +72,28 @@ test('administrator can inspect jobs and users',async({page})=>{
   await page.getByRole('button',{name:'Users',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Users and roles',exact:true})).toBeVisible();
   await expect(page.getByRole('cell',{name:'demo',exact:true})).toBeVisible();
+  await expect(page.getByText('All current accounts are managed through environment configuration.')).toBeVisible();
+});
+
+test('user editing form submits role and disabled state (mocked user endpoints)',async({page})=>{
+  let user={id:'ui-fixture',email:'fixture-user',role_id:'viewer',disabled:false,managed:false};
+  await page.route('**/api/admin/users',route=>route.fulfill({json:[user]}));
+  await page.route('**/api/admin/users/ui-fixture',async route=>{
+    const body=route.request().postDataJSON();
+    expect(body).toEqual({role:'planner',disabled:true});
+    user={...user,role_id:body.role,disabled:body.disabled};
+    await route.fulfill({json:{status:'updated'}});
+  });
+  await page.goto('/');
+  await page.getByLabel('Username',{exact:true}).fill('admin');
+  await page.getByLabel('Password',{exact:true}).fill(env.ADMIN_PASSWORD);
+  await page.getByRole('button',{name:'Sign in',exact:true}).click();
+  await page.getByRole('button',{name:'Admin',exact:true}).click();
+  await page.getByRole('button',{name:'Users',exact:true}).click();
+  await page.getByRole('combobox',{name:'Role for fixture-user'}).selectOption('planner');
+  await page.getByLabel('Disable fixture-user',{exact:true}).check();
+  await page.getByRole('button',{name:'Save access for fixture-user'}).click();
+  await expect(page.getByText('Access updated.',{exact:true})).toBeVisible();
+  await expect(page.getByRole('combobox',{name:'Role for fixture-user'})).toHaveValue('planner');
+  await expect(page.getByLabel('Disable fixture-user',{exact:true})).toBeChecked();
 });

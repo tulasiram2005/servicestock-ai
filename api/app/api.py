@@ -1,5 +1,6 @@
 from typing import Literal
 import uuid
+import time
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field
@@ -161,7 +162,8 @@ def router(store, settings, authorize, admin, queue, wake, cache):
     @route.get("/admin/users", dependencies=[Depends(admin)])
     def users(database=Depends(database)):
         with database.transaction() as connection:
-            return [dict(row) for row in connection.execute(select(db.users.c.id, db.users.c.email, db.users.c.role_id, db.users.c.disabled)).mappings()]
+            return [{**dict(row), "managed": row["email"] in {settings.admin_username, settings.demo_username}}
+                    for row in connection.execute(select(db.users.c.id, db.users.c.email, db.users.c.role_id, db.users.c.disabled)).mappings()]
 
     @route.post("/admin/users/{user_id}")
     def change_role(user_id: str, body: RoleChange, principal=Depends(admin), database=Depends(database)):
@@ -172,7 +174,9 @@ def router(store, settings, authorize, admin, queue, wake, cache):
             if row["email"] in {settings.admin_username, settings.demo_username}:
                 raise HTTPException(403, "Environment-managed accounts cannot be modified")
             connection.execute(update(db.users).where(db.users.c.id == user_id).values(role_id=body.role, disabled=body.disabled))
-        database.audit(principal.username, "change_role", {"user_id": user_id, **body.model_dump()})
+            connection.execute(db.audit_log.insert().values(id=uuid.uuid4().hex, actor=principal.username,
+                action="change_role", detail={"user_id": user_id, "previous_role": row["role_id"],
+                    "previous_disabled": row["disabled"], **body.model_dump()}, created_at=time.time()))
         return {"status": "updated"}
 
     return route

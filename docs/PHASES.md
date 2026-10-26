@@ -65,3 +65,14 @@ are tracked within the related analytics, data, UI and documentation phases.
   saving/loading/deleting a view and pagination with unapplied edits. The initial browser
   failure was a dropdown test locator; corrected to use the accessible combobox role.
 - Compose services healthy; Bandit medium/high scan passed. No paid services used.
+
+## P4/P7 administrator access editing · 2026-10-26
+
+- Existing non-managed users can have roles and disabled status changed in the Admin UI.
+  Seeded demo/admin accounts are visibly protected and remain protected server-side.
+- Access changes and before/after audit details now share a transaction. A simulated
+  audit-write failure proves the access change rolls back. Integration coverage verifies
+  viewer denial, protected accounts, old-token invalidation and disabled-account login denial.
+- Verification: 86 backend tests passed, one dedicated-database test skipped; 2 frontend
+  tests passed; TypeScript/build and Bandit medium/high passed; Compose healthy. Three
+  browser tests passed: two live flows and one form test mocking only user endpoints.
