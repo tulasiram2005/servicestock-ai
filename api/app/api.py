@@ -24,6 +24,12 @@ class RoleChange(BaseModel):
     disabled: bool = False
 
 
+class Configuration(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    model_id: str = Field(max_length=64)
+    options: list[str] = Field(max_length=20)
+
+
 def router(store, settings, authorize, admin, queue, wake, cache):
     route = APIRouter(prefix="/api")
 
@@ -36,6 +42,16 @@ def router(store, settings, authorize, admin, queue, wake, cache):
         if principal.role not in {"planner", "admin"}:
             raise HTTPException(403, "Planner access required")
         return principal
+
+    @route.get("/configurations")
+    def configurations(principal=Depends(authorize), database=Depends(database)):
+        from .configurations import catalog, pooling
+        return {**catalog(database), "pooling": pooling(database)}
+
+    @route.post("/configurations/evaluate")
+    def evaluate_configuration(body: Configuration, principal=Depends(authorize), database=Depends(database)):
+        from .configurations import evaluate
+        return evaluate(database, body.model_id, body.options)
 
     @route.get("/parts")
     def parts(query: str = Query(default="", max_length=80), cursor: str = Query(default="", max_length=64),
