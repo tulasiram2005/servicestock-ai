@@ -52,3 +52,16 @@ are tracked within the related analytics, data, UI and documentation phases.
 - Updated API rebuilt and healthy locally; both browser flows passed, with zero axe
   violations on Configurations. Frontend unit tests (2), TypeScript, production build and
   Bandit medium/high scan passed. No cloud deployment or external LLM calls were made.
+
+## P7 Parts Explorer continuation · 2026-10-26
+
+- Added server-side ABC segment filtering and ID sort direction. Cursor traversal tests
+  verify exact membership, correct ordering and no duplicates in both directions.
+- Added five browser-local named filter views with load/delete actions, bounded validation
+  of stored settings and graceful handling of unavailable storage. Credentials are never saved.
+- Pagination uses the applied view, so unapplied search edits cannot change the next page.
+- Verification: 85 backend tests passed, one dedicated-database test skipped; 2 frontend
+  tests passed; TypeScript and production build passed. Both browser flows passed, including
+  saving/loading/deleting a view and pagination with unapplied edits. The initial browser
+  failure was a dropdown test locator; corrected to use the accessible combobox role.
+- Compose services healthy; Bandit medium/high scan passed. No paid services used.

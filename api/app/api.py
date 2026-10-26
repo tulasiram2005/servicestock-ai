@@ -74,13 +74,20 @@ def router(store, settings, authorize, admin, queue, wake, cache):
 
     @route.get("/parts")
     def parts(query: str = Query(default="", max_length=80), cursor: str = Query(default="", max_length=64),
+              segment: Literal["A", "B", "C"] | None = None, order: Literal["asc", "desc"] = "asc",
               limit: int = Query(default=20, ge=1, le=100), principal=Depends(authorize), database=Depends(database)):
+        segments = {item["part_id"]: item["abc"] for item in services.artifact(database, "benchmark")["parts"]}
         with database.transaction() as connection:
-            statement = select(db.parts).where(db.parts.c.id > cursor)
+            statement = select(db.parts)
+            if cursor:
+                statement = statement.where(db.parts.c.id > cursor if order == "asc" else db.parts.c.id < cursor)
+            if segment:
+                statement = statement.where(db.parts.c.id.in_([key for key, value in segments.items() if value == segment]))
             if query:
                 statement = statement.where(db.parts.c.description.contains(query, autoescape=True) | db.parts.c.id.contains(query, autoescape=True))
-            rows = connection.execute(statement.order_by(db.parts.c.id).limit(limit + 1)).mappings().all()
-        return {"items": [dict(row) for row in rows[:limit]], "next_cursor": rows[limit - 1]["id"] if len(rows) > limit else None}
+            rows = connection.execute(statement.order_by(db.parts.c.id.asc() if order == "asc" else db.parts.c.id.desc()).limit(limit + 1)).mappings().all()
+        return {"items": [{**dict(row), "segment": segments.get(row["id"])} for row in rows[:limit]],
+                "next_cursor": rows[limit - 1]["id"] if len(rows) > limit else None}
 
     @route.get("/parts/{part_id}")
     def part(part_id: str, principal=Depends(authorize), database=Depends(database)):

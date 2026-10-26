@@ -5,6 +5,9 @@ import {Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tool
 
 type Json = null | boolean | number | string | Json[] | {[key: string]: Json};
 type RecordData = {[key: string]: Json};
+type PartView = {query:string;segment:string;order:string};
+type SavedView = PartView & {name:string};
+const defaultPartView:PartView={query:'',segment:'',order:'asc'};
 const pages = ['Overview', 'Parts', 'Policy Lab', 'Data Quality', 'Assistant', 'Configurations', 'Results', 'Reports', 'Admin'];
 const money = (value: unknown) => typeof value === 'number' ? new Intl.NumberFormat('en-US', {style:'currency',currency:'USD'}).format(value) : 'Not measured';
 const record = (value: Json | undefined): RecordData => value && typeof value === 'object' && !Array.isArray(value) ? value : {};
@@ -28,6 +31,11 @@ export default function Home() {
   const [busy,setBusy]=useState(false);
   const [notice,setNotice]=useState('');
   const [query,setQuery]=useState('');
+  const [segment,setSegment]=useState('');
+  const [order,setOrder]=useState('asc');
+  const [appliedView,setAppliedView]=useState<PartView>(defaultPartView);
+  const [savedViews,setSavedViews]=useState<SavedView[]>([]);
+  const [viewName,setViewName]=useState('');
   const [part,setPart]=useState<RecordData|null>(null);
   const [answer,setAnswer]=useState<RecordData|null>(null);
   const [service,setService]=useState(0.95);
@@ -65,8 +73,25 @@ export default function Home() {
   }
   async function navigate(next:string,access=token){
     setPage(next);setPart(null);setData({});
+    if(next==='Parts'){
+      try{
+        const stored:unknown=JSON.parse(localStorage.getItem('servicestock.part-views')||'[]');
+        setSavedViews(Array.isArray(stored)?stored.filter((view):view is SavedView=>!!view&&typeof view==='object'&&typeof view.name==='string'&&view.name.length<=40&&typeof view.query==='string'&&view.query.length<=80&&['','A','B','C'].includes(view.segment)&&['asc','desc'].includes(view.order)).slice(0,5):[]);
+      }catch{setSavedViews([]);}
+      await loadParts(appliedView,'',access);return;
+    }
     const endpoint:Record<string,string>={Overview:'/kpis',Parts:'/parts', 'Data Quality':'/dq',Configurations:'/configurations',Results:'/results',Admin:'/admin/usage'};
     if(endpoint[next]) setData(record(await request(endpoint[next],{},access)));
+  }
+  async function loadParts(view:PartView,cursor='',access=token){
+    const params=new URLSearchParams({query:view.query,order:view.order,cursor});
+    if(view.segment)params.set('segment',view.segment);
+    const result=record(await request('/parts?'+params,{},access));
+    setData(result);setAppliedView(view);setQuery(view.query);setSegment(view.segment);setOrder(view.order);
+  }
+  function saveViews(views:SavedView[]){
+    try{localStorage.setItem('servicestock.part-views',JSON.stringify(views));setSavedViews(views);setNotice('Saved in this browser.');}
+    catch{setNotice('Browser storage is unavailable. Filters still work without saving.');}
   }
   async function login(event:FormEvent<HTMLFormElement>){
     event.preventDefault();const form=new FormData(event.currentTarget);
@@ -120,7 +145,7 @@ export default function Home() {
     <nav aria-label="Workspace">{pages.filter(item=>item!=='Admin'||role==='admin').map(item=><button key={item} aria-current={page===item?'page':undefined} onClick={()=>action(()=>navigate(item))}>{item}</button>)}</nav>
     <section><p className="eyebrow">WORKSPACE / {role}</p><h1 className="page-title">{part?'Part detail':page}</h1>
     {page==='Overview'&&<><div className="cards">{[['Inventory value',kpis.inventory_value],['Annual cost savings',kpis.annual_savings],['Working capital freed',kpis.working_capital_freed]].map(([label,value])=><article key={String(label)}><h2>{String(label)}</h2><strong>{money(value)}</strong></article>)}</div><p>Negative working capital freed means the recommendation requires more capital. These are simulated outcomes, not realized business savings.</p><h2>Service and risk</h2><Table data={[kpis]}/><h2>Monthly finance · USD</h2><Table data={rows(finance.monthly)}/><Details data={finance}/></>}
-    {page==='Parts'&&!part&&<><form onSubmit={event=>{event.preventDefault();action(async()=>setData(record(await request('/parts?query='+encodeURIComponent(query)))));}} className="inline"><label>Search parts<input value={query} onChange={event=>setQuery(event.target.value)} maxLength={80}/></label><button disabled={busy}>Search</button></form><Table data={rows(data.items)}/><div className="part-links">{rows(data.items).map(item=><button key={String(item.id)} onClick={()=>action(async()=>setPart(record(await request('/parts/'+item.id))))}>Open {String(item.id)}</button>)}</div>{data.next_cursor&&<button onClick={()=>action(async()=>setData(record(await request('/parts?cursor='+data.next_cursor+'&query='+encodeURIComponent(query)))))}>Next page</button>}</>}
+    {page==='Parts'&&!part&&<><form onSubmit={event=>{event.preventDefault();action(()=>loadParts({query,segment,order}));}} className="inline"><label>Search parts<input value={query} onChange={event=>setQuery(event.target.value)} maxLength={80}/></label><label>ABC segment<select value={segment} onChange={event=>setSegment(event.target.value)}><option value="">All segments</option>{['A','B','C'].map(value=><option key={value}>{value}</option>)}</select></label><label>Part ID order<select value={order} onChange={event=>setOrder(event.target.value)}><option value="asc">Ascending</option><option value="desc">Descending</option></select></label><button disabled={busy}>Search</button></form><p>Applied filters: {appliedView.segment||'All segments'} · {appliedView.order==='asc'?'Ascending':'Descending'} · {appliedView.query||'All parts'}</p><form className="inline" onSubmit={event=>{event.preventDefault();const name=viewName.trim();if(!name)return;saveViews([...savedViews.filter(view=>view.name!==name),{...appliedView,name}].slice(-5));setViewName('');}}><label>Saved view name<input value={viewName} onChange={event=>setViewName(event.target.value)} maxLength={40} required/></label><button disabled={busy}>Save applied view</button></form><p>Up to five views are saved in this browser, shared by its users. No credentials are saved.</p>{savedViews.map(view=><div className="inline" key={view.name}><button disabled={busy} onClick={()=>action(()=>loadParts(view))}>Load {view.name}</button><button disabled={busy} onClick={()=>saveViews(savedViews.filter(item=>item.name!==view.name))}>Delete {view.name}</button></div>)}<Table data={rows(data.items)}/><div className="part-links">{rows(data.items).map(item=><button key={String(item.id)} disabled={busy} onClick={()=>action(async()=>setPart(record(await request('/parts/'+item.id))))}>Open {String(item.id)}</button>)}</div>{data.next_cursor&&<button disabled={busy} onClick={()=>action(()=>loadParts(appliedView,String(data.next_cursor)))}>Next page</button>}</>}
     {part&&<><button onClick={()=>setPart(null)}>Back to parts</button><h2>{String(record(part.part).description)}</h2><Table data={[record(part.part)]}/><h2>Monthly demand · units</h2><div className="chart"><ResponsiveContainer width="100%" height={260}><LineChart data={rows(part.history)}><CartesianGrid strokeDasharray="3 3"/><XAxis dataKey="period"/><YAxis/><Tooltip/><Line dataKey="qty" stroke="#4197db" dot={false}/></LineChart></ResponsiveContainer></div><details><summary>Demand table</summary><Table data={rows(part.history)}/></details><h2>Policy comparison</h2><Table data={[{policy:'Baseline',...record(record(part.policy).baseline)},{policy:'Optimized',...record(record(part.policy).optimized)}]}/><h2>Forecast and drivers</h2><Details data={part.forecast}/><Details data={part.policy}/></>}
     {page==='Policy Lab'&&<><p>Explore precomputed scenarios. Every request shows the nearest grid settings actually used.</p><form onSubmit={event=>{event.preventDefault();action(async()=>setData(record(await request('/whatif?service_level='+service+'&holding_cost_rate='+holding+'&lead_time_multiplier='+lead))));}}>{[['Service level',service,setService,0.8,0.999,0.001],['Holding cost rate',holding,setHolding,0.01,1,0.01],['Lead-time multiplier',lead,setLead,0.5,3,0.1]].map(([label,value,setter,min,max,step])=><label key={String(label)}>{String(label)}: {String(value)}<input type="range" value={Number(value)} min={Number(min)} max={Number(max)} step={Number(step)} onChange={event=>(setter as (value:number)=>void)(Number(event.target.value))}/></label>)}<button disabled={busy}>Compare scenario</button></form>{data.notice&&<p>{String(data.notice)}</p>}<Table data={data.used?[record(data.used)]:[]}/><Table data={rows(data.parts).map(item=>({part_id:item.part_id,annual_savings:item.annual_savings,working_capital_freed:item.working_capital_freed}))}/></>}
     {page==='Data Quality'&&<><Table data={[data]}/><h2>Flagged and quarantined rows</h2><Table data={rows(data.issues)}/><Details data={data}/></>}

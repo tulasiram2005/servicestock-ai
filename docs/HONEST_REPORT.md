@@ -11,7 +11,7 @@ on-demand PDF endpoint and CLI BI export code.
 Latest local continuation (2026-10-26): ten synthetic extract families, inventory/sales
 warehouse migration, 11 CSV/Parquet exports, numeric/reference validation, streamed UI
 tool traces, manual administrator job monitor and configuration option impact comparison.
-83 backend tests passed (one dedicated-database test skipped), 2 frontend unit tests and
+85 backend tests passed (one dedicated-database test skipped), 2 frontend unit tests and
 2 browser flows passed. TypeScript, production build and Bandit medium/high scan passed.
 Local Compose services are healthy. These checks do not establish full master-spec completion.
 
@@ -28,7 +28,10 @@ Remaining master-spec gaps:
 - Transformer/zero-shot NLP comparison; calibrated forecast intervals and service-level backtest metric.
 - Physical staging schema and reverse purchase/BOM ETL: ten synthetic extract families now
   exist, with inventory/sales ETL and 11 CSV/Parquet export tables including KPIs/finance.
-- Detailed frontend features still missing include saved views, full charts/waterfalls,
+- Parts Explorer now supports server-side ABC filters, ascending/descending ID order,
+  cursor pagination, and five browser-local saved filter views. Saved views are shared by
+  users of the browser, contain no credentials, and are not synchronized between devices.
+- Detailed frontend features still missing include full charts/waterfalls,
   optimistic feedback and user role editing. The UI consumes SSE tool/answer events and
   provides a manual-refresh administrator job monitor; the server computes tools before
   emitting events, so this is not incremental model-token streaming.

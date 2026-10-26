@@ -14,6 +14,29 @@ test('login, overview, part, scenario, assistant and configuration',async({page}
   const inventory=JSON.parse(readFileSync('../results/analytics.json','utf8')).kpis.inventory_value;
   await expect(page.getByText(new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(inventory),{exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Parts',exact:true}).click();
+  await page.getByLabel('Search parts',{exact:true}).fill('P0001');
+  await page.getByRole('button',{name:'Next page',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Open P0021',exact:true})).toBeVisible();
+  await expect(page.getByLabel('Search parts',{exact:true})).toHaveValue('');
+  await page.getByRole('combobox',{name:'ABC segment',exact:true}).selectOption('A');
+  await page.getByRole('combobox',{name:'Part ID order',exact:true}).selectOption('desc');
+  await page.getByRole('button',{name:'Search',exact:true}).click();
+  await expect(page.getByText('Applied filters: A · Descending · All parts',{exact:true})).toBeVisible();
+  await page.getByLabel('Saved view name',{exact:true}).fill('Priority parts');
+  await page.getByRole('button',{name:'Save applied view',exact:true}).click();
+  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('servicestock.part-views')||'[]'))).toEqual([
+    {query:'',segment:'A',order:'desc',name:'Priority parts'}
+  ]);
+  await page.getByRole('button',{name:'Overview',exact:true}).click();
+  await page.getByRole('button',{name:'Parts',exact:true}).click();
+  await page.getByRole('button',{name:'Load Priority parts',exact:true}).click();
+  await expect(page.getByRole('combobox',{name:'ABC segment',exact:true})).toHaveValue('A');
+  await expect(page.getByRole('combobox',{name:'Part ID order',exact:true})).toHaveValue('desc');
+  await page.getByRole('button',{name:'Delete Priority parts',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Load Priority parts',exact:true})).toHaveCount(0);
+  await page.getByRole('combobox',{name:'ABC segment',exact:true}).selectOption('');
+  await page.getByRole('combobox',{name:'Part ID order',exact:true}).selectOption('asc');
+  await page.getByRole('button',{name:'Search',exact:true}).click();
   await page.getByRole('button',{name:'Open P0001',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Part detail',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Policy Lab',exact:true}).click();
