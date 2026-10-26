@@ -52,6 +52,24 @@ def evaluate(store, model_id, selected):
             "lead_assumption": "parallel procurement: maximum component lead time", "synthetic_cost_assumptions": True}
 
 
+def impact(store, model_id, before_options, after_options):
+    before = evaluate(store, model_id, before_options)
+    after = evaluate(store, model_id, after_options)
+    if not before["valid"] or not after["valid"]:
+        return {"valid": False, "before": before, "after": after,
+                "notice": "Both configurations must be valid before comparing costs or lead times.",
+                "synthetic_cost_assumptions": True}
+    old = {part["part_id"]: part["quantity"] for part in before["bom"]}
+    new = {part["part_id"]: part["quantity"] for part in after["bom"]}
+    return {"valid": True, "before": before, "after": after,
+            "cost_change_usd": after["cost_usd"] - before["cost_usd"],
+            "lead_change_months": after["lead_months"] - before["lead_months"],
+            "component_changes": [{"part_id": key, "before_quantity": old.get(key, 0),
+                "after_quantity": new.get(key, 0), "quantity_change": new.get(key, 0) - old.get(key, 0)}
+                for key in sorted(old.keys() | new.keys()) if old.get(key, 0) != new.get(key, 0)],
+            "synthetic_cost_assumptions": True}
+
+
 def pooling(store):
     configs = catalog(store)["product_configs"]
     appearances = defaultdict(int)

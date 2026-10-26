@@ -8,6 +8,13 @@ regression and comment classification, finance summaries, JWT/Argon2/refresh/CSR
 leased jobs, typed offline assistant, SSE, connected workspace, configuration BOM/pooling,
 on-demand PDF endpoint and CLI BI export code.
 
+Latest local continuation (2026-10-26): ten synthetic extract families, inventory/sales
+warehouse migration, 11 CSV/Parquet exports, numeric/reference validation, streamed UI
+tool traces, manual administrator job monitor and configuration option impact comparison.
+76 backend tests passed (one dedicated-database test skipped), 2 frontend unit tests and
+2 browser flows passed. TypeScript, production build and Bandit medium/high scan passed.
+Local Compose services are healthy. These checks do not establish full master-spec completion.
+
 Evidence: phase tests are recorded in docs/PHASES.md; browser smoke and axe results in results/ui.json.
 Results are regenerated with make results. Local runtime metrics are separate from cloud metrics.
 

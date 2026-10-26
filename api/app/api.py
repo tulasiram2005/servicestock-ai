@@ -30,6 +30,10 @@ class Configuration(BaseModel):
     options: list[str] = Field(max_length=20)
 
 
+class ConfigurationImpact(Configuration):
+    before_options: list[str] = Field(max_length=20)
+
+
 def router(store, settings, authorize, admin, queue, wake, cache):
     route = APIRouter(prefix="/api")
 
@@ -62,6 +66,11 @@ def router(store, settings, authorize, admin, queue, wake, cache):
     def evaluate_configuration(body: Configuration, principal=Depends(authorize), database=Depends(database)):
         from .configurations import evaluate
         return evaluate(database, body.model_id, body.options)
+
+    @route.post("/configurations/impact")
+    def configuration_impact(body: ConfigurationImpact, principal=Depends(authorize), database=Depends(database)):
+        from .configurations import impact
+        return impact(database, body.model_id, body.before_options, body.options)
 
     @route.get("/parts")
     def parts(query: str = Query(default="", max_length=80), cursor: str = Query(default="", max_length=64),

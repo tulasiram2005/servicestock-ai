@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import {readFileSync,writeFileSync,mkdirSync,existsSync} from 'node:fs';
 import {resolve} from 'node:path';
 
 const env=Object.fromEntries(readFileSync(resolve('../.env'),'utf8').trim().split('\n').map(line=>line.split('=')));
@@ -26,9 +26,13 @@ test('login, overview, part, scenario, assistant and configuration',async({page}
   await page.getByRole('button',{name:'Configurations',exact:true}).click();
   await page.getByRole('button',{name:'Validate configuration',exact:true}).click();
   await expect(page.getByText('Configuration valid',{exact:true})).toBeVisible();
+  await page.getByLabel('Sensor',{exact:true}).check();
+  await page.getByRole('button',{name:'Compare option changes',exact:true}).click();
+  await expect(page.getByText('Cost change: $59.00',{exact:true})).toBeVisible();
   const results=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa']).analyze();
   mkdirSync('../results',{recursive:true});
-  writeFileSync('../results/ui.json',JSON.stringify({measured_at:new Date().toISOString(),page:'Configurations',axe_violations:results.violations.map(v=>({id:v.id,impact:v.impact,description:v.description})),lighthouse:'not measured'},null,2));
+  const previous=existsSync('../results/ui.json')?JSON.parse(readFileSync('../results/ui.json','utf8')):{};
+  writeFileSync('../results/ui.json',JSON.stringify({measured_at:new Date().toISOString(),page:'Configurations',axe_violations:results.violations.map(v=>({id:v.id,impact:v.impact,description:v.description})),lighthouse:previous.lighthouse||'not measured'},null,2));
   expect(results.violations).toEqual([]);
   await page.screenshot({path:'../results/workspace.png',fullPage:true});
 });

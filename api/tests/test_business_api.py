@@ -23,6 +23,11 @@ def test_pagination_admin_budget_and_job_idor(settings):
         second = client.get("/api/parts", params={"limit": 2, "cursor": first["next_cursor"]}, headers=viewer_headers).json()
         assert first["items"][-1]["id"] < second["items"][0]["id"]
         assert client.get("/api/admin/usage", headers=viewer_headers).status_code == 403
+        configuration = {"model_id": "MODEL-1", "before_options": ["AC"], "options": ["AC", "SENSOR"]}
+        assert client.post("/api/configurations/impact", json=configuration).status_code == 401
+        impact = client.post("/api/configurations/impact", json=configuration, headers=viewer_headers)
+        assert impact.status_code == 200
+        assert impact.json()["cost_change_usd"] == 59
         assert client.get("/api/admin/usage", headers=admin_headers).json()["row_counts"]["parts"] == 24
         body = {"idempotency_key": "test-job-key", "service_level": 0.95}
         assert client.post("/api/whatif", json=body, headers=viewer_headers).status_code == 403

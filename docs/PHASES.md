@@ -33,3 +33,8 @@ are tracked within the related analytics, data, UI and documentation phases.
   fact keys before writing. Browser/axe/Lighthouse CI workflow added for public repositories;
   YAML parsed locally, remote execution not measured. Lighthouse login scores: performance
   0.97, accessibility 1.00, best practices 0.74 and SEO 1.00 (see results/ui.json).
+- P9 option impact: read-only comparison endpoint and UI baseline selector calculate added/
+  removed component quantities, cost differences and parallel-procurement lead differences.
+  Invalid configurations omit impact values. Final suite: 76 backend tests passed, one
+  dedicated-database test skipped; 2 frontend unit tests and 2 browser flows passed;
+  TypeScript/build and Bandit medium/high scan passed; all Compose services healthy.
