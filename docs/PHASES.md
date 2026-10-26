@@ -89,3 +89,15 @@ are tracked within the related analytics, data, UI and documentation phases.
   tests and 3 browser tests passed, including Results table visibility. TypeScript/build,
   Bandit medium/high scan and local Compose startup passed.
 - GitHub destination is pending creation; all implementation commits are preserved locally.
+
+## P1/JD purchase and BOM reverse imports · 2026-10-26
+
+- Synthetic EKKO/EKPO and STKO/STPO extracts now transform back into purchase_orders and
+  config_bom in the same transaction as the other generated warehouse facts. Monetary
+  values, integer quantities, period/currency, headers and model/option relationships are
+  validated before replacement. Demo contract: one detail per header, explicitly documented.
+- Round-trip tests preserve original purchase prices, budgets, quantities and BOM exactly;
+  invalid numeric values and relationships fail closed. No schema migration was required.
+- Verification: 100 backend tests passed, one dedicated-database test skipped; three browser
+  tests passed. Bandit medium/high passed. Updated API healthy; PostgreSQL contains 288
+  purchase records and five BOM records following startup/import. Frontend unchanged.

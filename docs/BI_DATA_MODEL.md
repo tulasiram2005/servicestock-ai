@@ -18,12 +18,18 @@ rows directly so identifiers and decimal prices are not inferred through a CSV r
 | MARC | MATNR, WERKS, PLIFZ | warehouse_inventory lead_days |
 | MARD | MATNR, WERKS, LGORT, LABST | warehouse_inventory quantity by part/location |
 | MBEW | MATNR, BWKEY, STPRS | warehouse_inventory standard_price |
-| EKKO / EKPO | EBELN, BEDAT, MATNR, MENGE, NETPR | synthetic extracts from purchase_orders; reverse import pending |
+| EKKO / EKPO | EBELN, BEDAT, MATNR, MENGE, NETPR | purchase_orders, validated header/detail import |
 | VBAK / VBAP | VBELN, AUDAT, MATNR, WERKS, KWMENG | warehouse_sales fact joined to part/location |
-| STKO / STPO | STLNR, MODEL, OPTION, IDNRK, MENGE | synthetic extracts from config_bom; reverse import pending |
+| STKO / STPO | STLNR, MODEL, OPTION, IDNRK, MENGE | config_bom, validated model/option/component import |
 
 All ten families are generated deterministically into the logical staging_extracts namespace.
-Inventory and sales facts are transactionally rebuilt from those extracts. No real SAP system
-was used; this is not SAP-certified integration. A physically separate staging schema and full
-reverse import of purchase/BOM extracts are not implemented. SQL Server DDL compilation passes;
-runtime compatibility has not been measured.
+Inventory, sales, purchase and BOM records are transactionally rebuilt from those extracts.
+Purchase finance fields use explicitly synthetic extensions Z_STANDARD_PRICE, Z_BUDGET and
+Z_EXPEDITE_SPEND. The demo format has one detail per purchase/BOM header; duplicate details
+are rejected rather than overwritten. USD only; quantities are positive bounded integers,
+prices nonnegative finite decimals with at most two fractional digits. Options must belong
+to the referenced model. Validation completes before any records are replaced.
+
+No real SAP system was used; this is not SAP-certified integration. A physically separate
+staging schema, general multi-line SAP order mapping and external uploads are not implemented.
+SQL Server DDL compilation passes; runtime compatibility has not been measured.

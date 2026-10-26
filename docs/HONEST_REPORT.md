@@ -11,7 +11,7 @@ on-demand PDF endpoint and CLI BI export code.
 Latest local continuation (2026-10-26): ten synthetic extract families, inventory/sales
 warehouse migration, 11 CSV/Parquet exports, numeric/reference validation, streamed UI
 tool traces, manual administrator job monitor and configuration option impact comparison.
-89 backend tests passed (one dedicated-database test skipped), 2 frontend unit tests and
+100 backend tests passed (one dedicated-database test skipped), 2 frontend unit tests and
 3 browser tests passed (two live flows plus a user-edit form test with mocked user endpoints).
 TypeScript, production build and Bandit medium/high scan passed.
 Local Compose services are healthy. These checks do not establish full master-spec completion.
@@ -30,8 +30,10 @@ Remaining master-spec gaps:
   rolling residual calibration; one-step coverage, interval width and service hit rate are
   measured over six held-out origins per part. Coverage is empirical, not guaranteed;
   multi-step coverage validation remains outstanding.
-- Physical staging schema and reverse purchase/BOM ETL: ten synthetic extract families now
-  exist, with inventory/sales ETL and 11 CSV/Parquet export tables including KPIs/finance.
+- Ten synthetic extract families now support inventory/sales and purchase/BOM reverse ETL,
+  with 11 CSV/Parquet export tables including KPIs/finance. A physical staging schema and
+  general multi-line external SAP mapping remain missing. The current synthetic contract
+  deliberately accepts one detail per header and rejects duplicate details.
 - Parts Explorer now supports server-side ABC filters, ascending/descending ID order,
   cursor pagination, and five browser-local saved filter views. Saved views are shared by
   users of the browser, contain no credentials, and are not synchronized between devices.
