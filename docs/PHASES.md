@@ -214,3 +214,18 @@ are tracked within the related analytics, data, UI and documentation phases.
 - Verification: 15 provider tests passed with HTTP mocks; combined backend suite passed
   129 tests with two dedicated-database tests skipped. Bandit medium/high passed.
 - Live model quality, Gemini/community providers and native capability negotiation remain.
+
+
+## P8 SQL Server validation preparation · 2026-10-27
+
+- Added offline compilation checks for every schema table, SQL Server queue locking hints,
+  TOP pagination and the account write-lock statement. Both checks passed.
+- SQL Server CI now pins Ubuntu 24.04 to match its ODBC package source, supports manual
+  dispatch, and derives migration/test URLs from the same isolated database credentials.
+  The prior independent URL secret could be absent or target the wrong database. CI now
+  applies Alembic migrations before integration tests and includes atomic quota concurrency.
+- The combined suite passed 129 tests; two dedicated-database integration tests skipped
+  without TEST_DATABASE_URL. Offline compilation is not SQL Server runtime validation.
+  This host is ARM64; no SQL Server instance was provisioned and no remote workflow ran.
+  A public repository, opt-in variable and SQLSERVER_TEST_PASSWORD secret are still needed
+  for the free GitHub-hosted x86 CI path. No paid infrastructure or billing enabled.

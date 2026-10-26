@@ -1,5 +1,6 @@
 name: Scheduled SQL Server compatibility
 on:
+  workflow_dispatch:
   schedule:
     - cron: '37 4 * * 0'
 permissions:
@@ -7,7 +8,7 @@ permissions:
 jobs:
   sqlserver:
     if: github.event.repository.private == false && vars.SQLSERVER_TESTS_ENABLED == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     services:
       sqlserver:
@@ -34,7 +35,8 @@ jobs:
         env:
           SQLSERVER_TEST_PASSWORD: ${{ secrets.SQLSERVER_TEST_PASSWORD }}
         run: python scripts/sqlserver_setup.py
+      - name: Apply migrations to isolated SQL Server database
+        working-directory: api
+        run: python -m alembic upgrade head
       - name: Run database integration
-        env:
-          TEST_DATABASE_URL: ${{ secrets.SQLSERVER_TEST_DATABASE_URL }}
         run: python -m pytest api/tests/test_database_integration.py -q

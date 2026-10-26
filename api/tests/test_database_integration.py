@@ -25,3 +25,21 @@ def test_database_job_claims_are_exclusive(settings):
     finally:
         with store.transaction() as connection:
             connection.execute(delete(db.jobs).where(db.jobs.c.owner == owner))
+
+
+@pytest.mark.skipif(not os.getenv('TEST_DATABASE_URL'), reason='Dedicated integration database URL not configured')
+def test_database_model_budget_is_atomic(settings):
+    from app.llm_budget import DatabaseBudget
+    import secrets
+    store = Store(os.environ['TEST_DATABASE_URL'])
+    db.metadata.create_all(store.engine)
+    day = -1000000000 - secrets.randbelow(100000000)
+    try:
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            accepted = sum(executor.map(lambda index: DatabaseBudget(store).reserve('quota-probe-'+str(index),day,5,1),range(12)))
+        assert accepted == 5
+        assert DatabaseBudget(store).total(day) == 5
+    finally:
+        with store.transaction() as connection:
+            connection.execute(delete(db.llm_daily_usage).where(db.llm_daily_usage.c.day == day))
+        store.engine.dispose()
