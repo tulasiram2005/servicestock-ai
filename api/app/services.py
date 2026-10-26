@@ -68,6 +68,8 @@ def retain(store, days):
     with store.transaction() as connection:
         for table in [*db.artifacts.values(), db.audit_log, db.tool_call_log, db.data_quality_issues]:
             deleted[table.name] = connection.execute(delete(table).where(table.c.created_at < cutoff)).rowcount
+        deleted['llm_daily_usage'] = connection.execute(delete(db.llm_daily_usage).where(
+            db.llm_daily_usage.c.day < int(cutoff // 86400))).rowcount
         connection.execute(delete(db.refresh_tokens).where(db.refresh_tokens.c.expires_at < time.time()))
         connection.execute(delete(db.idempotency_keys).where(db.idempotency_keys.c.created_at < cutoff))
         deleted["jobs"] = connection.execute(delete(db.jobs).where(db.jobs.c.updated_at < cutoff,

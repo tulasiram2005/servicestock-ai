@@ -15,6 +15,9 @@ def ref(name, target, **kwargs):
 
 
 roles = Table("roles", metadata, identity(), Column("name", String(20), unique=True, nullable=False))
+llm_daily_usage = Table("llm_daily_usage", metadata,
+    Column("day", Integer, primary_key=True), Column("subject", String(64), primary_key=True),
+    Column("attempts", Integer, nullable=False, default=0))
 users = Table("users", metadata, identity(), Column("email", String(120), unique=True, nullable=False),
               Column("password_hash", String(256), nullable=False), ref("role_id", "roles"),
               Column("disabled", Boolean, nullable=False, default=False))

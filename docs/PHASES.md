@@ -136,3 +136,15 @@ are tracked within the related analytics, data, UI and documentation phases.
   medium/high passed. Focused assistant/provider tests passed after final metrics-label fix.
   No live model was called, cloud resources created or Docker images rebuilt this checkpoint.
 - Gemini/compatible providers and persistent cross-process budgets remain unfinished.
+
+## P6 persistent shared call budgets · 2026-10-27
+
+- Migration 0004 adds UTC-day global and hashed-user counters. Atomic conditional updates
+  reserve both counts in one transaction; exhausted user caps roll back the global increment.
+  Missing/unavailable budget storage prevents model calls. Retention prunes old daily rows.
+- Router uses shared counters whenever a database is configured; database-free standalone
+  usage is explicitly labeled process-local. Mock default still makes no model calls.
+- Verification: 120 backend tests passed, one dedicated-database test skipped; Bandit
+  medium/high passed; updated Docker API healthy. Local PostgreSQL accepted exactly five
+  of 24 attempts across eight workers at a cap of five, and a new instance read the persisted
+  total. Evidence: results/llm_budget_postgres.json. SQL Server behavior remains unverified.

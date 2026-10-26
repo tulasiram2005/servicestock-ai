@@ -5,12 +5,14 @@ import time
 from threading import Lock
 
 import httpx
+from sqlalchemy.exc import SQLAlchemyError
+from .llm_budget import DatabaseBudget
 
 from .runtime import TTLCache
 
 
 class LocalToolRouter:
-    def __init__(self, settings, transport=None, clock=time.time):
+    def __init__(self, settings, transport=None, clock=time.time, store=None):
         self.settings, self.transport, self.clock = settings, transport, clock
         self.lock = Lock()
         self.day = None
@@ -18,6 +20,7 @@ class LocalToolRouter:
         self.users = {}
         self.cooldown_until = 0
         self.cache = TTLCache(capacity=settings.cache_entries, ttl=settings.cache_seconds)
+        self.budget = DatabaseBudget(store) if store else None
 
     def route(self, username, question, registry):
         if self.settings.llm_provider_order == 'mock':
@@ -33,7 +36,13 @@ class LocalToolRouter:
                 self.day, self.total, self.users = day, 0, {}
             if now < self.cooldown_until:
                 return None, 'local provider cooling down'
-            if (self.total >= self.settings.llm_global_daily_cap or
+            if self.budget:
+                try:
+                    if not self.budget.reserve(username, day, self.settings.llm_global_daily_cap, self.settings.llm_user_daily_cap):
+                        return None, 'local model daily cap reached'
+                except SQLAlchemyError:
+                    return None, 'quota storage unavailable; deterministic fallback'
+            elif (self.total >= self.settings.llm_global_daily_cap or
                 self.users.get(username, 0) >= self.settings.llm_user_daily_cap or
                 (username not in self.users and len(self.users) >= 1024)):
                 return None, 'local model daily cap reached'
@@ -74,5 +83,7 @@ class LocalToolRouter:
 
     def usage(self):
         with self.lock:
-            return {'scope': 'current_process', 'day_utc': self.day, 'attempts': self.total,
+            day = int(self.clock() // 86400)
+            return {'scope': 'shared_database' if self.budget else 'current_process', 'day_utc': day,
+                    'attempts': self.budget.total(day) if self.budget else (self.total if self.day == day else 0),
                     'external_calls': 0, 'provider': 'mock' if self.settings.llm_provider_order == 'mock' else 'ollama-local'}

@@ -62,7 +62,7 @@ def create_app(settings=None, store_override=None):
     cache = TTLCache(settings.cache_entries, settings.cache_seconds)
     metrics = Metrics()
     provider = MockLLM()
-    model_router = LocalToolRouter(settings)
+    model_router = LocalToolRouter(settings, store=store)
     queue = JobQueue(store, settings) if store else None
     worker = Worker(queue, lambda kind, payload: handle_job(store, settings, kind, payload)) if queue else None
 

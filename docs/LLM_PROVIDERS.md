@@ -13,8 +13,12 @@ executor revalidates arguments, enforces roles/session ownership and logs tool e
 Only deterministic, cited summaries of tool results reach the UI. Model-authored prose is
 never rendered. Model routing is optional and failures return to deterministic routing.
 
-Attempts are reserved atomically before calls. Caps are per process per UTC day, reset on
-restart, and are not distributed billing controls. Model routing caches are user-specific
+Attempts are reserved atomically before calls. When a database is configured, global and
+hashed-user UTC-day counters share one transaction and survive API restarts. A rejected user
+reservation rolls back the global increment. Database errors fail closed to deterministic
+routing. Retention removes old daily rows. Standalone use without a database retains a
+per-process counter that resets on restart; its metrics explicitly identify that scope.
+These count attempts, not token charges or provider billing. Model routing caches are user-specific
 and bounded. Failures/429s trigger a 60-second circuit cooldown rather than repeated calls.
 HTTP phase timeouts are five seconds; response reads enforce a byte cap and check elapsed
 time between chunks. These are not a hard process-cancellation deadline. Metrics are
@@ -23,7 +27,9 @@ available to administrators at `/api/admin/llm-usage`.
 Offline tests use HTTP mock responses for valid/invalid tool plans, 429/500/redirect failures,
 cache isolation, concurrent cap enforcement and day rollover. A live Ollama model has not
 been run or quality-evaluated. Native tool capability negotiation, Gemini/OpenAI-compatible
-adapters, persistent distributed budgets and per-tool cancellation remain pending.
+adapters, provider token/cost accounting and per-tool cancellation remain pending.
+Local PostgreSQL concurrency verification is in results/llm_budget_postgres.json; SQL Server
+quota concurrency remains unverified. No background quota polling occurs.
 
 Protocol reference checked 2026-10-27:
 [Ollama official API](https://github.com/ollama/ollama/blob/main/docs/api.md).

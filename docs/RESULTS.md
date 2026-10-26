@@ -35,6 +35,23 @@ Source: results/benchmark.json
 - tsb: MAE 0.059039743206296375, RMSE 0.07326378366184029
 - lightgbm: MAE 0.059771783881595264, RMSE 0.07900683755117686
 
+## llm_budget_postgres
+
+Source: results/llm_budget_postgres.json
+
+```json
+{
+  "measured_at": "2026-10-26T21:28:17.939570+00:00",
+  "environment": "local Docker PostgreSQL",
+  "concurrent_workers": 8,
+  "reservation_attempts": 24,
+  "configured_global_cap": 5,
+  "accepted": 5,
+  "new_budget_instance_reads_persisted_total": true,
+  "status": "passed"
+}
+```
+
 ## load
 
 Source: results/load.json
