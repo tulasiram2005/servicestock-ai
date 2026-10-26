@@ -8,4 +8,7 @@ No scale claim is justified by the 24-series demo.
 
 Local browser flow and axe results are recorded when tests complete. Database access uses
 keyset pagination for part lists, composite demand keys and bounded tool results. Query plans
-for the five slowest queries, N+1 profiling and k6/Locust workload measurements remain pending.
+for the five slowest queries and broad N+1 profiling remain pending. The configuration BOM
+now fetches component prices and lead times with one joined query instead of two queries per
+component. A regression test verifies that increasing from two to 21 components does not
+increase SELECT count. This is query-count evidence, not a measured production latency claim.

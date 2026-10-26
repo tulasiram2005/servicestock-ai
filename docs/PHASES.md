@@ -101,3 +101,14 @@ are tracked within the related analytics, data, UI and documentation phases.
 - Verification: 100 backend tests passed, one dedicated-database test skipped; three browser
   tests passed. Bandit medium/high passed. Updated API healthy; PostgreSQL contains 288
   purchase records and five BOM records following startup/import. Frontend unchanged.
+
+## Saved-work continuation · 2026-10-27
+
+- Resumed the two uncommitted configuration optimization files from the previous session.
+  Component prices/leads now load in one joined query; SELECT count stays constant from
+  two to 21 components. Missing component lead data produces a clear validation error.
+- Backend suite: 102 passed, one dedicated-database test skipped. Bandit medium/high passed.
+  Frontend unchanged; existing browser results apply to the preceding running build.
+- Commit history and source backup are saved outside the repository as a Git bundle and
+  source ZIP. These include committed code, tests, docs and run artifacts; ignored credentials,
+  dependencies and live Docker database volumes are intentionally not exported.

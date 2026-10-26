@@ -43,10 +43,16 @@ def evaluate(store, model_id, selected):
             if item["option_id"] is None or item["option_id"] in selected:
                 quantities[item["part_id"]] += item["qty"]
         items = []
-        for part_id, qty in quantities.items():
-            part = connection.execute(select(db.parts).where(db.parts.c.id == part_id)).mappings().one()
-            lead = connection.scalar(select(db.lead_time_params.c.mean_months).where(db.lead_time_params.c.part_id == part_id))
-            items.append({"part_id": part_id, "quantity": qty, "cost_usd": float(part["unit_cost"]) * qty, "lead_months": lead})
+        component_rows = connection.execute(select(db.parts.c.id, db.parts.c.unit_cost,
+            db.lead_time_params.c.mean_months).outerjoin(db.lead_time_params,
+                db.parts.c.id == db.lead_time_params.c.part_id).where(db.parts.c.id.in_(quantities))).mappings().all()
+        components = {row['id']: row for row in component_rows}
+        for part_id, qty in sorted(quantities.items()):
+            part = components.get(part_id)
+            if part is None or part['mean_months'] is None:
+                raise HTTPException(422, "Component cost or lead-time data is incomplete")
+            items.append({"part_id": part_id, "quantity": qty, "cost_usd": float(part["unit_cost"]) * qty,
+                          "lead_months": part['mean_months']})
     return {"valid": True, "errors": [], "bom": items, "cost_usd": sum(item["cost_usd"] for item in items),
             "lead_months": max((item["lead_months"] for item in items), default=0),
             "lead_assumption": "parallel procurement: maximum component lead time", "synthetic_cost_assumptions": True}

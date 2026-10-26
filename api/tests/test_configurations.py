@@ -54,3 +54,34 @@ def test_invalid_configuration_has_no_misleading_impact_values(store):
     result = impact(store, "MODEL-1", ["AC"], ["AC", "BATTERY"])
     assert not result["valid"]
     assert "cost_change_usd" not in result
+
+
+def test_bom_query_count_does_not_grow_per_component(store):
+    from sqlalchemy import event
+    queries = []
+    def count(connection, cursor, statement, parameters, context, executemany):
+        if statement.lstrip().upper().startswith('SELECT'):
+            queries.append(statement)
+    event.listen(store.engine, 'before_cursor_execute', count)
+    try:
+        evaluate(store, 'MODEL-1', ['AC'])
+        small = len(queries)
+        with store.transaction() as connection:
+            connection.execute(db.config_bom.insert(), [
+                {'id':f'EXTRA-{index}', 'model_id':'MODEL-1', 'part_id':f'P{index:04}', 'qty':1}
+                for index in range(6, 25)])
+        queries.clear()
+        result = evaluate(store, 'MODEL-1', ['AC'])
+        assert len(result['bom']) == 21
+        assert len(queries) == small
+    finally:
+        event.remove(store.engine, 'before_cursor_execute', count)
+
+
+def test_missing_component_lead_is_explicit_error(store):
+    from sqlalchemy import delete
+    with store.transaction() as connection:
+        connection.execute(delete(db.lead_time_params).where(db.lead_time_params.c.part_id == 'P0001'))
+    with pytest.raises(HTTPException) as error:
+        evaluate(store, 'MODEL-1', ['AC'])
+    assert error.value.status_code == 422
