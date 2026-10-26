@@ -46,3 +46,13 @@ Single service token and single-process limiter are provisional infrastructure,
 not user authorization. Token is never logged or serialized by settings. Runtime
 requests are not persisted. Database, embedded durable jobs, financial logic,
 NLP, regression, Gemini integration and SQL Server compatibility are pending.
+
+## Local verification
+
+- API: 11 tests passed using Python 3.11.9, including unauthorized access,
+  input bounds, secret redaction, rate-limit enforcement and recovery.
+- Compose validates with temporary test placeholders and rejects missing secrets.
+- Dependency install audit reported zero known vulnerabilities at install time.
+- Next.js 16.4.3 production build passed, including static page generation.
+- Container startup/integration has not yet been tested.
+- No cloud deployment, paid API calls, or external data uploads were performed.
