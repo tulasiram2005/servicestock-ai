@@ -7,7 +7,7 @@ Master specification received 2026-10-26. Earlier foundation commits remain inta
 | P0 | Compose starts web/API/Postgres, config/logging/health/CI | Passed locally: make up, all three containers healthy, 22 API tests |
 | P1 | Migrated schema, seed, quarantined bad rows, DQ report | Passed: 27 tests; Postgres migration 0001; 24 parts; three quarantined rows |
 | P2 | Segmentation, forecasts, rolling backtest, benchmark artifact | Passed: 32 tests, six models, 24 public series, held-out benchmark artifact |
-| P3 | Simulation, policies, costs, sensitivity and statistical comparison | Pending |
+| P3 | Simulation, policies, costs, sensitivity and statistical comparison | Passed: 37 tests; 10,000 draws/part; 648 grid cells; paired bootstrap; regression/NLP artifacts |
 | P4 | Auth, role and object checks, audit, security tests | Partial foundation |
 | P5 | Durable jobs, leases, retries, progress, cache, keyset pagination | Pending |
 | P6 | Typed tools, guardrails, SSE, provider fallback | Pending |
