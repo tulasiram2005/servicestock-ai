@@ -31,3 +31,7 @@ def test_pagination_admin_budget_and_job_idor(settings):
         job_id = response.json()["job_id"]
         assert client.get("/api/jobs/" + job_id, headers=viewer_headers).status_code == 404
         assert client.get("/api/jobs/" + job_id, headers=admin_headers).status_code == 200
+        assert client.get("/api/admin/jobs", headers=viewer_headers).status_code == 403
+        jobs = client.get("/api/admin/jobs", headers=admin_headers).json()
+        assert job_id in {job["id"] for job in jobs}
+        assert all(set(job) == {"id", "kind", "status", "progress", "attempts", "created_at"} for job in jobs)

@@ -36,6 +36,7 @@ export default function Home() {
   const [options,setOptions]=useState(['AC']);
   const [configuration,setConfiguration]=useState<RecordData|null>(null);
   const [dark,setDark]=useState(true);
+  const [toolTrace,setToolTrace]=useState<RecordData[]>([]);
 
   async function request(path:string, init:RequestInit={}, access=token):Promise<Json> {
     for(let attempt=0;attempt<4;attempt++){
@@ -87,6 +88,27 @@ export default function Home() {
       setTimeout(()=>URL.revokeObjectURL(url),1000);
     });
   }
+  async function ask(question:string){
+    setAnswer(null);setToolTrace([]);
+    const response=await fetch('/api/assistant/stream',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({text:question}),signal:AbortSignal.timeout(30000)});
+    if(!response.ok||!response.body) throw new Error(response.status===429?'Assistant request limit reached. Please retry later.':'Assistant unavailable. Please retry.');
+    const reader=response.body.getReader();const decoder=new TextDecoder();let pending='';
+    try {
+      while(true){
+        const next=await reader.read();if(next.done)break;
+        pending+=decoder.decode(next.value,{stream:true});
+        const events=pending.split('\n\n');pending=events.pop()||'';
+        for(const event of events){
+          const kind=event.split('\n').find(line=>line.startsWith('event: '))?.slice(7);
+          const payload=event.split('\n').filter(line=>line.startsWith('data: ')).map(line=>line.slice(6)).join('\n');
+          if(!payload)continue;
+          const parsed=record(JSON.parse(payload) as Json);
+          if(kind==='tool')setToolTrace(previous=>[...previous,parsed]);
+          if(kind==='answer')setAnswer(parsed);
+        }
+      }
+    }finally{reader.releaseLock();}
+  }
   const kpis=record(data.kpis), finance=record(data.finance);
   return <main data-theme={dark?'dark':'light'}>
     <header><a href="/">S<span>ServiceStock AI</span></a><div className="badges"><span className="badge">Free-tier demo</span><span className="badge">Synthetic cost assumptions</span><button onClick={()=>setDark(!dark)} aria-label="Toggle color theme">{dark?'Light':'Dark'}</button>{token&&<button onClick={logout}>Sign out</button>}</div></header>
@@ -100,11 +122,11 @@ export default function Home() {
     {part&&<><button onClick={()=>setPart(null)}>Back to parts</button><h2>{String(record(part.part).description)}</h2><Table data={[record(part.part)]}/><h2>Monthly demand · units</h2><div className="chart"><ResponsiveContainer width="100%" height={260}><LineChart data={rows(part.history)}><CartesianGrid strokeDasharray="3 3"/><XAxis dataKey="period"/><YAxis/><Tooltip/><Line dataKey="qty" stroke="#4197db" dot={false}/></LineChart></ResponsiveContainer></div><details><summary>Demand table</summary><Table data={rows(part.history)}/></details><h2>Policy comparison</h2><Table data={[{policy:'Baseline',...record(record(part.policy).baseline)},{policy:'Optimized',...record(record(part.policy).optimized)}]}/><h2>Forecast and drivers</h2><Details data={part.forecast}/><Details data={part.policy}/></>}
     {page==='Policy Lab'&&<><p>Explore precomputed scenarios. Every request shows the nearest grid settings actually used.</p><form onSubmit={event=>{event.preventDefault();action(async()=>setData(record(await request('/whatif?service_level='+service+'&holding_cost_rate='+holding+'&lead_time_multiplier='+lead))));}}>{[['Service level',service,setService,0.8,0.999,0.001],['Holding cost rate',holding,setHolding,0.01,1,0.01],['Lead-time multiplier',lead,setLead,0.5,3,0.1]].map(([label,value,setter,min,max,step])=><label key={String(label)}>{String(label)}: {String(value)}<input type="range" value={Number(value)} min={Number(min)} max={Number(max)} step={Number(step)} onChange={event=>(setter as (value:number)=>void)(Number(event.target.value))}/></label>)}<button disabled={busy}>Compare scenario</button></form>{data.notice&&<p>{String(data.notice)}</p>}<Table data={data.used?[record(data.used)]:[]}/><Table data={rows(data.parts).map(item=>({part_id:item.part_id,annual_savings:item.annual_savings,working_capital_freed:item.working_capital_freed}))}/></>}
     {page==='Data Quality'&&<><Table data={[data]}/><h2>Flagged and quarantined rows</h2><Table data={rows(data.issues)}/><Details data={data}/></>}
-    {page==='Assistant'&&<><p>Offline, verified tool summaries. No external AI account is required.</p><form onSubmit={event=>{event.preventDefault();const form=new FormData(event.currentTarget);action(async()=>setAnswer(record(await request('/assistant',{method:'POST',body:JSON.stringify({text:form.get('question')})}))));}}><label>Ask about KPIs, a part ID, or data quality<textarea name="question" maxLength={4000} required defaultValue="Show inventory KPIs"/></label><button disabled={busy}>Ask assistant</button></form>{answer&&<article><p>{String(answer.notice)}</p><p>{String(answer.answer)}</p>{rows(answer.trace).map(trace=><details key={String(trace.tool_call_id)}><summary>{String(trace.tool)} · {String(trace.tool_call_id)}</summary><pre>{JSON.stringify(trace.data,null,2)}</pre></details>)}</article>}</>}
+    {page==='Assistant'&&<><p>Offline, verified tool summaries. No external AI account is required.</p><form onSubmit={event=>{event.preventDefault();const form=new FormData(event.currentTarget);action(()=>ask(String(form.get('question'))));}}><label>Ask about KPIs, a part ID, or data quality<textarea name="question" maxLength={4000} required defaultValue="Show inventory KPIs"/></label><button disabled={busy}>Ask assistant</button></form><div aria-live="polite">{answer&&<article><p>{String(answer.notice)}</p><p>{String(answer.answer)}</p></article>}{toolTrace.map(trace=><details key={String(trace.tool_call_id)}><summary>{String(trace.tool)} · {String(trace.tool_call_id)}</summary><pre>{JSON.stringify(trace.data,null,2)}</pre></details>)}</div></>}
     {page==='Configurations'&&<><p>Select options to validate compatibility and calculate the component bill of materials.</p><form onSubmit={event=>{event.preventDefault();action(async()=>setConfiguration(record(await request('/configurations/evaluate',{method:'POST',body:JSON.stringify({model_id:'MODEL-1',options})}))));}}>{rows(data.options).map(option=><label className="checkbox" key={String(option.id)}><input type="checkbox" checked={options.includes(String(option.id))} onChange={event=>setOptions(event.target.checked?[...options,String(option.id)]:options.filter(item=>item!==option.id))}/>{String(option.name)}</label>)}<button disabled={busy}>Validate configuration</button></form>{configuration&&<><p>{configuration.valid?'Configuration valid':String(configuration.errors)}</p><Table data={rows(configuration.bom)}/><p>Total: {money(configuration.cost_usd)}</p></>}<h2>Commonality and pooling estimate</h2><p>{String(record(data.pooling).assumption||'')}</p><Table data={rows(record(data.pooling).parts)}/></>}
     {page==='Results'&&<><p>Rendered from persisted run artifacts. Unmeasured fields remain explicitly unavailable.</p><h2>Forecast MAE · units</h2><div className="chart"><ResponsiveContainer width="100%" height={260}><BarChart data={Object.entries(record(record(data.benchmark).model_errors)).map(([model,value])=>({model,...record(value)}))}><CartesianGrid strokeDasharray="3 3"/><XAxis dataKey="model"/><YAxis/><Tooltip/><Bar dataKey="mae" fill="#4197db"/></BarChart></ResponsiveContainer></div><Table data={Object.entries(record(record(data.benchmark).model_errors)).map(([model,value])=>({model,...record(value)}))}/><h2>Lead-time regression</h2><Details data={record(data.analytics).regression}/><h2>Synthetic comment classification</h2><Details data={record(data.analytics).nlp}/></>}
     {page==='Reports'&&<><p>Review packs include verified run KPIs, recommendations, synthetic assumptions, methodology and limitations. Generated on demand without persistent report storage.</p>{role==='viewer'?<p>Read-only demo accounts cannot export. Sign in as a planner or administrator.</p>:<button disabled={busy} onClick={downloadReport}>Download PDF review pack</button>}</>}
-    {page==='Admin'&&<><h2>Measured database usage</h2><Table data={[data]}/><Details data={data}/><button onClick={()=>action(async()=>setData(record({audit:await request('/admin/audit')})))}>Audit log</button><button onClick={()=>action(async()=>setData(record({users:await request('/admin/users')})))}>Users</button></>}
+    {page==='Admin'&&<><div className="inline"><button disabled={busy} onClick={()=>action(async()=>setData(record(await request('/admin/usage'))))}>Database usage</button><button disabled={busy} onClick={()=>action(async()=>setData({audit:await request('/admin/audit')}))}>Audit log</button><button disabled={busy} onClick={()=>action(async()=>setData({users:await request('/admin/users')}))}>Users</button><button disabled={busy} onClick={()=>action(async()=>setData({jobs:await request('/admin/jobs')}))}>Refresh job monitor</button></div><h2>{data.jobs?'Job monitor':data.audit?'Audit log':data.users?'Users and roles':'Measured database usage'}</h2>{data.jobs&&<p>Latest 100 jobs. Refresh on demand to avoid idle database polling.</p>}<Table data={data.jobs?rows(data.jobs):data.audit?rows(data.audit):data.users?rows(data.users):[data]}/><Details data={data}/></>}
     </section></>}
     <footer>ServiceStock AI · Scale-ready design; production capacity has not been proven.</footer>
   </main>;

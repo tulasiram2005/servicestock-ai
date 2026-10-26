@@ -17,3 +17,14 @@ Master specification received 2026-10-26. Earlier foundation commits remain inta
 
 JD additions (regression, NLP, distribution fitting, finance, staging and BI)
 are tracked within the related analytics, data, UI and documentation phases.
+
+## Continuation verification · 2026-10-26
+
+- P1/JD staging: migration 0003 applied to local PostgreSQL; 24 inventory and 288 sales
+  facts. Ten synthetic extract families and 11 CSV/Parquet exports covered by tests.
+- P6/P7: browser consumes SSE events and displays cited tool traces; admin can inspect
+  users, audit rows and the latest 100 jobs without timer polling.
+- Verification: 61 backend tests passed, one dedicated-database test skipped; 2 frontend
+  unit tests passed; TypeScript and production build passed; both Docker browser flows
+  passed, with zero axe violations on the tested Configurations screen. Compose healthy.
+- Separate PostgreSQL concurrency smoke passed earlier; SQL Server remains unverified.

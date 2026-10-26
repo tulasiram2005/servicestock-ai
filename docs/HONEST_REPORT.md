@@ -14,9 +14,12 @@ Results are regenerated with make results. Local runtime metrics are separate fr
 Remaining master-spec gaps:
 - Optional external LLM chain, capability detection, distributed daily quotas and per-tool deadlines.
 - Transformer/zero-shot NLP comparison; calibrated forecast intervals and service-level backtest metric.
-- Full SAP-style staging/ETL mappings and complete normalized warehouse views/KPI exports.
-- All detailed frontend features (saved views, full charts/waterfalls, streaming chat rendering,
-  optimistic feedback, user management and job monitor).
+- Physical staging schema and reverse purchase/BOM ETL: ten synthetic extract families now
+  exist, with inventory/sales ETL and 11 CSV/Parquet export tables including KPIs/finance.
+- Detailed frontend features still missing include saved views, full charts/waterfalls,
+  optimistic feedback and user role editing. The UI consumes SSE tool/answer events and
+  provides a manual-refresh administrator job monitor; the server computes tools before
+  emitting events, so this is not incremental model-token streaming.
 - Local Bandit medium/high scan and runtime pip-audit pass after upgrading PyJWT. Lighthouse
   and a short local Locust smoke are measured; full load capacity is not. CI security and SQL Server
   workflow definitions exist but remote runs remain unverified; no claim that all gates pass.

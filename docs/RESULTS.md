@@ -115,12 +115,12 @@ Source: results/ui.json
 
 ```json
 {
-  "measured_at": "2026-10-26T11:22:30.845Z",
+  "measured_at": "2026-10-26T16:26:01.554Z",
   "page": "Configurations",
   "axe_violations": [],
   "lighthouse": {
     "page": "Login",
-    "measured_at": "2026-10-26T11:26:30.560Z",
+    "measured_at": "2026-10-26T16:26:49.053Z",
     "scores": {
       "performance": 0.97,
       "accessibility": 1,

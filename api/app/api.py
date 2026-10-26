@@ -136,6 +136,12 @@ def router(store, settings, authorize, admin, queue, wake, cache):
         with database.transaction() as connection:
             return [dict(row) for row in connection.execute(select(db.audit_log).order_by(db.audit_log.c.created_at.desc()).limit(100)).mappings()]
 
+    @route.get("/admin/jobs", dependencies=[Depends(admin)])
+    def jobs(database=Depends(database)):
+        with database.transaction() as connection:
+            return [dict(row) for row in connection.execute(select(db.jobs.c.id, db.jobs.c.kind, db.jobs.c.status,
+                db.jobs.c.progress, db.jobs.c.attempts, db.jobs.c.created_at).order_by(db.jobs.c.created_at.desc()).limit(100)).mappings()]
+
     @route.get("/admin/users", dependencies=[Depends(admin)])
     def users(database=Depends(database)):
         with database.transaction() as connection:

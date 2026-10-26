@@ -22,6 +22,7 @@ test('login, overview, part, scenario, assistant and configuration',async({page}
   await page.getByRole('button',{name:'Assistant',exact:true}).click();
   await page.getByRole('button',{name:'Ask assistant',exact:true}).click();
   await expect(page.getByText(/Inventory value: USD/)).toBeVisible();
+  await expect(page.locator('summary').filter({hasText:'get_kpis'})).toBeVisible();
   await page.getByRole('button',{name:'Configurations',exact:true}).click();
   await page.getByRole('button',{name:'Validate configuration',exact:true}).click();
   await expect(page.getByText('Configuration valid',{exact:true})).toBeVisible();
@@ -30,4 +31,18 @@ test('login, overview, part, scenario, assistant and configuration',async({page}
   writeFileSync('../results/ui.json',JSON.stringify({measured_at:new Date().toISOString(),page:'Configurations',axe_violations:results.violations.map(v=>({id:v.id,impact:v.impact,description:v.description})),lighthouse:'not measured'},null,2));
   expect(results.violations).toEqual([]);
   await page.screenshot({path:'../results/workspace.png',fullPage:true});
+});
+
+test('administrator can inspect jobs and users',async({page})=>{
+  await page.goto('/');
+  await page.getByLabel('Username',{exact:true}).fill('admin');
+  await page.getByLabel('Password',{exact:true}).fill(env.ADMIN_PASSWORD);
+  await page.getByRole('button',{name:'Sign in',exact:true}).click();
+  await page.getByRole('button',{name:'Admin',exact:true}).click();
+  await page.getByRole('button',{name:'Refresh job monitor',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'Job monitor',exact:true})).toBeVisible();
+  await expect(page.getByText('Latest 100 jobs. Refresh on demand to avoid idle database polling.')).toBeVisible();
+  await page.getByRole('button',{name:'Users',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'Users and roles',exact:true})).toBeVisible();
+  await expect(page.getByRole('cell',{name:'demo',exact:true})).toBeVisible();
 });
