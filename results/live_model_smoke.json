@@ -1,0 +1,24 @@
+{
+  "provider": "ollama-local",
+  "model": "mistral:latest",
+  "external_calls": 0,
+  "cold_attempt": {
+    "measured_at": "2026-10-26T23:28:48.723094+00:00",
+    "provider": "ollama-local",
+    "model": "mistral:latest",
+    "elapsed_seconds": 5.031,
+    "validated_tools": [],
+    "fallback": true,
+    "notice": "local provider unavailable or invalid output",
+    "scope": "single routing smoke; not model quality benchmark",
+    "external_calls": 0
+  },
+  "warm_attempt": {
+    "measured_at": "2026-10-26T23:30:02.666370+00:00",
+    "elapsed_seconds": 5.028,
+    "validated_tools": [],
+    "fallback": true,
+    "notice": "local provider unavailable or invalid output"
+  },
+  "scope": "single routing prompt, not a quality benchmark"
+}

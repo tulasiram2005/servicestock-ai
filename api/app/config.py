@@ -1,4 +1,5 @@
 import os
+import re
 from dataclasses import dataclass, field
 from urllib.parse import urlsplit
 
@@ -32,13 +33,21 @@ class Settings:
     llm_user_daily_cap: int = 0
     llm_provider_order: str = 'mock'
     ollama_model: str = ''
+    gemini_api_key: str = field(default='', repr=False)
+    gemini_model: str = ''
+    gemini_free_tier_confirmed: bool = False
 
     def __post_init__(self):
-        if self.llm_provider_order not in {'mock', 'ollama,mock', 'openai-local,mock'}:
-            raise ValueError('Supported provider order: mock, ollama,mock or openai-local,mock')
-        if self.llm_provider_order != 'mock' and (not self.ollama_model or 'cloud' in self.ollama_model.lower() or len(self.ollama_model) > 120):
+        if self.llm_provider_order not in {'mock', 'ollama,mock', 'openai-local,mock', 'gemini,mock'}:
+            raise ValueError('Supported provider order: mock, ollama,mock openai-local,mock or gemini,mock')
+        if self.llm_provider_order in {'ollama,mock', 'openai-local,mock'} and (not self.ollama_model or 'cloud' in self.ollama_model.lower() or len(self.ollama_model) > 120):
             raise ValueError('Ollama requires an explicitly configured local model')
-        if self.environment == 'production' and self.llm_provider_order != 'mock':
+        if self.llm_provider_order == 'gemini,mock':
+            if not self.gemini_api_key or not self.gemini_free_tier_confirmed or self.uploads_enabled:
+                raise ValueError('Gemini requires a key, verified free-tier configuration and disabled uploads')
+            if not re.fullmatch(r'gemini-[a-z0-9.-]*flash[a-z0-9.-]*', self.gemini_model):
+                raise ValueError('Configure an explicit Gemini Flash model ID')
+        if self.environment == 'production' and self.llm_provider_order in {'ollama,mock', 'openai-local,mock'}:
             raise ValueError('Local model routing is development-only')
         if len(self.jwt_secret) < 32:
             raise ValueError("JWT_SECRET must contain at least 32 characters")
@@ -86,6 +95,9 @@ class Settings:
             "worker_mode": os.getenv("WORKER_MODE", "embedded"),
             "llm_provider_order": os.getenv("LLM_PROVIDER_ORDER", "mock"),
             "ollama_model": os.getenv("OLLAMA_MODEL", ""),
+            "gemini_api_key": os.getenv("GEMINI_API_KEY", ""),
+            "gemini_model": os.getenv("GEMINI_MODEL", ""),
+            "gemini_free_tier_confirmed": os.getenv("GEMINI_FREE_TIER_CONFIRMED", "false").lower() == "true",
             "uploads_enabled": os.getenv("UPLOADS_ENABLED", "false").lower() == "true",
             "allowed_origins": tuple(filter(None, (value.strip() for value in os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")))),
         }

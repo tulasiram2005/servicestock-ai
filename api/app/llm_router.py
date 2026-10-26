@@ -17,6 +17,7 @@ class LocalToolRouter:
         self.lock = Lock()
         self.day = None
         self.total = 0
+        self.external_attempts = 0
         self.users = {}
         self.cooldown_until = 0
         self.cache = TTLCache(capacity=settings.cache_entries, ttl=settings.cache_seconds)
@@ -25,27 +26,36 @@ class LocalToolRouter:
     def route(self, username, question, registry):
         if self.settings.llm_provider_order == 'mock':
             return None, 'offline default'
+        gemini = self.settings.llm_provider_order == 'gemini,mock'
+        if gemini:
+            # Send only app-authored public prompts, never arbitrary user text or data.
+            public_prompts = {'show inventory kpis': 'Show inventory KPIs',
+                              'show kpis': 'Show inventory KPIs',
+                              'show data quality': 'Show data quality'}
+            question = public_prompts.get(question.strip().lower())
+            if question is None:
+                return None, 'private or unsupported prompt; deterministic fallback'
         key = hashlib.sha256((username + '\0' + question).encode()).hexdigest()
         cached = self.cache.get(key)
         if cached is not None:
-            return cached, 'local model route (cached)'
+            return cached, 'validated model route (cached)'
         with self.lock:
             now = self.clock()
             day = int(now // 86400)
             if day != self.day:
                 self.day, self.total, self.users = day, 0, {}
             if now < self.cooldown_until:
-                return None, 'local provider cooling down'
+                return None, 'model provider cooling down'
             if self.budget:
                 try:
                     if not self.budget.reserve(username, day, self.settings.llm_global_daily_cap, self.settings.llm_user_daily_cap):
-                        return None, 'local model daily cap reached'
+                        return None, 'model daily cap reached'
                 except SQLAlchemyError:
                     return None, 'quota storage unavailable; deterministic fallback'
             elif (self.total >= self.settings.llm_global_daily_cap or
                 self.users.get(username, 0) >= self.settings.llm_user_daily_cap or
                 (username not in self.users and len(self.users) >= 1024)):
-                return None, 'local model daily cap reached'
+                return None, 'model daily cap reached'
             self.total += 1
             self.users[username] = self.users.get(username, 0) + 1
         allowed = {name: model for name, model in registry.items() if name != 'generate_review_pack'}
@@ -59,9 +69,17 @@ class LocalToolRouter:
                  'response_format': {'type': 'json_object'}, 'temperature': 0, 'max_tokens': 1024}
                 if compatible else {'model': self.settings.ollama_model, 'stream': False, 'format': 'json',
                                     'messages': messages, 'options': {'temperature': 0, 'num_predict': 1024}})
+        headers = {}
+        if gemini:
+            endpoint = 'https://generativelanguage.googleapis.com/v1beta/models/' + self.settings.gemini_model + ':generateContent'
+            headers = {'x-goog-api-key': self.settings.gemini_api_key}
+            body = {'contents': [{'role': 'user', 'parts': [{'text': json.dumps(prompt)}]}],
+                    'generationConfig': {'responseMimeType': 'application/json', 'temperature': 0, 'maxOutputTokens': 1024}}
+            with self.lock:
+                self.external_attempts += 1
         try:
             with httpx.Client(timeout=5, transport=self.transport, trust_env=False, follow_redirects=False) as client:
-                with client.stream('POST', endpoint, json=body) as response:
+                with client.stream('POST', endpoint, json=body, headers=headers) as response:
                     response.raise_for_status()
                     content = bytearray()
                     started = time.monotonic()
@@ -70,7 +88,13 @@ class LocalToolRouter:
                         if len(content) > 65536 or time.monotonic()-started > 10:
                             raise ValueError('Provider output limit')
             envelope = json.loads(content)
-            text = envelope['choices'][0]['message']['content'] if compatible else envelope['message']['content']
+            if gemini:
+                candidate = envelope['candidates'][0]
+                if candidate.get('finishReason') != 'STOP':
+                    raise ValueError('Incomplete Gemini response')
+                text = ''.join(part['text'] for part in candidate['content']['parts'] if not part.get('thought', False))
+            else:
+                text = envelope['choices'][0]['message']['content'] if compatible else envelope['message']['content']
             payload = json.loads(text)
             if set(payload) != {'calls'} or not isinstance(payload['calls'], list) or not 1 <= len(payload['calls']) <= 6:
                 raise ValueError('Invalid tool plan')
@@ -81,16 +105,16 @@ class LocalToolRouter:
                 args = allowed[item['tool']].model_validate(item['arguments']).model_dump()
                 calls.append((item['tool'], args))
             self.cache.put(key, calls)
-            return calls, 'local model route'
+            return calls, 'Gemini route' if gemini else 'local model route'
         except (httpx.HTTPError, ValueError, KeyError, TypeError, IndexError):
             with self.lock:
                 self.cooldown_until = self.clock() + 60
-            return None, 'local provider unavailable or invalid output'
+            return None, 'model provider unavailable or invalid output'
 
     def usage(self):
         with self.lock:
             day = int(self.clock() // 86400)
             return {'scope': 'shared_database' if self.budget else 'current_process', 'day_utc': day,
                     'attempts': self.budget.total(day) if self.budget else (self.total if self.day == day else 0),
-                    'external_calls': 0, 'provider': 'mock' if self.settings.llm_provider_order == 'mock' else ('openai-local' if self.settings.llm_provider_order == 'openai-local,mock' else 'ollama-local'),
+                    'external_calls': self.external_attempts, 'external_calls_scope': 'current_process_attempts', 'provider': 'mock' if self.settings.llm_provider_order == 'mock' else ('gemini' if self.settings.llm_provider_order == 'gemini,mock' else 'openai-local' if self.settings.llm_provider_order == 'openai-local,mock' else 'ollama-local'),
                     'routing_capability': 'validated_json_plan', 'native_tool_calling': False}

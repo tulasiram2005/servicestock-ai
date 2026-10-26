@@ -242,3 +242,17 @@ are tracked within the related analytics, data, UI and documentation phases.
 - Six frontend tests, TypeScript and production Docker build passed. All four browser tests
   passed, including the real Part Detail interval section and its 12 forecast rows. Both
   local app containers are healthy. No claim of full chart accessibility certification.
+
+
+## P6 guarded Gemini protocol and live local smoke · 2026-10-27
+
+- Added opt-in Gemini JSON routing with header-only secret handling, explicit Flash model,
+  operator free-tier confirmation, disabled uploads and existing quota/fallback controls.
+  Only three app-authored public prompts may leave the machine; arbitrary input stays local.
+  Default remains Mock. Multi-provider cascading and general cloud prompting remain pending.
+- Protocol/security tests pass with simulated HTTP, including private input no-network,
+  configuration rejection, empty/safety/incomplete responses and key representation isolation.
+  Combined suite: 139 passed, two dedicated-database tests skipped; Bandit medium/high passed.
+- Installed local Mistral was tested twice: both requests hit the five-second timeout and
+  correctly fell back. Evidence records both failed attempts, not a successful model test.
+  No live Gemini call, key retrieval, model download or paid service was used.

@@ -95,3 +95,49 @@ def test_openai_compatible_unusable_capability_falls_back(settings,envelope):
     router = LocalToolRouter(enabled,httpx.MockTransport(lambda request:httpx.Response(200,json=envelope)))
     assert router.route('a','KPIs',REGISTRY)[0] is None
     assert 'cooling' in router.route('a','other',REGISTRY)[1]
+
+
+def gemini_settings(settings):
+    return replace(settings,llm_provider_order='gemini,mock',gemini_model='gemini-test-flash',
+        gemini_api_key='test-key-not-real',gemini_free_tier_confirmed=True,
+        llm_global_daily_cap=3,llm_user_daily_cap=2)
+
+
+def test_gemini_sends_only_public_prompt_and_key_in_header(settings):
+    enabled=gemini_settings(settings)
+    assert enabled.gemini_api_key not in repr(enabled)
+    def reply(request):
+        assert request.url.host == 'generativelanguage.googleapis.com'
+        assert not request.url.query
+        assert request.headers['x-goog-api-key'] == enabled.gemini_api_key
+        body=json.loads(request.content)
+        assert body['generationConfig']['maxOutputTokens'] == 1024
+        text=json.loads(body['contents'][0]['parts'][0]['text'])
+        assert text['question_data'] == 'Show inventory KPIs'
+        return httpx.Response(200,json={'candidates':[{'finishReason':'STOP','content':{'parts':[{'text':'{"calls":[{"tool":"get_kpis","arguments":{}}]}'}]}}]})
+    router=LocalToolRouter(enabled,httpx.MockTransport(reply))
+    assert router.route('private-username',' SHOW KPIS ',REGISTRY)[0][0][0] == 'get_kpis'
+    assert router.usage()['external_calls'] == 1
+    assert router.usage()['provider'] == 'gemini'
+
+
+def test_gemini_private_inputs_do_not_leave_machine(settings):
+    def forbidden(request):
+        raise AssertionError('Private input sent externally')
+    router=LocalToolRouter(gemini_settings(settings),httpx.MockTransport(forbidden))
+    assert router.route('a','show kpis secret customer document',REGISTRY)[0] is None
+    assert router.usage()['attempts'] == 0
+    assert router.usage()['external_calls'] == 0
+
+
+@pytest.mark.parametrize('change',[{'gemini_api_key':''},{'gemini_free_tier_confirmed':False},{'uploads_enabled':True},{'gemini_model':'../other'}])
+def test_gemini_requires_explicit_safe_configuration(settings,change):
+    with pytest.raises(ValueError):
+        replace(gemini_settings(settings),**change)
+
+
+@pytest.mark.parametrize('payload',[{}, {'candidates':[]}, {'candidates':[{'finishReason':'SAFETY'}]},
+    {'candidates':[{'finishReason':'MAX_TOKENS','content':{'parts':[{'text':'{}'}]}}]}])
+def test_gemini_blocked_or_incomplete_responses_fall_back(settings,payload):
+    router=LocalToolRouter(gemini_settings(settings),httpx.MockTransport(lambda request:httpx.Response(200,json=payload)))
+    assert router.route('a','show kpis',REGISTRY)[0] is None
