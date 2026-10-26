@@ -9,7 +9,7 @@ Master specification received 2026-10-26. Earlier foundation commits remain inta
 | P2 | Segmentation, forecasts, rolling backtest, benchmark artifact | Passed: 32 tests, six models, 24 public series, held-out benchmark artifact |
 | P3 | Simulation, policies, costs, sensitivity and statistical comparison | Passed: 37 tests; 10,000 draws/part; 648 grid cells; paired bootstrap; regression/NLP artifacts |
 | P4 | Auth, role and object checks, audit, security tests | Passed: 43 tests; Argon2id, JWT, rotation/replay, CSRF, lockout, request caps and audit |
-| P5 | Durable jobs, leases, retries, progress, cache, keyset pagination | Pending |
+| P5 | Durable jobs, leases, retries, progress, cache, keyset pagination | Implemented; 49 local tests pass, including ownership, retry and idle-worker tests. PostgreSQL concurrency validation pending. |
 | P6 | Typed tools, guardrails, SSE, provider fallback | Pending |
 | P7 | Pages, charts, accessibility and end-to-end smoke | Pending |
 | P8 | Reports, results, measurements, docs and deploy guidance | Pending |

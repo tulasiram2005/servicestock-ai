@@ -5,6 +5,8 @@ import time
 import secrets
 import sys
 import uuid
+import asyncio
+import contextlib
 
 from fastapi import Depends, FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -16,6 +18,10 @@ from .config import Settings
 from .runtime import MemoryRateLimiter, Metrics, TTLCache
 from .db.store import Store
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import text
+from .jobs import JobQueue, Worker
+from .services import handle_job
+from .api import router
 
 
 class Prompt(BaseModel):
@@ -37,14 +43,14 @@ class MockLLM:
                 "input_characters": len(prompt)}
 
 
-def create_app(settings=None):
+def create_app(settings=None, store_override=None):
     settings = settings or Settings.from_env()
     app = FastAPI(title="ServiceStock AI", version="0.2.0", docs_url=None, redoc_url=None, openapi_url=None)
     app.add_middleware(CORSMiddleware, allow_origins=list(settings.allowed_origins),
                        allow_methods=["GET", "POST"], allow_headers=["Authorization", "Content-Type", "If-None-Match", "X-CSRF-Token"],
                        expose_headers=["ETag", "Retry-After"])
     bearer = HTTPBearer(auto_error=False)
-    store = Store(settings.database_url, settings.statement_timeout_ms) if settings.database_url else None
+    store = store_override or (Store(settings.database_url, settings.statement_timeout_ms) if settings.database_url else None)
     auth = Auth(settings, store)
     limiter = MemoryRateLimiter(limit=settings.rate_limit)
     login_limiter = MemoryRateLimiter(limit=settings.login_rate_limit)
@@ -52,6 +58,23 @@ def create_app(settings=None):
     cache = TTLCache(settings.cache_entries, settings.cache_seconds)
     metrics = Metrics()
     provider = MockLLM()
+    queue = JobQueue(store, settings) if store else None
+    worker = Worker(queue, lambda kind, payload: handle_job(store, settings, kind, payload)) if queue else None
+
+    @contextlib.asynccontextmanager
+    async def lifespan(application):
+        loop = asyncio.get_running_loop()
+        application.state.wake = lambda: loop.call_soon_threadsafe(worker.wake) if worker else None
+        task = asyncio.create_task(worker.run()) if worker and settings.worker_mode == "embedded" else None
+        yield
+        if task:
+            task.cancel()
+            with contextlib.suppress(asyncio.CancelledError):
+                await task
+        if store:
+            store.engine.dispose()
+
+    app.router.lifespan_context = lifespan
     logger = logging.getLogger("servicestock")
     if not logger.handlers:
         logger.addHandler(logging.StreamHandler(sys.stdout))
@@ -111,6 +134,14 @@ def create_app(settings=None):
     def live():
         return {"status": "ok"}
 
+    @app.get("/ready")
+    def ready():
+        if store is None:
+            raise HTTPException(503, "Database is not configured")
+        with store.transaction() as connection:
+            connection.execute(text("SELECT 1"))
+        return {"status": "ready"}
+
     @app.post("/api/auth/login")
     def login(body: Login, response: Response):
         if not login_limiter.allow():
@@ -152,8 +183,8 @@ def create_app(settings=None):
 
     @app.get("/api/status")
     def status(request: Request, principal=Depends(authorize)):
-        data = {"stage": "foundation", "llm_provider": "mock", "database_connected": False,
-                "specification_available": False, "metrics": None, "free_tier_demo": True,
+        data = {"stage": "implementation", "llm_provider": "mock", "database_connected": bool(store),
+                "specification_available": True, "metrics": None, "free_tier_demo": True,
                 "synthetic_cost_assumptions": True, "uploads_enabled": False}
         payload = json.dumps(data, sort_keys=True).encode()
         etag = '"' + hashlib.sha256(payload).hexdigest() + '"'
@@ -179,4 +210,7 @@ def create_app(settings=None):
     app.state.administrator = administrator
     app.state.store = store
     app.state.auth = auth
+    app.state.queue = queue
+    app.include_router(router(store, settings, authorize, administrator, queue,
+                              lambda: app.state.wake(), cache))
     return app

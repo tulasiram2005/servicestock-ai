@@ -13,13 +13,16 @@ services:
       timeout: 5s
       retries: 5
   api:
-    build: ./api
+    build:
+      context: .
+      dockerfile: api/Dockerfile
     environment:
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET}
       DEMO_PASSWORD: ${DEMO_PASSWORD:?Set DEMO_PASSWORD}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD}
       DATABASE_URL: postgresql+psycopg://servicestock:${POSTGRES_PASSWORD}@db:5432/servicestock
       APP_ENV: local
+      RESULTS_DIR: /app/results
     depends_on:
       db:
         condition: service_healthy
