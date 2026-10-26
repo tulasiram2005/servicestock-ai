@@ -1,6 +1,8 @@
 from decimal import Decimal
 import hashlib
 import json
+import math
+from datetime import datetime
 
 from sqlalchemy import select, delete
 
@@ -57,16 +59,37 @@ def transform(extracts, valid_parts):
     costs = {(row["MATNR"], row["BWKEY"]): Decimal(row["STPRS"]) for row in grouped.get("MBEW", [])}
     leads = {(row["MATNR"], row["WERKS"]): float(row["PLIFZ"]) for row in grouped.get("MARC", [])}
     periods = {row["VBELN"]: row["AUDAT"] for row in grouped.get("VBAK", [])}
+    def nonnegative(value):
+        converted = float(value)
+        if not math.isfinite(converted) or converted < 0:
+            raise ValueError("Staging numbers must be finite and nonnegative")
+        return converted
+
+    for value in costs.values():
+        nonnegative(value)
+    for value in leads.values():
+        nonnegative(value)
+    for value in periods.values():
+        if datetime.strptime(value, "%Y-%m").strftime("%Y-%m") != value:
+            raise ValueError("Invalid staging period")
     inventory, sales = [], []
+    inventory_keys, sales_keys = set(), set()
     for row in grouped.get("MARD", []):
         key = (row["MATNR"], row["WERKS"])
-        if key[0] not in valid_parts or key not in costs or key not in leads or float(row["LABST"]) < 0:
+        if key[0] not in valid_parts or key not in costs or key not in leads:
             raise ValueError("Invalid staging inventory reference or quantity")
-        inventory.append({"part_id": key[0], "location_id": key[1], "quantity": float(row["LABST"]),
+        if key in inventory_keys:
+            raise ValueError("Duplicate staging inventory key; aggregate storage locations before import")
+        inventory_keys.add(key)
+        inventory.append({"part_id": key[0], "location_id": key[1], "quantity": nonnegative(row["LABST"]),
                           "standard_price": costs[key], "lead_days": leads[key]})
     for row in grouped.get("VBAP", []):
-        if row["MATNR"] not in valid_parts or row["VBELN"] not in periods or float(row["KWMENG"]) < 0:
+        if row["MATNR"] not in valid_parts or row["VBELN"] not in periods or (row["MATNR"], row["WERKS"]) not in leads:
             raise ValueError("Invalid staging sales reference or quantity")
-        sales.append({"id": row["VBELN"] + ":" + row["POSNR"], "part_id": row["MATNR"],
-                      "location_id": row["WERKS"], "period": periods[row["VBELN"]], "quantity": float(row["KWMENG"])})
+        key = row["VBELN"] + ":" + row["POSNR"]
+        if key in sales_keys:
+            raise ValueError("Duplicate staging sales key")
+        sales_keys.add(key)
+        sales.append({"id": key, "part_id": row["MATNR"],
+                      "location_id": row["WERKS"], "period": periods[row["VBELN"]], "quantity": nonnegative(row["KWMENG"])})
     return inventory, sales

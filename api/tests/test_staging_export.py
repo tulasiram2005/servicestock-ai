@@ -36,6 +36,30 @@ def test_invalid_staging_input_is_not_silently_accepted():
         transform([{"sap_table":"MARD","payload":{"MATNR":"MISSING","WERKS":"LOC-1","LABST":2}}], set())
 
 
+@pytest.mark.parametrize("table,field", [("MARD", "LABST"), ("MBEW", "STPRS"), ("MARC", "PLIFZ"), ("VBAP", "KWMENG")])
+@pytest.mark.parametrize("invalid", [float("nan"), float("inf"), -1])
+def test_staging_rejects_nonfinite_and_negative_numbers(store, table, field, invalid):
+    generate_and_transform(store)
+    with store.transaction() as connection:
+        extracts = [dict(row) for row in connection.execute(select(db.staging_extracts)).mappings()]
+    next(row for row in extracts if row["sap_table"] == table)["payload"][field] = invalid
+    with pytest.raises(ValueError, match="finite and nonnegative"):
+        transform(extracts, {f"P{index:04}" for index in range(1, 25)})
+
+
+def test_staging_rejects_duplicate_sales_and_invalid_months(store):
+    generate_and_transform(store)
+    with store.transaction() as connection:
+        extracts = [dict(row) for row in connection.execute(select(db.staging_extracts)).mappings()]
+    valid_parts = {f"P{index:04}" for index in range(1, 25)}
+    duplicate = next(row for row in extracts if row["sap_table"] == "VBAP")
+    with pytest.raises(ValueError, match="Duplicate"):
+        transform([*extracts, duplicate], valid_parts)
+    next(row for row in extracts if row["sap_table"] == "VBAK")["payload"]["AUDAT"] = "2002-13"
+    with pytest.raises(ValueError):
+        transform(extracts, valid_parts)
+
+
 def test_csv_parquet_exports_preserve_keys_and_kpis(store, tmp_path):
     generate_and_transform(store)
     counts = export_all(store, tmp_path)
