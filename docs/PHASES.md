@@ -148,3 +148,20 @@ are tracked within the related analytics, data, UI and documentation phases.
   medium/high passed; updated Docker API healthy. Local PostgreSQL accepted exactly five
   of 24 attempts across eight workers at a cap of five, and a new instance read the persisted
   total. Evidence: results/llm_budget_postgres.json. SQL Server behavior remains unverified.
+
+
+## P7 Policy Lab asynchronous job workflow · 2026-10-27
+
+- Planners/admins can submit scenario jobs, manually refresh status/progress, and inspect
+  completed results with the actual snapped grid settings. Retry/dead states are visible.
+  Existing preview stays available. No automatic idle polling or fresh simulation is implied.
+- One cryptographically random idempotency key is reused for each request's transport retries.
+  Uses getRandomValues so offline HTTP works; browser testing caught and fixed randomUUID's
+  secure-context restriction. New submissions create new keys. Job display is cleared at login/logout.
+- Validation: 120 backend tests passed, one dedicated-database test skipped; two frontend
+  tests and TypeScript passed; Docker production build passed and web is healthy.
+  Four browser tests passed: two live flows (including real queued scenario completion),
+  two mocked endpoint flows (user editing and failed-job/new-submission UI). Configurations
+  axe scan reported zero violations; this does not establish application-wide accessibility.
+- Still pending: baseline/optimized waterfall and broader chart coverage. Scenario state is
+  session-local and a full browser reload loses the selected job; admins can use the job monitor.

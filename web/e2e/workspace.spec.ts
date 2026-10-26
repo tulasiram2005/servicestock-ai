@@ -63,11 +63,20 @@ test('login, overview, part, scenario, assistant and configuration',async({page}
   await expect(page.getByRole('columnheader',{name:'service level hit rate',exact:true})).toBeVisible();
 });
 
-test('administrator can inspect jobs and users',async({page})=>{
+test('administrator can complete a scenario job and inspect jobs and users',async({page})=>{
   await page.goto('/');
   await page.getByLabel('Username',{exact:true}).fill('admin');
   await page.getByLabel('Password',{exact:true}).fill(env.ADMIN_PASSWORD);
   await page.getByRole('button',{name:'Sign in',exact:true}).click();
+  await page.getByRole('button',{name:'Policy Lab',exact:true}).click();
+  await page.getByRole('button',{name:'Submit scenario job',exact:true}).click();
+  await expect(page.getByRole('region',{name:'Scenario job',exact:true})).toBeVisible();
+  await expect(async()=>{
+    await page.getByRole('button',{name:'Refresh scenario job',exact:true}).click();
+    await expect(page.getByText('Job status: succeeded',{exact:true})).toBeVisible({timeout:1000});
+  }).toPass({timeout:15000,intervals:[1000]});
+  await expect(page.getByRole('heading',{name:'Completed scenario',exact:true})).toBeVisible();
+  await expect(page.getByText(/Snapped to the nearest/)).toBeVisible();
   await page.getByRole('button',{name:'Admin',exact:true}).click();
   await page.getByRole('button',{name:'Refresh job monitor',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Job monitor',exact:true})).toBeVisible();
@@ -99,4 +108,30 @@ test('user editing form submits role and disabled state (mocked user endpoints)'
   await expect(page.getByText('Access updated.',{exact:true})).toBeVisible();
   await expect(page.getByRole('combobox',{name:'Role for fixture-user'})).toHaveValue('planner');
   await expect(page.getByLabel('Disable fixture-user',{exact:true})).toBeChecked();
+});
+
+test('scenario job failure is visible and a new submission clears it (mocked jobs)',async({page})=>{
+  let submissions=0;
+  const keys=new Set<string>();
+  await page.route('**/api/whatif',async route=>{
+    const body=route.request().postDataJSON();
+    expect(body.service_level).toBe(0.95);
+    expect(keys.has(body.idempotency_key)).toBe(false);
+    keys.add(body.idempotency_key);
+    submissions++;
+    await route.fulfill({json:{job_id:'scenario-fixture-'+submissions,status:'pending'}});
+  });
+  await page.route('**/api/jobs/scenario-fixture-*',route=>route.fulfill({json:{id:'scenario-fixture-1',status:'dead',progress:0,attempts:3,result:null,error:'execution_failed'}}));
+  await page.goto('/');
+  await page.getByLabel('Username',{exact:true}).fill('admin');
+  await page.getByLabel('Password',{exact:true}).fill(env.ADMIN_PASSWORD);
+  await page.getByRole('button',{name:'Sign in',exact:true}).click();
+  await page.getByRole('button',{name:'Policy Lab',exact:true}).click();
+  await page.getByRole('button',{name:'Submit scenario job',exact:true}).click();
+  await page.getByRole('button',{name:'Refresh scenario job',exact:true}).click();
+  await expect(page.getByRole('region',{name:'Scenario job',exact:true}).getByRole('alert')).toHaveText('Job failed after retries. Submit a new job to try again.');
+  await page.getByRole('button',{name:'Submit scenario job',exact:true}).click();
+  await expect(page.getByText('Job status: pending',{exact:true})).toBeVisible();
+  await expect(page.getByRole('region',{name:'Scenario job',exact:true}).getByRole('alert')).toHaveCount(0);
+  expect(submissions).toBe(2);
 });
