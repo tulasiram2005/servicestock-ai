@@ -90,3 +90,18 @@ On 2026-10-27 the root environment file preflight reported missing key, model an
 confirmation flag. The user's verbal billing confirmation is recorded, but no key file
 has been identified. Zero requests were attempted. Do not paste keys in chat; configure
 them locally. The `.env.example` lists names only, with an empty key and confirmation false.
+
+### Private terminal setup (2026-10-27)
+
+Run `api/.venv/bin/python scripts/configure_gemini.py` from the repository in Terminal.
+Enter a verified free-tier model ID, confirm billing is disabled, and paste the key at
+its hidden prompt. The script makes no network calls and exclusively creates `.env.gemini`
+with owner-only permissions (0600). It refuses existing files/symlinks and multiline input;
+Git ignores this file. Do not paste the key in chat or supply it as a command argument.
+Then run the check with `--env-file .env.gemini`. Application Mock defaults remain unchanged.
+
+The user's screenshot shows the ServiceStock-AI project on Free tier; the user clarified
+that the key was only copied, never saved locally. On 2026-10-27 the official
+[pricing page](https://ai.google.dev/gemini-api/docs/pricing) lists standard text input/output
+for `gemini-3.5-flash-lite` as free on Free tier. Project quota/access still needs a live
+check. Use no grounding, caching, or paid upgrade. The smoke sends only app-authored public text.

@@ -382,3 +382,12 @@ are tracked within the related analytics, data, UI and documentation phases.
   11 frontend tests, TypeScript, production build and four browser tests passed. Added
   reconciliation/negative-value coverage and browser section/table assertions.
 - SQL Server and live Gemini remain unvalidated; this is not full project completion.
+
+## P6 Private Gemini setup · 2026-10-27
+
+- Added hidden terminal input and exclusive owner-only secret-file creation. No key is
+  accepted in command arguments or printed. Existing files and symlinks are not overwritten.
+- Full backend suite: 155 passed, two dedicated-database integration tests skipped.
+  New tests cover permissions, preservation, symlinks and dotenv injection rejection.
+- User screenshot shows Free tier, but user confirms key is only copied, not locally saved.
+  No live model request occurred. Browser remains disabled, preventing GitHub allowance check.
