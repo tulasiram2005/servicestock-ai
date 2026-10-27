@@ -10,9 +10,12 @@ DESTINATION = Path(__file__).resolve().parents[1] / '.env.gemini'
 
 
 def save_config(path, key, model):
-    # Strict single-line values prevent dotenv injection. Never include input in errors.
+    # Trim surrounding clipboard whitespace; reject embedded newlines or shell syntax.
+    key = key.strip()
+    if not key:
+        raise ValueError('No key received. Copy the full key, then paste once at the hidden prompt.')
     if not re.fullmatch(r'[A-Za-z0-9_-]{20,200}', key):
-        raise ValueError('Invalid key format')
+        raise ValueError('Key format not recognized. Use the copy icon in AI Studio; do not copy the shortened label or add quotes.')
     if not re.fullmatch(r'gemini-[a-z0-9.-]*flash[a-z0-9.-]*', model):
         raise ValueError('Enter a verified free-tier Gemini Flash model ID')
     payload = f'GEMINI_API_KEY={key}\nGEMINI_MODEL={model}\nGEMINI_FREE_TIER_CONFIRMED=true\n'
@@ -37,8 +40,18 @@ def main():
             warnings.simplefilter('error', getpass.GetPassWarning)
             key = getpass.getpass('Gemini API key (hidden): ')
         save_config(DESTINATION, key, model)
-    except (OSError, ValueError, getpass.GetPassWarning):
-        print('Configuration not saved. Check model/key format or whether .env.gemini already exists.')
+    except ValueError as error:
+        # save_config emits only fixed messages, never the submitted value.
+        print(str(error))
+        return 2
+    except FileExistsError:
+        print('.env.gemini already exists; it was not changed. Ask to run the safe preflight check.')
+        return 2
+    except getpass.GetPassWarning:
+        print('Hidden input is unavailable. Run directly in the macOS Terminal app.')
+        return 2
+    except OSError:
+        print('Could not save the private file. Check folder permissions and available disk space.')
         return 2
     print('Saved privately to .env.gemini. Offline application defaults are unchanged.')
     return 0

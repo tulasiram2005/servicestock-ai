@@ -31,3 +31,24 @@ def test_symlink_and_dotenv_injection_are_rejected(tmp_path):
         with pytest.raises(ValueError):
             module.save_config(tmp_path / 'absent', key, model)
     assert not (tmp_path / 'absent').exists()
+
+
+def test_clipboard_whitespace_and_empty_input(tmp_path):
+    path = tmp_path / '.env.gemini'
+    module.save_config(path, ' \t'+KEY+'\r\n', 'gemini-test-flash')
+    assert path.read_text().splitlines()[0] == 'GEMINI_API_KEY='+KEY
+    with pytest.raises(ValueError, match='No key received'):
+        module.save_config(tmp_path / 'empty', ' \n', 'gemini-test-flash')
+
+
+@pytest.mark.parametrize('key, expected', [('', 'No key received'), ('...HRQQ', 'Key format not recognized')])
+def test_terminal_error_is_actionable_and_does_not_print_input(monkeypatch, capsys, key, expected):
+    monkeypatch.setattr(module.sys.stdin, 'isatty', lambda: True)
+    answers = iter(['gemini-test-flash', 'yes'])
+    monkeypatch.setattr('builtins.input', lambda _: next(answers))
+    monkeypatch.setattr(module.getpass, 'getpass', lambda _: key)
+    assert module.main() == 2
+    output = capsys.readouterr().out
+    assert expected in output
+    if key:
+        assert key not in output
