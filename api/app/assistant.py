@@ -200,6 +200,10 @@ class Assistant:
                 statements.append(f'Inventory value: USD {data["inventory_value"]:.2f}; annual cost savings: USD {data["annual_savings"]:.2f}; working capital freed: USD {data["working_capital_freed"]:.2f}. [{result["tool_call_id"]}]')
             else:
                 statements.append(f'Verified {result["tool"]} results are available in the tool trace. [{result["tool_call_id"]}]')
-        return {"session_id": session_id, "provider": "ollama-local" if model_routed else "mock", "fallback": not model_routed, "is_mock": not model_routed,
-                "notice": "Deterministic tool summaries. Synthetic cost assumptions. No external model called. Routing: " + routing_notice,
+        selected = self.model_router.settings.llm_provider_order.split(',')[0] if self.model_router else 'mock'
+        provider = {'ollama': 'ollama-local', 'openai-local': 'openai-local', 'gemini': 'gemini'}.get(selected, 'mock')
+        provenance = ('Gemini routing configured; public-prompt requests may use Google. '
+                      if selected == 'gemini' else 'No external model called. ')
+        return {"session_id": session_id, "provider": provider if model_routed else "mock", "fallback": not model_routed, "is_mock": not model_routed,
+                "notice": "Deterministic tool summaries. Synthetic cost assumptions. " + provenance + "Routing: " + routing_notice,
                 "answer": " ".join(statements), "trace": trace}

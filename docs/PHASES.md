@@ -318,3 +318,12 @@ are tracked within the related analytics, data, UI and documentation phases.
   paid infrastructure enabled. SQL Server runtime CI remains pending by design.
 - App code unchanged this checkpoint; preceding tests remain 144 backend passed/two
   skipped, 10 frontend passed and four browser passed. Remote CI is not claimed as passed.
+
+
+## P6 assistant provider provenance correction · 2026-10-27
+
+- Corrected provider labels: Gemini and OpenAI-compatible routing no longer incorrectly
+  report Ollama. Gemini-configured responses no longer claim no external model was called,
+  including when a failed external request may have preceded deterministic fallback.
+- Verification: 148 backend tests passed, two dedicated-database tests skipped; new tests
+  cover each provider and Gemini fallback. Bandit medium/high passed. No live cloud calls.

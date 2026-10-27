@@ -111,7 +111,9 @@ def test_unsupported_period_and_reversed_history_are_rejected(assistant):
 
 
 def test_model_proposed_calls_use_existing_citations_and_executor(assistant):
+    from types import SimpleNamespace
     class Router:
+        settings = SimpleNamespace(llm_provider_order='ollama,mock')
         def route(self, username, question, registry):
             return [('get_kpis', {})], 'local model route'
     assistant.model_router = Router()
@@ -127,3 +129,26 @@ def test_llm_usage_is_admin_only(client, demo_headers, admin_headers):
     assert result['attempts'] == 0
     assert result['external_calls'] == 0
     assert result['scope'] == 'current_process'
+
+
+@pytest.mark.parametrize('order,provider',[('gemini,mock','gemini'),('openai-local,mock','openai-local'),('ollama,mock','ollama-local')])
+def test_answer_provider_labels_match_router(assistant,order,provider):
+    from types import SimpleNamespace
+    assistant.model_router=SimpleNamespace(settings=SimpleNamespace(llm_provider_order=order),
+        route=lambda *args:([('get_kpis',{})],'validated route'))
+    answer=assistant.conversation(Principal('viewer','viewer'),'Show KPIs')
+    assert answer['provider']==provider
+    assert not answer['fallback']
+    if provider=='gemini':
+        assert 'No external model called' not in answer['notice']
+        assert 'Google' in answer['notice']
+
+
+def test_gemini_fallback_does_not_claim_no_external_request(assistant):
+    from types import SimpleNamespace
+    assistant.model_router=SimpleNamespace(settings=SimpleNamespace(llm_provider_order='gemini,mock'),
+        route=lambda *args:(None,'model provider unavailable'))
+    answer=assistant.conversation(Principal('viewer','viewer'),'Show KPIs')
+    assert answer['provider']=='mock'
+    assert answer['fallback']
+    assert 'No external model called' not in answer['notice']
