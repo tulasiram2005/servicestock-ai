@@ -75,3 +75,18 @@ free-text cloud routing, multi-provider cascades and native tool negotiation rem
 Live local evidence: `results/live_model_smoke.json`. Reproduce a single attempt with
 `PYTHONPATH=api api/.venv/bin/python scripts/check_local_model.py --model mistral:latest`.
 An already installed local model server is required; the script does not download models.
+
+### Reproducible live-check preparation
+
+`PYTHONPATH=api api/.venv/bin/python scripts/check_gemini.py --env-file .env`
+performs configuration checks only. It never creates a network client. Add `--live`
+only after the model's current free-tier availability and billing-disabled project are
+verified. The live check permits one app-authored KPI prompt, reserves a single attempt,
+prints only a sanitized outcome, and exits nonzero on fallback/unexpected routing. It
+neither edits `.env` nor changes the running application's Mock default. Repeated manual
+invocations each have a fresh one-attempt budget; this is a smoke tool, not a scheduler.
+
+On 2026-10-27 the root environment file preflight reported missing key, model and local
+confirmation flag. The user's verbal billing confirmation is recorded, but no key file
+has been identified. Zero requests were attempted. Do not paste keys in chat; configure
+them locally. The `.env.example` lists names only, with an empty key and confirmation false.

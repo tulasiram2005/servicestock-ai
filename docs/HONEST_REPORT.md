@@ -11,7 +11,7 @@ on-demand PDF endpoint and CLI BI export code.
 Latest local continuation (2026-10-27): ten synthetic extract families, inventory/sales
 warehouse migration, 11 CSV/Parquet exports, numeric/reference validation, streamed UI
 tool traces, manual administrator job monitor and configuration option impact comparison.
-140 backend tests passed (two dedicated-database tests skipped), 10 frontend unit tests and
+144 backend tests passed (two dedicated-database tests skipped), 10 frontend unit tests and
 4 browser tests passed (two live flows, plus mocked user-edit and failed-job UI checks).
 TypeScript, production build and Bandit medium/high scan passed.
 Local Compose services are healthy. These checks do not establish full master-spec completion.
@@ -76,3 +76,6 @@ Remaining master-spec gaps:
 
 The local source subset is 24 series. All costs, lead times and business attributes are synthetic.
 Negative capital freed is retained honestly. Pooling is theoretical, not empirical stock savings.
+
+Live-check setup and platform constraints: see LIVE_VALIDATION.md. Gemini preflight is
+implemented and tested; the root environment still has no key/model, so zero calls were made.

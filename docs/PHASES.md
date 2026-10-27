@@ -288,3 +288,19 @@ are tracked within the related analytics, data, UI and documentation phases.
   root .env has no Gemini key/model and no alternative key file has been identified.
   No Gemini call or key retrieval occurred. GitHub is separately uncreated; local commits
   continue, while SQL Server remote runtime validation remains pending.
+
+
+## P6/P8 reproducible live-validation preparation · 2026-10-27
+
+- Added Gemini preflight with no network by default; explicit --live enables one capped
+  app-authored public prompt. Environment input is parsed as data, never shell-executed.
+  Sanitized output omits credentials and raw provider errors. Mock app settings stay intact.
+- Actual local preflight: key, model and confirmation flag absent; zero requests attempted.
+  User's verbal billing confirmation does not supply a key/model. Example environment now
+  lists the settings without enabling them. LIVE_VALIDATION.md records remaining setup.
+- SQL Server supported-host requirements verified against Microsoft: x86-64 Linux; this
+  ARM64 Mac's emulation is unsupported. Existing gated x86 CI cannot run without a repository.
+- Verification: 144 backend tests passed, two dedicated-database tests skipped; Bandit
+  medium/high passed including the new script. New tests prove no-network preflight,
+  one-attempt public prompt, literal environment parsing and secret-free failure output.
+  No live Gemini or SQL Server result is claimed; frontend unchanged this checkpoint.
