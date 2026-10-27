@@ -21,7 +21,7 @@ No unsupported container run is being presented as compatibility certification.
 The existing `.github/workflows/sqlserver.yml` uses an x86 Linux runner and Developer
 edition for testing. It remains gated to a public repository with the explicit
 `SQLSERVER_TESTS_ENABLED=true` variable and `SQLSERVER_TEST_PASSWORD` secret. It applies
-migrations and runs job-claim and quota-concurrency integration tests. The private GitHub repository now exists, but the public-only gate deliberately skips
+migrations and runs job-claim, quota-concurrency and refresh-token concurrency integration tests. The private GitHub repository now exists, but the public-only gate deliberately skips
 this workflow; it has not run. No paid VM or database was provisioned.
 A successful workflow is required before claiming SQL Server runtime compatibility.
 

@@ -1,0 +1,9 @@
+{
+  "measured_on": "2026-10-27",
+  "database": "local PostgreSQL 16",
+  "attempts": 4,
+  "successful_rotations": 1,
+  "replay_revoked_family": true,
+  "status": "passed",
+  "sqlserver_runtime_validated": false
+}

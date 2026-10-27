@@ -43,3 +43,53 @@ def test_database_model_budget_is_atomic(settings):
         with store.transaction() as connection:
             connection.execute(delete(db.llm_daily_usage).where(db.llm_daily_usage.c.day == day))
         store.engine.dispose()
+
+
+@pytest.mark.parametrize('backend', ['sqlite', 'configured'])
+def test_refresh_token_can_only_be_rotated_once_concurrently(settings, tmp_path, backend):
+    from dataclasses import replace
+    from threading import Barrier
+    from fastapi import HTTPException
+    from app.auth import Auth
+    if backend == 'configured' and not os.getenv('TEST_DATABASE_URL'):
+        pytest.skip('Dedicated integration database URL not configured')
+    url = (os.environ['TEST_DATABASE_URL'] if backend == 'configured'
+           else 'sqlite:///' + str(tmp_path / 'refresh-concurrency.db'))
+    suffix = uuid.uuid4().hex
+    isolated = replace(settings, demo_username='refresh-viewer-'+suffix,
+                       admin_username='refresh-admin-'+suffix)
+    stores = [Store(url) for _ in range(4)]
+    db.metadata.create_all(stores[0].engine)
+    instances = [Auth(isolated, store) for store in stores]
+    for instance in instances:
+        instance.ensure_accounts()
+    original = instances[0].create_refresh(isolated.demo_username)
+    barrier = Barrier(len(instances))
+    def rotate(instance):
+        barrier.wait(timeout=10)
+        try:
+            return instance.rotate(original)
+        except HTTPException as error:
+            assert error.status_code == 401
+            return None
+    try:
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            results = list(executor.map(rotate, instances))
+        winners = [result for result in results if result is not None]
+        assert len(winners) == 1
+        # Replay revokes the entire family, including the winner's replacement.
+        with pytest.raises(HTTPException) as error:
+            instances[0].rotate(winners[0][1])
+        assert error.value.status_code == 401
+        with stores[0].transaction() as connection:
+            rows = connection.execute(select(db.refresh_tokens).where(
+                db.refresh_tokens.c.username == isolated.demo_username)).mappings().all()
+            assert len(rows) == 2
+            assert all(row['revoked'] for row in rows)
+    finally:
+        with stores[0].transaction() as connection:
+            connection.execute(delete(db.refresh_tokens).where(db.refresh_tokens.c.username == isolated.demo_username))
+            connection.execute(delete(db.users).where(db.users.c.email.in_(
+                [isolated.demo_username, isolated.admin_username])))
+        for store in stores:
+            store.engine.dispose()

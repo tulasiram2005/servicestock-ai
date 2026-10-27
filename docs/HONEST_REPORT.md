@@ -11,7 +11,7 @@ on-demand PDF endpoint and CLI BI export code.
 Latest local continuation (2026-10-27): ten synthetic extract families, inventory/sales
 warehouse migration, 11 CSV/Parquet exports, numeric/reference validation, streamed UI
 tool traces, manual administrator job monitor and configuration option impact comparison.
-166 backend tests passed (two dedicated-database tests skipped), 11 frontend unit tests and
+167 backend tests passed (three dedicated-database tests skipped), 11 frontend unit tests and
 4 browser tests passed (two live flows, plus mocked user-edit and failed-job UI checks).
 TypeScript, production build and Bandit medium/high scan passed.
 Local Compose services are healthy. These checks do not establish full master-spec completion.
@@ -93,3 +93,6 @@ Overview now includes ABC inventory totals and ten ranked simulated savings oppo
 with exact tables and negative savings/capital retained. Reconciliation tests and browser
 checks pass. Private Actions eligibility needs account verification; public visibility is
 not a requirement imposed by GitHub. See LIVE_VALIDATION.md.
+
+Refresh rotation now serializes with a portable no-op write. Concurrent one-use/replay
+behavior passed SQLite and live PostgreSQL checks; SQL Server coverage is prepared but unrun.

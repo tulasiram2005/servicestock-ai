@@ -133,7 +133,11 @@ class Auth:
         hashed = hashlib.sha256(token.encode()).hexdigest()
         invalid = False
         with self.store.transaction() as connection:
-            row = connection.execute(select(db.refresh_tokens).where(db.refresh_tokens.c.id == hashed).with_for_update()).mappings().first()
+            # A no-op write serializes rotation on SQLite, PostgreSQL and SQL Server.
+            # SQL Server does not implement SQLAlchemy's SELECT FOR UPDATE clause.
+            connection.execute(update(db.refresh_tokens).where(db.refresh_tokens.c.id == hashed)
+                               .values(id=db.refresh_tokens.c.id))
+            row = connection.execute(select(db.refresh_tokens).where(db.refresh_tokens.c.id == hashed)).mappings().first()
             if not row or row["expires_at"] <= time.time() or row["revoked"] or row["used"]:
                 if row:
                     connection.execute(update(db.refresh_tokens).where(db.refresh_tokens.c.family == row["family"]).values(revoked=True))

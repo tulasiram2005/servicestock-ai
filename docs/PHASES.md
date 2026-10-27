@@ -401,3 +401,17 @@ are tracked within the related analytics, data, UI and documentation phases.
   punctuation without executing configuration as shell code.
 - Full backend suite: 166 passed, two dedicated-database integration tests skipped.
 - Mock remains the app default. SQL Server runtime validation is still pending.
+
+## P0/P9 Portable refresh-token serialization · 2026-10-27
+
+- Replaced SELECT FOR UPDATE reliance in refresh rotation with a row-locking no-op write
+  before reading token state. SQL Server's SQLAlchemy dialect omits FOR UPDATE, so the
+  old selection alone did not serialize competing rotations on that platform.
+- Added a four-client concurrency test for local SQLite and the configured integration
+  database. Exactly one rotation succeeds; replay revokes the entire replacement family.
+- Full backend suite: 167 passed, three dedicated-database tests skipped. Separately ran
+  the same four-attempt scenario against live local PostgreSQL: one success, family revoked.
+  Evidence: results/refresh_rotation_postgres.json. Temporary probe accounts/tokens removed.
+- Existing SQL Server workflow automatically includes the new configured-database case.
+  SQL Server runtime remains unverified; browser access is disabled, blocking account
+  allowance verification. No hosted workflow or paid service was enabled.
