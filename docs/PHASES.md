@@ -356,3 +356,18 @@ are tracked within the related analytics, data, UI and documentation phases.
   tests, TypeScript, production builds and four browser tests passed. Tests verify horizon
   counts, missing horizons, future-spike leakage protection and actual UI row count.
 - Horizons beyond six months remain unvalidated with the current held-out window.
+
+
+## P7 Data Quality rules and recorded history · 2026-10-27
+
+- Data Quality now includes five rule categories and the latest 30 recorded runs in
+  chronological order. Rule counts distinguish quarantined records from accepted outlier
+  warnings. Labels disclose first-failure classification rather than implying independent
+  per-rule pass rates. Quality score remains accepted rows / received rows.
+- Chart appears only with multiple real runs; a single seed run explicitly lacks a trend.
+  Empty database responses report unmeasured quality with no fabricated records.
+- Verification: 152 backend passed, two database integration tests skipped; 11 frontend
+  tests, TypeScript, production builds and four browser tests passed; Bandit medium/high
+  passed. API tests cover authorization, 30-run limit/order, warnings and empty history.
+  Browser verifies rule/history sections and the single-run explanation. Existing seed
+  data remains unchanged; multiple synthetic runs were inserted only in isolated tests.

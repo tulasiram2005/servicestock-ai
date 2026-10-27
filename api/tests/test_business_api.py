@@ -131,3 +131,41 @@ def test_part_sensitivity_holds_other_policy_inputs_fixed():
         assert sum(policy['histogram']['counts'])==policy['draws']
     finally:
         store.engine.dispose()
+
+
+def test_quality_history_is_bounded_chronological_and_counts_are_honest(settings):
+    store=Store('sqlite://')
+    db.metadata.create_all(store.engine)
+    seed(store)
+    payload={'quality_score':50,'rows_received':2,'rows_accepted':1,'quarantined':1,
+             'issues':[{'rule':'validity','quarantined':True},{'rule':'outlier','quarantined':False}]}
+    with store.transaction() as connection:
+        connection.execute(db.artifacts['dq_runs'].delete())
+        for index in range(35):
+            connection.execute(db.artifacts['dq_runs'].insert().values(id=f'run-{index:02}',run_id=f'run-{index:02}',created_at=index,payload=payload))
+    try:
+        with TestClient(create_app(settings,store_override=store)) as client:
+            assert client.get('/api/dq').status_code==401
+            token=client.post('/api/auth/login',json={'username':'demo','password':settings.demo_password}).json()['access_token']
+            result=client.get('/api/dq',headers={'Authorization':'Bearer '+token}).json()
+            assert [run['created_at'] for run in result['history']]==list(range(5,35))
+            rules={row['rule']:row for row in result['rule_results']}
+            assert rules['validity']['quarantined']==1
+            assert rules['outlier']['flagged']==1
+            assert rules['outlier']['quarantined']==0
+            assert rules['completeness']['flagged']==0
+            assert result['quality_score']==50
+    finally:
+        store.engine.dispose()
+
+
+def test_quality_without_runs_is_explicitly_unmeasured(settings):
+    store=Store('sqlite://')
+    db.metadata.create_all(store.engine)
+    try:
+        with TestClient(create_app(settings,store_override=store)) as client:
+            token=client.post('/api/auth/login',json={'username':'demo','password':settings.demo_password}).json()['access_token']
+            report=client.get('/api/dq',headers={'Authorization':'Bearer '+token}).json()
+            assert report=={'issues':[],'history':[],'rule_results':[],'quality_score':None}
+    finally:
+        store.engine.dispose()

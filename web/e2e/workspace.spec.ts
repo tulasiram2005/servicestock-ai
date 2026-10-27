@@ -60,6 +60,10 @@ test('login, overview, part, scenario, assistant and configuration',async({page}
   await expect(comparison.getByText('Annual savings: '+currency(baseline-optimized)+'. Negative savings indicate a cost increase.',{exact:true})).toBeVisible();
   expect((await new AxeBuilder({page}).include('section[aria-label="Scenario cost comparison"]').withTags(['wcag2a','wcag2aa']).analyze()).violations).toEqual([]);
 
+  await page.getByRole('button',{name:'Data Quality',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'Validation rule results',exact:true})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Quality history',exact:true})).toBeVisible();
+  await expect(page.getByText('A trend needs at least two recorded runs. No history is fabricated.',{exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Assistant',exact:true}).click();
   await page.getByRole('button',{name:'Ask assistant',exact:true}).click();
   await expect(page.getByText(/Inventory value: USD/)).toBeVisible();

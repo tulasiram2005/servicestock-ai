@@ -107,7 +107,23 @@ def router(store, settings, authorize, admin, queue, wake, cache):
     @route.get("/dq")
     def quality(principal=Depends(authorize), database=Depends(database)):
         with database.transaction() as connection:
-            return connection.scalar(select(db.artifacts["dq_runs"].c.payload).order_by(db.artifacts["dq_runs"].c.created_at.desc()).limit(1))
+            table = db.artifacts["dq_runs"]
+            runs = connection.execute(select(table.c.id, table.c.created_at, table.c.payload)
+                .order_by(table.c.created_at.desc(), table.c.id.desc()).limit(30)).mappings().all()
+        if not runs:
+            return {"issues": [], "history": [], "rule_results": [], "quality_score": None}
+        latest = runs[0]["payload"]
+        rule_results = []
+        for rule in ("completeness", "referential_integrity", "validity", "duplicate", "outlier"):
+            matches = [item for item in latest.get("issues", []) if item["rule"] == rule]
+            rule_results.append({"rule": rule, "flagged": len(matches),
+                "quarantined": sum(bool(item["quarantined"]) for item in matches),
+                "severity": "warning" if rule == "outlier" else "error"})
+        return {**latest, "rule_results": rule_results, "history": [
+            {"run_id": run["id"], "created_at": run["created_at"],
+             **{key: run["payload"].get(key) for key in ("quality_score", "rows_received", "rows_accepted", "quarantined")}}
+            for run in reversed(runs)],
+            "rule_note": "Rows are classified by the first failing rejection rule; outliers are warnings on accepted rows. Counts are not independent per-rule pass rates."}
 
     @route.get("/results")
     def results(principal=Depends(authorize), database=Depends(database)):
