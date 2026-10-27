@@ -31,7 +31,7 @@ jobs:
             cd api
             python -c 'import os; from app.db.store import Store; from app.services import publish,retain; store=Store(os.environ["DATABASE_URL"]); publish(store,"../results"); retain(store,int(os.environ.get("RETENTION_DAYS","30")))'
           fi
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: compact-results
           path: results/*.json
