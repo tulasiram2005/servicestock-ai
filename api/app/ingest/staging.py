@@ -109,7 +109,7 @@ def transform(extracts, valid_parts):
 
 
 def transform_purchase_bom(extracts, valid_parts, valid_models, option_models):
-    """Import the documented single-line synthetic order/BOM extract contract."""
+    """Import synthetic headers/details, preserving legacy line-10 warehouse IDs."""
     grouped = {}
     for row in extracts:
         grouped.setdefault(row["sap_table"], []).append(row["payload"])
@@ -137,29 +137,45 @@ def transform_purchase_bom(extracts, valid_parts, valid_models, option_models):
     orders, headers = unique_index('EKKO', 'EBELN'), unique_index('STKO', 'STLNR')
     purchases, components = [], []
     seen_orders, seen_bom = set(), set()
+    purchase_ids, component_ids = set(), set()
+
+    def detail_id(header, row, field, seen, output_ids):
+        line = str(row.get(field, '10'))
+        if not line.isascii() or not line.isdigit() or not 1 <= len(line) <= 6 or int(line) <= 0:
+            raise ValueError('Invalid staging detail line number')
+        line = str(int(line))
+        pair = (header, line)
+        if pair in seen:
+            raise ValueError('Duplicate staging detail line')
+        seen.add(pair)
+        identifier = header if line == '10' else header + ':' + line
+        if len(identifier) > 64 or identifier in output_ids:
+            raise ValueError('Staging detail ID collision or length overflow')
+        output_ids.add(identifier)
+        return identifier
     for row in grouped.get('EKPO', []):
         key = row['EBELN']
-        if key not in orders or row['MATNR'] not in valid_parts or key in seen_orders:
+        if key not in orders or row['MATNR'] not in valid_parts :
             raise ValueError('Invalid or duplicate staging purchase reference')
         header = orders[key]
         period = header['BEDAT']
         if datetime.strptime(period, '%Y-%m').strftime('%Y-%m') != period or header['WAERS'] != 'USD':
             raise ValueError('Invalid staging purchase period or currency')
-        seen_orders.add(key)
-        purchases.append({'id': key, 'part_id': row['MATNR'], 'period': period, 'qty': quantity(row['MENGE']),
+        identifier = detail_id(key, row, 'EBELP', seen_orders, purchase_ids)
+        purchases.append({'id': identifier, 'part_id': row['MATNR'], 'period': period, 'qty': quantity(row['MENGE']),
             'actual_price': money(row['NETPR']), 'standard_price': money(row['Z_STANDARD_PRICE']),
             'budget': money(row['Z_BUDGET']), 'expedite_spend': money(row['Z_EXPEDITE_SPEND'])})
     for row in grouped.get('STPO', []):
         key = row['STLNR']
-        if key not in headers or row['IDNRK'] not in valid_parts or key in seen_bom:
+        if key not in headers or row['IDNRK'] not in valid_parts :
             raise ValueError('Invalid or duplicate staging BOM reference')
         header = headers[key]
         model, option = header['MODEL'], header['OPTION']
         if model not in valid_models or (option is not None and option_models.get(option) != model):
             raise ValueError('Invalid staging model or option reference')
-        seen_bom.add(key)
-        components.append({'id': key, 'model_id': model, 'option_id': option,
+        identifier = detail_id(key, row, 'POSNR', seen_bom, component_ids)
+        components.append({'id': identifier, 'model_id': model, 'option_id': option,
             'part_id': row['IDNRK'], 'qty': quantity(row['MENGE'])})
-    if seen_orders != orders.keys() or seen_bom != headers.keys():
+    if {key for key, _ in seen_orders} != orders.keys() or {key for key, _ in seen_bom} != headers.keys():
         raise ValueError('Staging header has no detail row')
     return purchases, components

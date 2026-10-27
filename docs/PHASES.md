@@ -433,3 +433,13 @@ from ten immediate attempts). Changed the test to drain with bounded retries for
 empty READPAST/SKIP LOCKED results. It still requires every enqueued ID exactly once and
 successful fenced completion for every job. This interpretation needs another SQL Server
 run; no runtime compatibility success is claimed. Evidence: results/sqlserver_runtime.json.
+
+## P1/JD Multi-line synthetic detail mapping · 2026-10-27
+
+Purchase and BOM transforms now preserve multiple numbered details per header, normalize
+leading-zero line numbers, reject duplicates and ID collisions, and retain existing single-line
+IDs. Verified totals, input-order independence and unchanged idempotent seeded ETL.
+Targeted staging suite: 28 passed. Full backend suite recorded in current status report.
+SQL Server run 40534000327 independently verified: four tests passed on f710f6b.
+This import change has not been runtime-tested on SQL Server; physical staging schema and
+external SAP integration are still unfinished.

@@ -12,11 +12,12 @@ Application defaults remain Mock and zero quotas. No paid service was enabled.
 
 ## SQL Server
 
-Run [40533154602](https://github.com/tulasiram2005/servicestock-ai/actions/runs/40533154602)
-validated database creation, all migrations, quota concurrency and refresh-token concurrency.
-The job-claim test failed; full compatibility remains unvalidated. The test now retries
-transient empty claims with a ten-second deadline while retaining exact-once and complete
-coverage assertions. A new run on the updated commit is required.
+Run [40534000327](https://github.com/tulasiram2005/servicestock-ai/actions/runs/40534000327)
+on f710f6b passed database creation, all migrations and four tests in 1m59s total.
+Tests cover SQL Server job exclusivity, atomic model quotas, and refresh-token concurrency
+(the refresh case also runs on SQLite). This is targeted runtime compatibility, not an
+end-to-end certification of every application path on SQL Server. Earlier runs failed;
+the successful run includes the bounded readiness and transient-empty-claim fixes.
 
 The manual-only workflow uses an x86-64 Ubuntu runner, SQL Server Developer, ephemeral
 masked credentials, a 20-minute timeout and cleanup. Private Actions allowance and an
@@ -37,6 +38,7 @@ minutes/storage, and says usage is blocked after quota exhaustion if no valid pa
 method is on file. See [official Actions billing documentation](https://docs.github.com/en/billing/concepts/product-billing/github-actions).
 Before enabling one bounded private test, verify the account's remaining allowance and
 no-charge configuration; do not add a card, enable paid usage, or change visibility.
-Account verification could not proceed because local browser use is disabled in Work
-settings. No SQL Server workflow was enabled or dispatched. Gemini single-request validation is
-now complete as documented above; SQL Server runtime validation remains pending.
+Account verification succeeded after browser access became available: 3,000 included
+minutes with 0 used and an existing $0 Actions budget were displayed before the manual
+runs. The budget and repository visibility were not changed. No recurring SQL Server
+workflow was enabled. Gemini and the targeted SQL Server runtime checks have passed.

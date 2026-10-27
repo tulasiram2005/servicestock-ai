@@ -11,7 +11,7 @@ on-demand PDF endpoint and CLI BI export code.
 Latest local continuation (2026-10-27): ten synthetic extract families, inventory/sales
 warehouse migration, 11 CSV/Parquet exports, numeric/reference validation, streamed UI
 tool traces, manual administrator job monitor and configuration option impact comparison.
-167 backend tests passed (three dedicated-database tests skipped), 11 frontend unit tests and
+170 backend tests passed (three dedicated-database tests skipped), 11 frontend unit tests and
 4 browser tests passed (two live flows, plus mocked user-edit and failed-job UI checks).
 TypeScript, production build and Bandit medium/high scan passed.
 Local Compose services are healthy. These checks do not establish full master-spec completion.
@@ -30,8 +30,8 @@ Remaining master-spec gaps:
   bounded response reads, user-isolated caching and failure cooldown is implemented and
   tested with simulated HTTP responses. Two live local Mistral attempts timed out and fell
   back; successful model quality is unmeasured. An opt-in Gemini adapter is implemented
-  for three app-authored public prompts and tested with simulated responses, but no live
-  Gemini call or account/billing verification occurred. Community adapters, general cloud
+  for three app-authored public prompts and tested with simulated responses, and a live public KPI routing check passed. Free-tier status is based on the user
+  screenshot and confirmation; billing was not verified through a provider API. Community adapters, general cloud
   prompting, provider cascading, capability detection, token/cost accounting and tool deadlines
   remain pending. See LLM_PROVIDERS.md for settings and exact limitations.
 - Transformer/zero-shot NLP comparison remains. Forecast intervals now use per-horizon
@@ -40,8 +40,8 @@ Remaining master-spec gaps:
   Coverage is empirical, not guaranteed; horizons beyond six months remain unvalidated.
 - Ten synthetic extract families now support inventory/sales and purchase/BOM reverse ETL,
   with 11 CSV/Parquet export tables including KPIs/finance. A physical staging schema and
-  general multi-line external SAP mapping remain missing. The current synthetic contract
-  deliberately accepts one detail per header and rejects duplicate details.
+  general external SAP integration remain missing. Purchase and BOM transforms now accept
+  multiple numbered details per header, reject duplicate lines, and preserve legacy IDs.
 - Parts Explorer now supports server-side ABC filters, ascending/descending ID order,
   cursor pagination, and five browser-local saved filter views. Saved views are shared by
   users of the browser, contain no credentials, and are not synchronized between devices.
@@ -63,7 +63,8 @@ Remaining master-spec gaps:
 - Local Bandit medium/high scan and runtime pip-audit pass after upgrading PyJWT. Lighthouse
   and a short local Locust smoke are measured; full load capacity is not. CI security and SQL Server
   workflow definitions exist; SQL Server schema/lock statements compile offline and its workflow
-  now runs migrations and derives its isolated connection settings, but runtime and remote runs remain unverified; no claim that all gates pass.
+  now runs migrations and derives its isolated connection settings, with targeted SQL Server runtime checks now passing (four workflow tests). Full
+  application coverage on SQL Server and all remote quality gates remain unverified.
 - Concurrent account-seeding conflict handling is implemented and tested with independent
   instances against shared SQLite; account-seeding PostgreSQL/SQL Server validation remains.
   Concurrent login lockout is now serialized and tested with shared SQLite and live local
@@ -72,8 +73,8 @@ Remaining master-spec gaps:
   provider-specific quotas and deployment wake-up behavior need further validation.
 - No live deployment, paid service, billing enablement or no-card account verification occurred.
 - GitHub repository https://github.com/tulasiram2005/servicestock-ai was created private
-  on 2026-10-27 and the existing main history pushed. Hosted CI jobs are gated off for
-  private repositories to preserve free-only operation; remote checks remain unrun.
+  on 2026-10-27 and the existing main history pushed. Most hosted CI jobs remain gated off for private repositories. A manually triggered
+  SQL Server run passed within the included allowance with the existing $0 budget unchanged.
 
 The local source subset is 24 series. All costs, lead times and business attributes are synthetic.
 Negative capital freed is retained honestly. Pooling is theoretical, not empirical stock savings.
@@ -91,8 +92,8 @@ multiple recorded runs exist. The seeded local demonstration currently has one r
 
 Overview now includes ABC inventory totals and ten ranked simulated savings opportunities,
 with exact tables and negative savings/capital retained. Reconciliation tests and browser
-checks pass. Private Actions eligibility needs account verification; public visibility is
-not a requirement imposed by GitHub. See LIVE_VALIDATION.md.
+checks pass. Private Actions allowance and the $0 budget were verified; public visibility is
+not required for the successful manual test. See LIVE_VALIDATION.md.
 
 Refresh rotation now serializes with a portable no-op write. Concurrent one-use/replay
-behavior passed SQLite and live PostgreSQL checks; SQL Server coverage is prepared but unrun.
+behavior passed SQLite and live PostgreSQL checks; the targeted SQL Server concurrency test also passed.

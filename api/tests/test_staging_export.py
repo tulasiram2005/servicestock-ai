@@ -93,3 +93,29 @@ def test_purchase_bom_rejects_invalid_extracts(store, family, field, value):
     next(row for row in extracts if row['sap_table'] == family)['payload'][field] = value
     with pytest.raises(ValueError):
         transform_purchase_bom(extracts, parts, models, option_models)
+
+
+def test_multiline_purchase_and_bom_preserve_every_detail():
+    extracts = [
+        {'sap_table':'EKKO','payload':{'EBELN':'PO1','BEDAT':'2026-01','WAERS':'USD'}},
+        {'sap_table':'STKO','payload':{'STLNR':'BOM1','MODEL':'M1','OPTION':None}},
+    ]
+    for line, part in [('00010','P1'),('00020','P2')]:
+        extracts += [
+            {'sap_table':'EKPO','payload':{'EBELN':'PO1','EBELP':line,'MATNR':part,'MENGE':2,
+             'NETPR':'3.00','Z_STANDARD_PRICE':'4.00','Z_BUDGET':'9.00','Z_EXPEDITE_SPEND':'1.00'}},
+            {'sap_table':'STPO','payload':{'STLNR':'BOM1','POSNR':line,'IDNRK':part,'MENGE':2}},
+        ]
+    purchases, components = transform_purchase_bom(extracts, {'P1','P2'}, {'M1'}, {})
+    assert [row['id'] for row in purchases] == ['PO1','PO1:20']
+    assert [row['id'] for row in components] == ['BOM1','BOM1:20']
+    assert sum(row['qty'] * row['actual_price'] for row in purchases) == 12
+    assert sum(row['qty'] for row in components) == 4
+    reversed_result = transform_purchase_bom(list(reversed(extracts)), {'P1','P2'}, {'M1'}, {})
+    assert sorted(reversed_result[0], key=lambda r:r['id']) == purchases
+    duplicate = {'sap_table':'EKPO','payload':dict(extracts[2]['payload'],EBELP='10')}
+    with pytest.raises(ValueError, match='Duplicate staging detail'):
+        transform_purchase_bom(extracts+[duplicate], {'P1','P2'}, {'M1'}, {})
+    duplicate_bom = {'sap_table':'STPO','payload':dict(extracts[3]['payload'],POSNR='10')}
+    with pytest.raises(ValueError, match='Duplicate staging detail'):
+        transform_purchase_bom(extracts+[duplicate_bom], {'P1','P2'}, {'M1'}, {})

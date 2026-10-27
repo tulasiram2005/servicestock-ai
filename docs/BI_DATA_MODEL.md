@@ -33,3 +33,15 @@ to the referenced model. Validation completes before any records are replaced.
 No real SAP system was used; this is not SAP-certified integration. A physically separate
 staging schema, general multi-line SAP order mapping and external uploads are not implemented.
 SQL Server DDL compilation passes; runtime compatibility has not been measured.
+
+## Multi-line synthetic purchase and BOM mapping
+
+EKPO details use EBELN + EBELP; STPO details use STLNR + POSNR. Line numbers are positive
+ASCII integers up to six digits; leading zeros normalize before duplicate detection.
+Legacy line 10 (or an omitted line number) preserves the header ID; other lines use
+`header:line`. IDs over 64 characters or collisions are rejected. Each header must have
+a detail. Existing money, currency, period, quantity and reference validation still applies.
+Budget and expedite fields are per-detail values, never repeated header totals.
+This extends the transformation functions, not a general external SAP import endpoint.
+The local generator still produces single-line fixtures. SAP-style synthetic extract;
+no SAP system was used. Physical staging-schema isolation remains pending.
