@@ -1,42 +1,56 @@
-name: Scheduled SQL Server compatibility
+name: Manual SQL Server compatibility
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '37 4 * * 0'
+    inputs:
+      free_allowance_verified:
+        description: 'Verified included allowance and zero-dollar Actions spending limit'
+        type: boolean
+        required: true
+        default: false
 permissions:
   contents: read
+concurrency:
+  group: sqlserver-compatibility
+  cancel-in-progress: false
 jobs:
   sqlserver:
-    if: github.event.repository.private == false && vars.SQLSERVER_TESTS_ENABLED == 'true'
+    if: inputs.free_allowance_verified == true
     runs-on: ubuntu-24.04
     timeout-minutes: 20
-    services:
-      sqlserver:
-        image: mcr.microsoft.com/mssql/server:2022-latest
-        env:
-          ACCEPT_EULA: Y
-          MSSQL_PID: Developer
-          MSSQL_SA_PASSWORD: ${{ secrets.SQLSERVER_TEST_PASSWORD }}
-        ports:
-          - 1433:1433
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Start isolated SQL Server Developer container
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os, secrets, subprocess
+          password = 'Ss9!' + secrets.token_hex(24)
+          print('::add-mask::' + password, flush=True)
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              output.write('SQLSERVER_TEST_PASSWORD=' + password + '\n')
+          environment = dict(os.environ, MSSQL_SA_PASSWORD=password)
+          subprocess.run(['docker', 'run', '-d', '--name', 'servicestock-sqlserver',
+              '-e', 'ACCEPT_EULA=Y', '-e', 'MSSQL_PID=Developer', '-e', 'MSSQL_SA_PASSWORD',
+              '-p', '127.0.0.1:1433:1433', 'mcr.microsoft.com/mssql/server:2022-latest'],
+              env=environment, check=True)
+          PY
       - name: Install ODBC driver
         run: |
-          curl -sSL https://packages.microsoft.com/config/ubuntu/24.04/packages-microsoft-prod.deb -o packages-microsoft-prod.deb
+          curl -fsSL https://packages.microsoft.com/config/ubuntu/24.04/packages-microsoft-prod.deb -o packages-microsoft-prod.deb
           sudo dpkg -i packages-microsoft-prod.deb
           sudo apt-get update
           sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev
       - run: pip install -r api/requirements-dev.txt pyodbc
       - name: Create isolated test database
-        env:
-          SQLSERVER_TEST_PASSWORD: ${{ secrets.SQLSERVER_TEST_PASSWORD }}
         run: python scripts/sqlserver_setup.py
       - name: Apply migrations to isolated SQL Server database
         working-directory: api
         run: python -m alembic upgrade head
       - name: Run database integration
         run: python -m pytest api/tests/test_database_integration.py -q
+      - name: Remove isolated SQL Server container
+        if: always()
+        run: docker rm -f servicestock-sqlserver || true
