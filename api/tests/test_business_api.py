@@ -169,3 +169,22 @@ def test_quality_without_runs_is_explicitly_unmeasured(settings):
             assert report=={'issues':[],'history':[],'rule_results':[],'quality_score':None}
     finally:
         store.engine.dispose()
+
+
+def test_overview_breakdown_reconciles_and_keeps_negative_values():
+    from app.services import overview_breakdown
+    policies=[]
+    for index in range(12):
+        policies.append({'part_id':f'P{index:04}', 'annual_savings':index-8,
+            'working_capital_freed':-index,'optimized':{'inventory_value':index*10,'stock':index+1},
+            'baseline':{'stock':index}})
+    benchmark={'parts':[{'part_id':p['part_id'],'abc':'A' if i%2 else 'B'} for i,p in enumerate(policies[:-1])]}
+    result=overview_breakdown({'policies':policies},benchmark)
+    assert sum(s['parts'] for s in result['segments'])==12
+    assert sum(s['inventory_value'] for s in result['segments'])==sum(i*10 for i in range(12))
+    assert sum(s['annual_savings'] for s in result['segments'])==sum(i-8 for i in range(12))
+    assert sum(s['working_capital_freed'] for s in result['segments'])==-sum(range(12))
+    assert result['top_opportunities'][0]['part_id']=='P0011'
+    assert result['top_opportunities'][0]['segment']=='Unclassified'
+    assert len(result['top_opportunities'])==10
+    assert result['top_opportunities'][-1]['annual_savings']<0

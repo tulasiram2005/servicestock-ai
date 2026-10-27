@@ -11,6 +11,9 @@ test('login, overview, part, scenario, assistant and configuration',async({page}
   await page.getByLabel('Password',{exact:true}).fill(env.DEMO_PASSWORD);
   await page.getByRole('button',{name:'Sign in',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Overview',exact:true})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Inventory by ABC segment',exact:true})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Top simulated savings opportunities',exact:true})).toBeVisible();
+  await expect(page.getByRole('table').filter({has:page.getByRole('columnheader',{name:'recommended stock',exact:true})}).getByRole('row')).toHaveCount(11);
   const inventory=JSON.parse(readFileSync('../results/analytics.json','utf8')).kpis.inventory_value;
   await expect(page.getByText(new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(inventory),{exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Parts',exact:true}).click();

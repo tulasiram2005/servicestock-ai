@@ -28,3 +28,15 @@ A successful workflow is required before claiming SQL Server runtime compatibili
 Installed Mistral was attempted twice; both attempts timed out under the app's five-second
 request timeout and fell back. See results/live_model_smoke.json. This proves fallback
 behavior for those attempts, not successful inference or quality.
+
+## Private GitHub Actions eligibility · checked 2026-10-27
+
+Keep the repository private. The current public-only workflow guard is a conservative
+project choice, not a GitHub requirement. GitHub documents included private-repository
+minutes/storage, and says usage is blocked after quota exhaustion if no valid payment
+method is on file. See [official Actions billing documentation](https://docs.github.com/en/billing/concepts/product-billing/github-actions).
+Before enabling one bounded private test, verify the account's remaining allowance and
+no-charge configuration; do not add a card, enable paid usage, or change visibility.
+Account verification could not proceed because local browser use is disabled in Work
+settings. No workflow was enabled or dispatched. Gemini still needs local key/model
+configuration; neither blocker is a completed runtime validation.

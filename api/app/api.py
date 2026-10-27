@@ -99,7 +99,9 @@ def router(store, settings, authorize, admin, queue, wake, cache):
         cached = cache.get("kpis")
         if cached is None:
             data = services.artifact(database, "analytics")
-            cached = {"kpis": data["kpis"], "finance": data["finance"], "source_id": "analytics",
+            cached = {"kpis": data["kpis"], "finance": data["finance"],
+                      **services.overview_breakdown(data, services.artifact(database, "benchmark")),
+                      "source_id": "analytics + benchmark",
                       "synthetic_cost_assumptions": True}
             cache.put("kpis", cached)
         return cached

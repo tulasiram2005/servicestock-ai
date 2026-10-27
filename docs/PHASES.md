@@ -371,3 +371,14 @@ are tracked within the related analytics, data, UI and documentation phases.
   passed. API tests cover authorization, 30-run limit/order, warnings and empty history.
   Browser verifies rule/history sections and the single-run explanation. Existing seed
   data remains unchanged; multiple synthetic runs were inserted only in isolated tests.
+
+
+## P7 Overview ABC breakdown and opportunities · 2026-10-27
+
+- Added ABC segment inventory chart and exact totals, plus ten opportunities ranked by
+  annual simulated savings. Unmatched parts remain unclassified; negative financial values
+  remain visible. Labels disclose synthetic business attributes.
+- Verification: 153 backend tests passed, two dedicated-database integration tests skipped;
+  11 frontend tests, TypeScript, production build and four browser tests passed. Added
+  reconciliation/negative-value coverage and browser section/table assertions.
+- SQL Server and live Gemini remain unvalidated; this is not full project completion.

@@ -101,3 +101,23 @@ def handle_job(store, settings, kind, payload):
     if kind == "report":
         return {"download_path": "/api/reports/review.pdf", "storage": "generated on demand, never persisted"}
     raise ValueError("Unsupported job kind")
+
+
+def overview_breakdown(analytics, benchmark):
+    """Reconcile simulated policy values by current benchmark ABC assignment."""
+    segments = {part["part_id"]: part["abc"] for part in benchmark["parts"]}
+    groups = {}
+    opportunities = []
+    for policy in analytics["policies"]:
+        segment = segments.get(policy["part_id"], "Unclassified")
+        group = groups.setdefault(segment, {"segment": segment, "parts": 0,
+            "inventory_value": 0.0, "annual_savings": 0.0, "working_capital_freed": 0.0})
+        group["parts"] += 1
+        group["inventory_value"] += policy["optimized"]["inventory_value"]
+        group["annual_savings"] += policy["annual_savings"]
+        group["working_capital_freed"] += policy["working_capital_freed"]
+        opportunities.append({"part_id": policy["part_id"], "segment": segment,
+            "annual_savings": policy["annual_savings"], "working_capital_freed": policy["working_capital_freed"],
+            "baseline_stock": policy["baseline"]["stock"], "recommended_stock": policy["optimized"]["stock"]})
+    return {"segments": [groups[key] for key in sorted(groups)],
+            "top_opportunities": sorted(opportunities, key=lambda row: (-row["annual_savings"], row["part_id"]))[:10]}
