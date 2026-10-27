@@ -27,13 +27,56 @@ Source: results/bandit.json
 Source: results/benchmark.json
 
 - Parts: 24
-- Runtime seconds: 2.034867000009399
+- Runtime seconds: 1.5455153750008321
 - naive: MAE 0.03472222222222222, RMSE 0.06512286786846311
 - seasonal_naive: MAE 0.041666666666666664, RMSE 0.09209764296021157
 - croston: MAE 0.2062493782015649, RMSE 0.22167877002468536
 - sba: MAE 0.19663135373593107, RMSE 0.2122803637178656
 - tsb: MAE 0.059039743206296375, RMSE 0.07326378366184029
 - lightgbm: MAE 0.059771783881595264, RMSE 0.07900683755117686
+
+| Horizon (months) | Evaluated observations | Coverage | Mean width (units) |
+|---|---|---|---|
+| 1 | 144 | 0.9653 | 0.3056 |
+| 2 | 120 | 0.9583 | 0.2917 |
+| 3 | 96 | 0.9479 | 0.2708 |
+| 4 | 72 | 0.9444 | 0.2500 |
+| 5 | 48 | 0.9375 | 0.5833 |
+| 6 | 24 | 0.9167 | 0.5833 |
+
+Final six held-out periods only; horizons have decreasing, overlapping samples.
+Coverage is empirical, not guaranteed; target-month bounds are not cumulative lead-time demand.
+
+## live_model_smoke
+
+Source: results/live_model_smoke.json
+
+```json
+{
+  "provider": "ollama-local",
+  "model": "mistral:latest",
+  "external_calls": 0,
+  "cold_attempt": {
+    "measured_at": "2026-10-26T23:28:48.723094+00:00",
+    "provider": "ollama-local",
+    "model": "mistral:latest",
+    "elapsed_seconds": 5.031,
+    "validated_tools": [],
+    "fallback": true,
+    "notice": "local provider unavailable or invalid output",
+    "scope": "single routing smoke; not model quality benchmark",
+    "external_calls": 0
+  },
+  "warm_attempt": {
+    "measured_at": "2026-10-26T23:30:02.666370+00:00",
+    "elapsed_seconds": 5.028,
+    "validated_tools": [],
+    "fallback": true,
+    "notice": "local provider unavailable or invalid output"
+  },
+  "scope": "single routing prompt, not a quality benchmark"
+}
+```
 
 ## llm_budget_postgres
 
@@ -120,6 +163,23 @@ Source: results/local_integration.json
 }
 ```
 
+## login_lockout_postgres
+
+Source: results/login_lockout_postgres.json
+
+```json
+{
+  "measured_at": "2026-10-26T23:21:58.337282+00:00",
+  "environment": "local Docker PostgreSQL",
+  "concurrent_attempts": 8,
+  "rejected_attempts": 8,
+  "lock_threshold": 5,
+  "correct_password_rejected_during_lock": true,
+  "locked_requests_do_not_extend_lock": true,
+  "status": "passed"
+}
+```
+
 ## pip-audit
 
 Source: results/pip-audit.json
@@ -132,7 +192,7 @@ Source: results/ui.json
 
 ```json
 {
-  "measured_at": "2026-10-26T17:54:38.362Z",
+  "measured_at": "2026-10-27T09:53:32.439Z",
   "page": "Configurations",
   "axe_violations": [],
   "lighthouse": {

@@ -107,21 +107,32 @@ def calibrated_intervals(values, model, horizon=12, coverage=0.9):
             "method": "Per-horizon rolling forecast residual quantiles; maximum 24 past origins; empirical, no coverage guarantee"}
 
 
-def interval_backtest(values, model):
+def interval_backtest(values, model, max_horizon=6):
+    """Evaluate horizons inside the held-out final six periods, without target leakage."""
+    if not isinstance(max_horizon, int) or not 1 <= max_horizon <= 12:
+        raise ValueError("Evaluation horizon must be between one and twelve")
     values = np.asarray(values, dtype=float)
-    covered, service_hits, widths = [], [], []
-    for origin in range(len(values)-6, len(values)):
-        bounds = calibrated_intervals(values[:origin], model, 1)
-        if bounds["lower"][0] is None:
-            continue
-        covered.append(bounds["lower"][0] <= values[origin] <= bounds["upper"][0])
-        service_hits.append(values[origin] <= bounds["service_upper"][0])
-        widths.append(bounds["upper"][0]-bounds["lower"][0])
-    return {"evaluated_origins": len(covered), "interval_coverage": float(np.mean(covered)) if covered else None,
-            "mean_interval_width": float(np.mean(widths)) if widths else None,
-            "service_level_hit_rate": float(np.mean(service_hits)) if service_hits else None,
-            "service_target": 0.95,
-            "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"}
+    outcomes = [{"covered": [], "hits": [], "widths": []} for _ in range(max_horizon)]
+    for origin in range(max(14, len(values)-6), len(values)):
+        available = min(max_horizon, len(values)-origin)
+        bounds = calibrated_intervals(values[:origin], model, available)
+        for step in range(available):
+            if bounds["lower"][step] is None:
+                continue
+            actual = values[origin+step]
+            outcomes[step]["covered"].append(bounds["lower"][step] <= actual <= bounds["upper"][step])
+            outcomes[step]["hits"].append(actual <= bounds["service_upper"][step])
+            outcomes[step]["widths"].append(bounds["upper"][step]-bounds["lower"][step])
+    horizons = []
+    for step, outcome in enumerate(outcomes):
+        horizons.append({"horizon_months": step+1, "evaluated_origins": len(outcome["covered"]),
+            "interval_coverage": float(np.mean(outcome["covered"])) if outcome["covered"] else None,
+            "mean_interval_width": float(np.mean(outcome["widths"])) if outcome["widths"] else None,
+            "service_level_hit_rate": float(np.mean(outcome["hits"])) if outcome["hits"] else None})
+    return {**{key: value for key, value in horizons[0].items() if key != "horizon_months"},
+            "by_horizon": horizons, "service_target": 0.95,
+            "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+            "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."}
 
 
 def explain_ml(values):

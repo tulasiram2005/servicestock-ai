@@ -72,3 +72,20 @@ def test_insufficient_interval_history_is_explicitly_unmeasured():
     assert bounds['calibration_counts'] == [0]*3
     with pytest.raises(ValueError):
         calibrated_intervals([5]*40, 'naive', coverage=1)
+
+
+def test_multistep_coverage_counts_and_unavailable_horizons():
+    result=interval_backtest([5]*40,'naive',12)
+    assert [h['evaluated_origins'] for h in result['by_horizon']]==[6,5,4,3,2,1,0,0,0,0,0,0]
+    assert all(h['interval_coverage']==1 for h in result['by_horizon'][:6])
+    assert all(h['interval_coverage'] is None for h in result['by_horizon'][6:])
+
+
+def test_multistep_predictions_cannot_calibrate_against_future_targets():
+    result=interval_backtest([5]*39+[1000],'naive',6)
+    for row in result['by_horizon']:
+        count=row['evaluated_origins']
+        assert row['interval_coverage']==pytest.approx((count-1)/count)
+        assert row['mean_interval_width']==0
+    with pytest.raises(ValueError):
+        interval_backtest([5]*40,'naive',0)

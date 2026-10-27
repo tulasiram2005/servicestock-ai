@@ -90,6 +90,10 @@ test('login, overview, part, scenario, assistant and configuration',async({page}
   await page.getByRole('button',{name:'Results',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Forecast interval validation',exact:true})).toBeVisible();
   await expect(page.getByRole('columnheader',{name:'service level hit rate',exact:true})).toBeVisible();
+  await page.getByText('View results by part and forecast horizon',{exact:true}).click();
+  await expect(page.getByRole('columnheader',{name:'horizon months',exact:true})).toBeVisible();
+  const horizonTable=page.getByRole('table').filter({has:page.getByRole('columnheader',{name:'horizon months',exact:true})});
+  await expect(horizonTable.getByRole('row')).toHaveCount(145);
 });
 
 test('administrator can complete a scenario job and inspect jobs and users',async({page})=>{

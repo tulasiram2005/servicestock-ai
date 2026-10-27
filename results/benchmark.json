@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-26T17:49:38.980374+00:00",
+  "generated_at": "2026-10-27T09:52:18.183095+00:00",
   "dataset": {
     "kind": "public",
     "url": "https://zenodo.org/records/4656021/files/car_parts_dataset_without_missing_values.zip?download=1",
@@ -259,8 +259,53 @@
         "interval_coverage": 1.0,
         "mean_interval_width": 0.0,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -513,8 +558,53 @@
         "interval_coverage": 1.0,
         "mean_interval_width": 0.0,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -767,8 +857,53 @@
         "interval_coverage": 1.0,
         "mean_interval_width": 0.0,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -1021,8 +1156,53 @@
         "interval_coverage": 1.0,
         "mean_interval_width": 0.0,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -1275,8 +1455,53 @@
         "interval_coverage": 1.0,
         "mean_interval_width": 0.0,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -1529,8 +1754,53 @@
         "interval_coverage": 1.0,
         "mean_interval_width": 0.0,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -1783,8 +2053,53 @@
         "interval_coverage": 1.0,
         "mean_interval_width": 0.0,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -2037,8 +2352,53 @@
         "interval_coverage": 1.0,
         "mean_interval_width": 1.0,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -2291,8 +2651,53 @@
         "interval_coverage": 1.0,
         "mean_interval_width": 0.0,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -2545,8 +2950,53 @@
         "interval_coverage": 1.0,
         "mean_interval_width": 0.0,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -2799,8 +3249,53 @@
         "interval_coverage": 1.0,
         "mean_interval_width": 0.0,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -3053,8 +3548,53 @@
         "interval_coverage": 1.0,
         "mean_interval_width": 0.0,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -3307,8 +3847,53 @@
         "interval_coverage": 1.0,
         "mean_interval_width": 0.0,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -3561,8 +4146,53 @@
         "interval_coverage": 0.8333333333333334,
         "mean_interval_width": 1.0,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 0.8333333333333334,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 0.8,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 0.75,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 0.6666666666666666,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 2.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 2.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -3815,8 +4445,53 @@
         "interval_coverage": 1.0,
         "mean_interval_width": 0.6666666666666666,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.6666666666666666,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.6,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.5,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.3333333333333333,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -4069,8 +4744,53 @@
         "interval_coverage": 1.0,
         "mean_interval_width": 0.0,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -4323,8 +5043,53 @@
         "interval_coverage": 1.0,
         "mean_interval_width": 1.0,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -4577,8 +5342,53 @@
         "interval_coverage": 0.8333333333333334,
         "mean_interval_width": 1.0,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 0.8333333333333334,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 0.8,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 0.75,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 0.6666666666666666,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 0.5,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 0.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -4831,8 +5641,53 @@
         "interval_coverage": 1.0,
         "mean_interval_width": 0.0,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -5085,8 +5940,53 @@
         "interval_coverage": 1.0,
         "mean_interval_width": 0.3333333333333333,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.3333333333333333,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.2,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -5339,8 +6239,53 @@
         "interval_coverage": 0.8333333333333334,
         "mean_interval_width": 0.5,
         "service_level_hit_rate": 0.8333333333333334,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 0.8333333333333334,
+            "mean_interval_width": 0.5,
+            "service_level_hit_rate": 0.8333333333333334
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 0.8,
+            "mean_interval_width": 0.4,
+            "service_level_hit_rate": 0.8
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 0.75,
+            "mean_interval_width": 0.25,
+            "service_level_hit_rate": 0.75
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 2.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 2.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -5593,8 +6538,53 @@
         "interval_coverage": 1.0,
         "mean_interval_width": 0.0,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 0.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -5847,8 +6837,53 @@
         "interval_coverage": 0.6666666666666666,
         "mean_interval_width": 0.8333333333333334,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 0.6666666666666666,
+            "mean_interval_width": 0.8333333333333334,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 0.6,
+            "mean_interval_width": 0.8,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 0.5,
+            "mean_interval_width": 0.75,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 0.3333333333333333,
+            "mean_interval_width": 0.6666666666666666,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 0.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 0.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     },
     {
@@ -6101,8 +7136,53 @@
         "interval_coverage": 1.0,
         "mean_interval_width": 1.0,
         "service_level_hit_rate": 1.0,
+        "by_horizon": [
+          {
+            "horizon_months": 1,
+            "evaluated_origins": 6,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 2,
+            "evaluated_origins": 5,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 3,
+            "evaluated_origins": 4,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 4,
+            "evaluated_origins": 3,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 5,
+            "evaluated_origins": 2,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          },
+          {
+            "horizon_months": 6,
+            "evaluated_origins": 1,
+            "interval_coverage": 1.0,
+            "mean_interval_width": 1.0,
+            "service_level_hit_rate": 1.0
+          }
+        ],
         "service_target": 0.95,
-        "service_definition": "Fraction of one-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate"
+        "service_definition": "Fraction of target-month demand observations within the issued 95th-percentile upper bound; not inventory fill rate",
+        "limitations": "Final six held-out periods only; longer horizons have fewer overlapping origins. No independence or coverage guarantee. Missing horizons are unmeasured."
       }
     }
   ],
@@ -6132,7 +7212,7 @@
       "rmse": 0.07900683755117686
     }
   },
-  "runtime_seconds": 2.034867000009399,
+  "runtime_seconds": 1.5455153750008321,
   "selection": "Per-pattern aggregate validation MAE; patterns frozen before validation; final six rolling origins held out.",
   "segment_selection": "ADI/CV2 on history excluding the final 12 validation/test periods; displayed current pattern uses full history"
 }

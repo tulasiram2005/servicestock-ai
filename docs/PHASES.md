@@ -340,3 +340,19 @@ are tracked within the related analytics, data, UI and documentation phases.
   and verifies clipboard feedback. API, database and frontend containers healthy.
 - Full backend suite: 148 passed, two dedicated-database tests skipped. Live Gemini and
   SQL Server validations remain pending; this update makes no external model calls.
+
+
+## P2 multi-step held-out interval validation · 2026-10-27
+
+- Extended validation to six forecast horizons with a separate observation count, coverage,
+  mean interval width and service-bound hit rate per horizon. Forecast/calibration use only
+  observations before issuance. Longer horizons without targets are explicitly unmeasured.
+- Regenerated the 24-part benchmark; one-month coverage 0.9653 (144 observations), six-month
+  coverage 0.9167 (24 observations). Overlapping sparse samples do not prove coverage or
+  independence. Bounds concern demand in the target month, not cumulative lead-time demand.
+- Results UI exposes 144 part/horizon rows; generated results documentation weights metrics
+  by evaluated observations rather than assigning equal weight to different sample sizes.
+- Validation: 150 backend tests passed, two database integration tests skipped; 11 frontend
+  tests, TypeScript, production builds and four browser tests passed. Tests verify horizon
+  counts, missing horizons, future-spike leakage protection and actual UI row count.
+- Horizons beyond six months remain unvalidated with the current held-out window.

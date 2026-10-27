@@ -17,6 +17,22 @@ for path in sorted((root / "results").glob("*.json")):
         lines += [f'- Parts: {artifact["parts_count"]}', f'- Runtime seconds: {artifact["runtime_seconds"]}']
         for model, values in artifact["model_errors"].items():
             lines.append(f'- {model}: MAE {values["mae"]}, RMSE {values["rmse"]}')
+        horizons = {}
+        for part in artifact["parts"]:
+            for row in part.get("interval_backtest", {}).get("by_horizon", []):
+                horizons.setdefault(row["horizon_months"], []).append(row)
+        if horizons:
+            lines += ["", "| Horizon (months) | Evaluated observations | Coverage | Mean width (units) |",
+                      "|---|---|---|---|"]
+            for horizon, rows in sorted(horizons.items()):
+                n = sum(row["evaluated_origins"] for row in rows)
+                covered = sum((row["interval_coverage"] or 0)*row["evaluated_origins"] for row in rows)
+                width = sum((row["mean_interval_width"] or 0)*row["evaluated_origins"] for row in rows)
+                coverage_label = f"{covered/n:.4f}" if n else "Not measured"
+                width_label = f"{width/n:.4f}" if n else "Not measured"
+                lines.append(f"| {horizon} | {n} | {coverage_label} | {width_label} |")
+            lines += ["", "Final six held-out periods only; horizons have decreasing, overlapping samples.",
+                      "Coverage is empirical, not guaranteed; target-month bounds are not cumulative lead-time demand."]
     elif path.stem == "pip-audit":
         vulnerabilities = sum(len(item.get("vulns", [])) for item in artifact.get("dependencies", []))
         lines += [f"- Reported dependency vulnerabilities: {vulnerabilities}"]

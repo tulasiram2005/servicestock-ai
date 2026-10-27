@@ -11,7 +11,7 @@ on-demand PDF endpoint and CLI BI export code.
 Latest local continuation (2026-10-27): ten synthetic extract families, inventory/sales
 warehouse migration, 11 CSV/Parquet exports, numeric/reference validation, streamed UI
 tool traces, manual administrator job monitor and configuration option impact comparison.
-148 backend tests passed (two dedicated-database tests skipped), 11 frontend unit tests and
+150 backend tests passed (two dedicated-database tests skipped), 11 frontend unit tests and
 4 browser tests passed (two live flows, plus mocked user-edit and failed-job UI checks).
 TypeScript, production build and Bandit medium/high scan passed.
 Local Compose services are healthy. These checks do not establish full master-spec completion.
@@ -35,9 +35,9 @@ Remaining master-spec gaps:
   prompting, provider cascading, capability detection, token/cost accounting and tool deadlines
   remain pending. See LLM_PROVIDERS.md for settings and exact limitations.
 - Transformer/zero-shot NLP comparison remains. Forecast intervals now use per-horizon
-  rolling residual calibration; one-step coverage, interval width and service hit rate are
-  measured over six held-out origins per part. Coverage is empirical, not guaranteed;
-  multi-step coverage validation remains outstanding.
+  rolling residual calibration; one- through six-month coverage, width and service hit rate
+  are measured within six held-out periods, with decreasing per-horizon sample counts.
+  Coverage is empirical, not guaranteed; horizons beyond six months remain unvalidated.
 - Ten synthetic extract families now support inventory/sales and purchase/BOM reverse ETL,
   with 11 CSV/Parquet export tables including KPIs/finance. A physical staging schema and
   general multi-line external SAP mapping remain missing. The current synthetic contract
