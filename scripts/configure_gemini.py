@@ -12,10 +12,28 @@ DESTINATION = Path(__file__).resolve().parents[1] / '.env.gemini'
 def save_config(path, key, model):
     # Trim surrounding clipboard whitespace; reject embedded newlines or shell syntax.
     key = key.strip()
+    # Some terminals include bracketed-paste control markers in hidden input.
+    if key.startswith('\x1b[200~') and key.endswith('\x1b[201~'):
+        key = key[6:-6].strip()
     if not key:
         raise ValueError('No key received. Copy the full key, then paste once at the hidden prompt.')
     if not re.fullmatch(r'[A-Za-z0-9_-]{20,200}', key):
-        raise ValueError('Key format not recognized. Use the copy icon in AI Studio; do not copy the shortened label or add quotes.')
+        reasons = []
+        if len(key) < 20:
+            reasons.append('fewer than 20 characters received')
+        if len(key) > 200:
+            reasons.append('more than 200 characters received')
+        if any(c.isspace() for c in key):
+            reasons.append('contains internal whitespace')
+        if any(ord(c) < 32 or ord(c) == 127 for c in key):
+            reasons.append('contains terminal control characters')
+        if any(ord(c) > 127 for c in key):
+            reasons.append('contains non-ASCII characters')
+        if any(c in '\"\'' for c in key):
+            reasons.append('contains quotation marks')
+        if not reasons:
+            reasons.append('contains punctuation outside letters, digits, underscore and hyphen')
+        raise ValueError('Key format not recognized: ' + '; '.join(reasons) + '. No key content displayed or saved.')
     if not re.fullmatch(r'gemini-[a-z0-9.-]*flash[a-z0-9.-]*', model):
         raise ValueError('Enter a verified free-tier Gemini Flash model ID')
     payload = f'GEMINI_API_KEY={key}\nGEMINI_MODEL={model}\nGEMINI_FREE_TIER_CONFIRMED=true\n'

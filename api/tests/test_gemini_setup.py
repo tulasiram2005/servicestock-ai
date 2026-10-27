@@ -52,3 +52,26 @@ def test_terminal_error_is_actionable_and_does_not_print_input(monkeypatch, caps
     assert expected in output
     if key:
         assert key not in output
+
+
+def test_bracketed_paste_markers_are_removed(tmp_path):
+    path = tmp_path / '.env.gemini'
+    module.save_config(path, '\x1b[200~'+KEY+'\x1b[201~', 'gemini-test-flash')
+    assert path.read_text().splitlines()[0] == 'GEMINI_API_KEY='+KEY
+
+
+@pytest.mark.parametrize('key, reason', [
+    ('short', 'fewer than 20'),
+    ('x'*201, 'more than 200'),
+    (KEY+' secret', 'internal whitespace'),
+    (KEY+'\x1b', 'terminal control'),
+    (KEY+'…', 'non-ASCII'),
+    ('"'+KEY+'"', 'quotation marks'),
+    (KEY+'!', 'punctuation'),
+])
+def test_diagnostic_never_includes_secret(tmp_path, key, reason):
+    with pytest.raises(ValueError) as error:
+        module.save_config(tmp_path / '.env.gemini', key, 'gemini-test-flash')
+    assert reason in str(error.value)
+    assert key not in str(error.value)
+    assert not (tmp_path / '.env.gemini').exists()
