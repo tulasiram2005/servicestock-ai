@@ -6,6 +6,7 @@ permissions:
   contents: read
 jobs:
   python:
+    if: github.event.repository.private == false
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -22,6 +23,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   containers:
+    if: github.event.repository.private == false
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -38,6 +40,7 @@ jobs:
           image: servicestock-api
           artifact-name: servicestock-sbom.spdx.json
   codeql:
+    if: github.event.repository.private == false
     permissions:
       contents: read
       security-events: write
