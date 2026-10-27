@@ -304,3 +304,17 @@ are tracked within the related analytics, data, UI and documentation phases.
   medium/high passed including the new script. New tests prove no-network preflight,
   one-attempt public prompt, literal environment parsing and secret-free failure output.
   No live Gemini or SQL Server result is claimed; frontend unchanged this checkpoint.
+
+
+## GitHub creation and initial push · 2026-10-27
+
+- Created private tulasiram2005/servicestock-ai in the authenticated user's account and
+  pushed the existing main branch with complete Git history. No restart or history rewrite.
+- Root .env remains ignored; only .env.example is tracked. Scanned 357 historical blobs
+  for configured local secret values and common credential patterns; zero matches. This
+  targeted scan is not a claim of exhaustive secret detection.
+- Foundation/security CI jobs now share the public-repository gate already used by the
+  other workflows, preventing hosted work on the new private repository. No billing or
+  paid infrastructure enabled. SQL Server runtime CI remains pending by design.
+- App code unchanged this checkpoint; preceding tests remain 144 backend passed/two
+  skipped, 10 frontend passed and four browser passed. Remote CI is not claimed as passed.

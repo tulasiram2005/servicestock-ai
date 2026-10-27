@@ -71,8 +71,9 @@ Remaining master-spec gaps:
   External worker notifications, fully enforced audit privileges,
   provider-specific quotas and deployment wake-up behavior need further validation.
 - No live deployment, paid service, billing enablement or no-card account verification occurred.
-- GitHub access was checked; no ServiceStock remote exists and the user confirmed no repository
-  has been created. All commits remain local; nothing has been pushed to GitHub.
+- GitHub repository https://github.com/tulasiram2005/servicestock-ai was created private
+  on 2026-10-27 and the existing main history pushed. Hosted CI jobs are gated off for
+  private repositories to preserve free-only operation; remote checks remain unrun.
 
 The local source subset is 24 series. All costs, lead times and business attributes are synthetic.
 Negative capital freed is retained honestly. Pooling is theoretical, not empirical stock savings.
