@@ -327,3 +327,16 @@ are tracked within the related analytics, data, UI and documentation phases.
   including when a failed external request may have preceded deterministic fallback.
 - Verification: 148 backend tests passed, two dedicated-database tests skipped; new tests
   cover each provider and Gemini fallback. Bandit medium/high passed. No live cloud calls.
+
+
+## P7 assistant copy and text export · 2026-10-27
+
+- Added Copy answer and Download answer controls, including routing notice and source
+  tool-call references. Exports omit hidden session identifiers and raw tool payloads.
+  Clipboard denial/unavailability gives a usable download alternative. Text is exported
+  as plain text, not executable HTML; transient object URLs are revoked.
+- Verification: 11 frontend tests, TypeScript, production builds and four browser tests
+  passed. Browser test downloads and reads the answer file, checks citations/assumptions,
+  and verifies clipboard feedback. API, database and frontend containers healthy.
+- Full backend suite: 148 passed, two dedicated-database tests skipped. Live Gemini and
+  SQL Server validations remain pending; this update makes no external model calls.

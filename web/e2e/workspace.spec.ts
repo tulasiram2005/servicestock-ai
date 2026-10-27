@@ -64,6 +64,17 @@ test('login, overview, part, scenario, assistant and configuration',async({page}
   await page.getByRole('button',{name:'Ask assistant',exact:true}).click();
   await expect(page.getByText(/Inventory value: USD/)).toBeVisible();
   await expect(page.locator('summary').filter({hasText:'get_kpis'})).toBeVisible();
+  const exported=page.waitForEvent('download');
+  await page.getByRole('button',{name:'Download answer',exact:true}).click();
+  const downloaded=await exported;
+  expect(downloaded.suggestedFilename()).toBe('servicestock-answer.txt');
+  const content=readFileSync((await downloaded.path())!,'utf8');
+  expect(content).toContain('Inventory value: USD');
+  expect(content).toContain('get_kpis [');
+  expect(content).toContain('Synthetic cost assumptions');
+  await page.getByRole('button',{name:'Copy answer',exact:true}).click();
+  await expect(page.getByText(/Answer copied\.|Clipboard unavailable\./)).toBeVisible();
+
   await page.getByRole('button',{name:'Configurations',exact:true}).click();
   await page.getByRole('button',{name:'Validate configuration',exact:true}).click();
   await expect(page.getByText('Configuration valid',{exact:true})).toBeVisible();
