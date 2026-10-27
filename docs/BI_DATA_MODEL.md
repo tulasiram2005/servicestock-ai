@@ -22,17 +22,21 @@ rows directly so identifiers and decimal prices are not inferred through a CSV r
 | VBAK / VBAP | VBELN, AUDAT, MATNR, WERKS, KWMENG | warehouse_sales fact joined to part/location |
 | STKO / STPO | STLNR, MODEL, OPTION, IDNRK, MENGE | config_bom, validated model/option/component import |
 
-All ten families are generated deterministically into the logical staging_extracts namespace.
-Inventory, sales, purchase and BOM records are transactionally rebuilt from those extracts.
+All ten families are generated into typed tables in the physical `staging` schema on
+PostgreSQL and SQL Server: mara, marc, mard, mbew, ekko, ekpo, vbak, vbap, stko, stpo.
+SAP-style field names are retained as columns, with decimal prices and a synthetic label.
+SQLite maps the namespace to its main database for offline tests. The legacy JSON
+`staging_extracts` table remains available for compatibility. Inventory, sales, purchase
+and BOM records are read back from typed staging and rebuilt in the same transaction.
 Purchase finance fields use explicitly synthetic extensions Z_STANDARD_PRICE, Z_BUDGET and
 Z_EXPEDITE_SPEND. The demo format has one detail per purchase/BOM header; duplicate details
 are rejected rather than overwritten. USD only; quantities are positive bounded integers,
 prices nonnegative finite decimals with at most two fractional digits. Options must belong
-to the referenced model. Validation completes before any records are replaced.
+to the referenced model. Any validation or insertion failure rolls back staging and warehouse changes together.
 
-No real SAP system was used; this is not SAP-certified integration. A physically separate
-staging schema, general multi-line SAP order mapping and external uploads are not implemented.
-SQL Server DDL compilation passes; runtime compatibility has not been measured.
+No real SAP system was used; this is not SAP-certified integration. General external SAP import and external uploads are not implemented.
+SQL Server DDL compilation passes; the new staging tables have not been runtime-tested
+on SQL Server. Targeted queue/quota/refresh SQL Server tests passed before this migration.
 
 ## Multi-line synthetic purchase and BOM mapping
 
@@ -44,4 +48,6 @@ a detail. Existing money, currency, period, quantity and reference validation st
 Budget and expedite fields are per-detail values, never repeated header totals.
 This extends the transformation functions, not a general external SAP import endpoint.
 The local generator still produces single-line fixtures. SAP-style synthetic extract;
-no SAP system was used. Physical staging-schema isolation remains pending.
+no SAP system was used. Migration 0005 preserves legacy history; the next synthetic ETL populates typed tables.
+Downgrade removes only the ten typed tables, retaining legacy history and the schema namespace.
+Local PostgreSQL migration and repeated ETL passed with 1,258 typed rows.

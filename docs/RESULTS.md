@@ -251,13 +251,31 @@ Source: results/sqlserver_runtime.json
 }
 ```
 
+## staging_runtime
+
+Source: results/staging_runtime.json
+
+```json
+{
+  "date": "2026-10-27",
+  "database": "local PostgreSQL",
+  "migration": "0005",
+  "physical_schema": "staging",
+  "table_count": 10,
+  "extract_rows": 1258,
+  "repeated_etl_identical": true,
+  "sqlite_upgrade_downgrade_preserves_legacy_rows": true,
+  "sqlserver_new_staging_runtime_validated": false
+}
+```
+
 ## ui
 
 Source: results/ui.json
 
 ```json
 {
-  "measured_at": "2026-10-27T16:02:29.176Z",
+  "measured_at": "2026-10-27T16:11:44.064Z",
   "page": "Configurations",
   "axe_violations": [],
   "lighthouse": {

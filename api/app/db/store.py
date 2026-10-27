@@ -16,6 +16,8 @@ class Store:
         elif url.startswith("postgresql"):
             kwargs["connect_args"] = {"connect_timeout": 5}
         self.engine = create_engine(url, hide_parameters=True, **kwargs)
+        if self.engine.dialect.name == "sqlite":
+            self.engine = self.engine.execution_options(schema_translate_map={"staging": None})
         self.timeout_ms = timeout_ms
         if self.engine.dialect.name == "sqlite":
             @event.listens_for(self.engine, "connect")

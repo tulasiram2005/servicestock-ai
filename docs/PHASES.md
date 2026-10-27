@@ -471,3 +471,18 @@ Full backend validation: 183 passed, three dedicated-database cases skipped. Moc
 tests include 429 degradation, third-adapter success, cap exhaustion, private input
 protection and response labels. No live model request or billing change was made.
 Frontend and browser checks were not rerun: this phase changes backend routing only.
+
+## P1/JD Physical synthetic staging · 2026-10-27
+
+Migration 0005 adds ten typed SAP-style tables in `staging` on PostgreSQL/SQL Server.
+SQLite maps this namespace to main. Legacy JSON history remains untouched by migration;
+the next synthetic ETL populates typed landing tables, reads them to transform warehouse
+facts, and commits all changes together. Decimal prices, source field names and synthetic
+labels are preserved. Failed transforms roll back staged and warehouse replacements.
+
+185 backend tests passed; three dedicated-database cases skipped. SQLite existing-data
+upgrade/downgrade/re-upgrade preserves legacy history. SQL Server DDL compiles. Local
+PostgreSQL upgraded to 0005 with ten physical tables and 1,258 rows; two successive ETL
+runs were identical. New staging SQL Server runtime validation remains outstanding.
+All four browser checks passed against the updated local stack (two live application
+flows and two mocked error/edit flows). No external model or paid service was used.

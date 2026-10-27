@@ -41,9 +41,19 @@ def generate_and_transform(store):
     for item in bom:
         add("STKO", item["id"], {"STLNR": item["id"], "MODEL": item["model_id"], "OPTION": item["option_id"]})
         add("STPO", item["id"], {"STLNR": item["id"], "IDNRK": item["part_id"], "MENGE": item["qty"]})
-    inventories, sales = transform(extracts, {part["id"] for part in parts})
-    purchases, components = transform_purchase_bom(extracts, {part["id"] for part in parts}, models, option_models)
     with store.transaction() as connection:
+        for table in db.sap_staging.values():
+            connection.execute(delete(table))
+        for extract in extracts:
+            table = db.sap_staging[extract["sap_table"]]
+            connection.execute(table.insert().values(extract_id=extract["id"], label=LABEL, **extract["payload"]))
+        staged = []
+        for name, table in db.sap_staging.items():
+            for row in connection.execute(select(table).order_by(table.c.extract_id)).mappings():
+                staged.append({'sap_table': name, 'payload': {key: value for key, value in row.items()
+                    if key not in {'extract_id', 'label'} and not (key == 'POSNR' and value is None)}})
+        inventories, sales = transform(staged, {part['id'] for part in parts})
+        purchases, components = transform_purchase_bom(staged, {part['id'] for part in parts}, models, option_models)
         connection.execute(delete(db.staging_extracts))
         connection.execute(delete(db.warehouse_inventory))
         connection.execute(delete(db.warehouse_sales))

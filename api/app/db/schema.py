@@ -92,3 +92,7 @@ warehouse_inventory = Table("warehouse_inventory", metadata, ref("part_id", "par
 warehouse_sales = Table("warehouse_sales", metadata, identity(), ref("part_id", "parts"),
                         ref("location_id", "locations"), Column("period", String(7), nullable=False),
                         Column("quantity", Float, nullable=False))
+
+# SQLite maps this namespace to its main database; deployed databases use staging.*.
+from .staging_schema import define_tables
+sap_staging = define_tables(metadata)

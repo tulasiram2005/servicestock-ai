@@ -119,3 +119,24 @@ def test_multiline_purchase_and_bom_preserve_every_detail():
     duplicate_bom = {'sap_table':'STPO','payload':dict(extracts[3]['payload'],POSNR='10')}
     with pytest.raises(ValueError, match='Duplicate staging detail'):
         transform_purchase_bom(extracts+[duplicate_bom], {'P1','P2'}, {'M1'}, {})
+
+
+def test_physical_staging_rows_and_failed_transform_rollback(store, monkeypatch):
+    from app.ingest import staging
+    generate_and_transform(store)
+    with store.transaction() as connection:
+        counts = {name: connection.scalar(select(func.count()).select_from(table))
+                  for name, table in db.sap_staging.items()}
+        assert all(count > 0 for count in counts.values())
+        assert sum(counts.values()) == connection.scalar(select(func.count()).select_from(db.staging_extracts))
+        row = connection.execute(select(db.sap_staging['MARA'])).mappings().first()
+        assert row['label'] == staging.LABEL and row['MATNR'].startswith('P')
+        connection.execute(db.sap_staging['MARA'].update().values(MAKTX='preserve on failure'))
+    def fail(*args):
+        raise ValueError('injected transform failure')
+    monkeypatch.setattr(staging, 'transform', fail)
+    with pytest.raises(ValueError, match='injected'):
+        generate_and_transform(store)
+    with store.transaction() as connection:
+        assert set(connection.scalars(select(db.sap_staging['MARA'].c.MAKTX))) == {'preserve on failure'}
+        assert connection.scalar(select(func.count()).select_from(db.warehouse_sales)) == counts['VBAP']
