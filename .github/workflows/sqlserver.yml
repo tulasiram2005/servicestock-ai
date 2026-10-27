@@ -51,6 +51,26 @@ jobs:
         run: python -m alembic upgrade head
       - name: Run database integration
         run: python -m pytest api/tests/test_database_integration.py -q
+      - name: Diagnose SQL Server startup failure
+        if: failure()
+        shell: bash
+        run: |
+          python - <<'PYDIAG'
+          import os, subprocess
+          password = os.environ.get('SQLSERVER_TEST_PASSWORD', '')
+          commands = [
+              ['docker', 'inspect', '--format', '{{json .State}}', 'servicestock-sqlserver'],
+              ['docker', 'logs', '--tail', '60', 'servicestock-sqlserver'],
+          ]
+          for command in commands:
+              result = subprocess.run(command, capture_output=True, text=True, timeout=10)
+              output = result.stdout + result.stderr
+              if password:
+                  output = output.replace(password, '[REDACTED]')
+              # Prevent container text from becoming GitHub workflow commands.
+              for line in output.splitlines():
+                  print('diagnostic: ' + line)
+          PYDIAG
       - name: Remove isolated SQL Server container
         if: always()
         run: docker rm -f servicestock-sqlserver || true

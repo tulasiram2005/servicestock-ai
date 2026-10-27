@@ -415,3 +415,12 @@ are tracked within the related analytics, data, UI and documentation phases.
 - Existing SQL Server workflow automatically includes the new configured-database case.
   SQL Server runtime remains unverified; browser access is disabled, blocking account
   allowance verification. No hosted workflow or paid service was enabled.
+
+## SQL Server first hosted attempt · 2026-10-27
+
+Run 40527320927 failed after 9m28s during database readiness. Container start, ODBC
+installation and dependency installation succeeded; migrations and integration tests
+were skipped. Logs exposed only "SQL Server did not become ready", so root cause remains
+unknown. Added explicit IPv4 loopback, three-second login timeout, five-second query
+timeout, twelve attempts, SQLSTATE-only errors and bounded container diagnostics with
+password redaction. The remote fix is not yet validated. The $0 budget is unchanged.
