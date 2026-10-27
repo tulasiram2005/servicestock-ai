@@ -11,7 +11,7 @@ on-demand PDF endpoint and CLI BI export code.
 Latest local continuation (2026-10-27): ten synthetic extract families, inventory/sales
 warehouse migration, 11 CSV/Parquet exports, numeric/reference validation, streamed UI
 tool traces, manual administrator job monitor and configuration option impact comparison.
-174 backend tests passed (three dedicated-database tests skipped), 13 frontend unit tests and
+183 backend tests passed (three dedicated-database tests skipped), 13 frontend unit tests and
 4 browser tests passed (two live flows, plus mocked user-edit and failed-job UI checks).
 TypeScript, production build and Bandit medium/high scan passed.
 Local Compose services are healthy. These checks do not establish full master-spec completion.
@@ -32,8 +32,10 @@ Remaining master-spec gaps:
   back; successful model quality is unmeasured. An opt-in Gemini adapter is implemented
   for three app-authored public prompts and tested with simulated responses, and a live public KPI routing check passed. Free-tier status is based on the user
   screenshot and confirmation; billing was not verified through a provider API. Community adapters, general cloud
-  prompting, provider cascading, capability detection, token/cost accounting and tool deadlines
-  remain pending. See LLM_PROVIDERS.md for settings and exact limitations.
+  prompting, native-tool capability negotiation, token/cost accounting and tool deadlines
+  remain pending. Ordered fallback across the configured adapters and observed JSON-plan
+  capability reporting are implemented; native tool calling remains disabled.
+  See LLM_PROVIDERS.md for settings and exact limitations.
 - One live Gemini zero-shot NLP comparison is now measured: macro-F1 1.00 versus
   offline TF-IDF 0.667, on 48 synthetic rows derived from only four held-out phrase
   templates. This is not independent real-world accuracy evidence. Risk flags still use

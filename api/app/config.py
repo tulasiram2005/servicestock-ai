@@ -38,16 +38,19 @@ class Settings:
     gemini_free_tier_confirmed: bool = False
 
     def __post_init__(self):
-        if self.llm_provider_order not in {'mock', 'ollama,mock', 'openai-local,mock', 'gemini,mock'}:
-            raise ValueError('Supported provider order: mock, ollama,mock openai-local,mock or gemini,mock')
-        if self.llm_provider_order in {'ollama,mock', 'openai-local,mock'} and (not self.ollama_model or 'cloud' in self.ollama_model.lower() or len(self.ollama_model) > 120):
+        providers = self.llm_provider_order.split(',')
+        if (providers[-1] != 'mock' or len(set(providers)) != len(providers)
+                or any(name not in {'mock', 'ollama', 'openai-local', 'gemini'} for name in providers)):
+            raise ValueError('Provider order must contain unique supported providers and end with mock')
+        local = bool({'ollama', 'openai-local'} & set(providers))
+        if local and (not self.ollama_model or 'cloud' in self.ollama_model.lower() or len(self.ollama_model) > 120):
             raise ValueError('Ollama requires an explicitly configured local model')
-        if self.llm_provider_order == 'gemini,mock':
+        if 'gemini' in providers:
             if not self.gemini_api_key or not self.gemini_free_tier_confirmed or self.uploads_enabled:
                 raise ValueError('Gemini requires a key, verified free-tier configuration and disabled uploads')
             if not re.fullmatch(r'gemini-[a-z0-9.-]*flash[a-z0-9.-]*', self.gemini_model):
                 raise ValueError('Configure an explicit Gemini Flash model ID')
-        if self.environment == 'production' and self.llm_provider_order in {'ollama,mock', 'openai-local,mock'}:
+        if self.environment == 'production' and local:
             raise ValueError('Local model routing is development-only')
         if len(self.jwt_secret) < 32:
             raise ValueError("JWT_SECRET must contain at least 32 characters")

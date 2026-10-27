@@ -458,3 +458,16 @@ unit tests passed; TypeScript and production build passed. All four browser test
 (two live flows and two mocked error/edit flows), including published comparison evidence.
 Docker Compose services rebuilt and healthy. No new provider request was needed for these
 tests. Historical targeted SQL Server success remains separate from this local test suite.
+
+## P6 Ordered provider fallback · 2026-10-27
+
+Configured Gemini, local OpenAI-compatible, and native Ollama adapters now form an
+ordered chain ending with Mock. Shared attempt budgets, provider-specific cooldowns,
+provider/user cache separation and request-context provenance prevent cap bypass and
+incorrect provider attribution. Gemini's public-only input gate remains in every chain.
+Admin capability observations distinguish unprobed, validated JSON plans and unavailable
+responses. Native tool negotiation and arbitrary community endpoints remain unfinished.
+Full backend validation: 183 passed, three dedicated-database cases skipped. Mock HTTP
+tests include 429 degradation, third-adapter success, cap exhaustion, private input
+protection and response labels. No live model request or billing change was made.
+Frontend and browser checks were not rerun: this phase changes backend routing only.

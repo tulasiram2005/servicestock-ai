@@ -141,3 +141,57 @@ def test_gemini_requires_explicit_safe_configuration(settings,change):
 def test_gemini_blocked_or_incomplete_responses_fall_back(settings,payload):
     router=LocalToolRouter(gemini_settings(settings),httpx.MockTransport(lambda request:httpx.Response(200,json=payload)))
     assert router.route('a','show kpis',REGISTRY)[0] is None
+
+
+def chained(settings, **changes):
+    return replace(gemini_settings(settings), llm_provider_order='gemini,openai-local,ollama,mock',
+                   ollama_model='local-test', **changes)
+
+
+def test_chain_cooldowns_capability_and_successful_provider(settings):
+    requests=[]
+    def reply(request):
+        requests.append(str(request.url))
+        if request.url.host != '127.0.0.1':
+            return httpx.Response(429)
+        return httpx.Response(200,json={'choices':[{'message':{'content':'{"calls":[{"tool":"get_kpis","arguments":{}}]}'}}]})
+    router=LocalToolRouter(chained(settings),httpx.MockTransport(reply))
+    assert set(router.usage()['provider_capabilities'].values()) == {'unprobed'}
+    calls,notice=router.route('a','show kpis',REGISTRY)
+    assert calls is not None and router.selected_provider() == 'openai-local'
+    assert 'gemini:' in notice and 'openai-local:' in notice
+    assert len(requests)==2 and router.usage()['attempts']==2
+    assert router.usage()['provider_capabilities']['gemini']=='unavailable_or_invalid_output'
+    assert router.usage()['provider_capabilities']['openai-local']=='validated_json_plan'
+    assert router.route('a','show kpis',REGISTRY)[0] == calls
+    assert len(requests)==2  # First provider cools down; successful provider cache survives.
+
+
+def test_chain_preserves_private_input_guard_and_combined_budget(settings):
+    requests=[]
+    def fail(request):
+        assert request.url.host=='127.0.0.1'
+        requests.append(request)
+        return httpx.Response(500)
+    router=LocalToolRouter(chained(settings,llm_global_daily_cap=1),httpx.MockTransport(fail))
+    assert router.route('a','private customer question',REGISTRY)[0] is None
+    assert len(requests)==1
+    assert router.selected_provider()=='mock'
+    assert router.usage()['attempts']==1 and router.usage()['external_calls']==0
+
+
+def test_chain_reaches_last_local_provider(settings):
+    def reply(request):
+        if request.url.path == '/api/chat':
+            return response(request)
+        return httpx.Response(503)
+    router=LocalToolRouter(chained(settings,llm_user_daily_cap=3),httpx.MockTransport(reply))
+    assert router.route('a','show kpis',REGISTRY)[0] is not None
+    assert router.selected_provider()=='ollama-local'
+    assert router.usage()['attempts']==3
+
+
+@pytest.mark.parametrize('order',['mock,ollama','ollama,ollama,mock','gemini,unknown,mock','gemini',''])
+def test_invalid_chains_rejected(settings,order):
+    with pytest.raises(ValueError):
+        replace(gemini_settings(settings),llm_provider_order=order,ollama_model='local-test')

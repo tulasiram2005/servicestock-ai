@@ -114,6 +114,8 @@ def test_model_proposed_calls_use_existing_citations_and_executor(assistant):
     from types import SimpleNamespace
     class Router:
         settings = SimpleNamespace(llm_provider_order='ollama,mock')
+        def selected_provider(self):
+            return 'ollama-local'
         def route(self, username, question, registry):
             return [('get_kpis', {})], 'local model route'
     assistant.model_router = Router()
@@ -131,11 +133,11 @@ def test_llm_usage_is_admin_only(client, demo_headers, admin_headers):
     assert result['scope'] == 'current_process'
 
 
-@pytest.mark.parametrize('order,provider',[('gemini,mock','gemini'),('openai-local,mock','openai-local'),('ollama,mock','ollama-local')])
+@pytest.mark.parametrize('order,provider',[('gemini,mock','gemini'),('openai-local,mock','openai-local'),('ollama,mock','ollama-local'),('gemini,ollama,mock','ollama-local')])
 def test_answer_provider_labels_match_router(assistant,order,provider):
     from types import SimpleNamespace
     assistant.model_router=SimpleNamespace(settings=SimpleNamespace(llm_provider_order=order),
-        route=lambda *args:([('get_kpis',{})],'validated route'))
+        route=lambda *args:([('get_kpis',{})],'validated route'), selected_provider=lambda:provider)
     answer=assistant.conversation(Principal('viewer','viewer'),'Show KPIs')
     assert answer['provider']==provider
     assert not answer['fallback']

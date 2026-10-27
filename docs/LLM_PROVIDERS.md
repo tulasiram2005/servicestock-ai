@@ -29,7 +29,7 @@ cache isolation, concurrent cap enforcement and day rollover. A live Mistral loc
 attempts hit the five-second timeout and fell back. Model quality is not established. Native tool capability negotiation, external community adapters, provider token/cost
 accounting and per-tool cancellation remain pending.
 Local PostgreSQL concurrency verification is in results/llm_budget_postgres.json; SQL Server
-quota concurrency remains unverified. No background quota polling occurs.
+quota concurrency passed in the targeted SQL Server workflow. No background quota polling occurs.
 
 Protocol reference checked 2026-10-27:
 [Ollama official API](https://github.com/ollama/ollama/blob/main/docs/api.md).
@@ -113,3 +113,26 @@ seconds using the privately saved `.env.gemini`. The typed response selected `ge
 for the public smoke prompt. See results/gemini_live_smoke.json. This is one routing
 smoke, not a quality benchmark. No keys were logged or committed. Application defaults
 remain Mock with zero quotas; the saved configuration is used only by the explicit checker.
+
+### Ordered fallback and observed capabilities · 2026-10-27
+
+`LLM_PROVIDER_ORDER=gemini,openai-local,ollama,mock` now tries each configured
+adapter once in order. Any unique subset ending in `mock` is accepted, subject to the
+existing provider prerequisites. Local providers remain development-only. No arbitrary
+community URL is accepted, and defaults remain mock with zero caps.
+
+All attempts share the same user/global budget; trying another provider cannot bypass
+the cap. Each provider has its own 60-second failure cooldown and user-isolated route
+cache. The Gemini public-prompt restriction is applied before every Gemini attempt, even
+when it is in a chain. Private questions may reach a configured local model but never
+Google. The response names the successful adapter using request-context-local provenance.
+
+Admin usage includes per-provider observed JSON-plan capability: `unprobed`,
+`validated_json_plan`, or `unavailable_or_invalid_output`. These states arise from real
+responses, without extra probe requests, and describe this process's last observation.
+They do not detect native tool support: native calling stays disabled. Unsupported JSON
+or provider errors move to the next adapter, then deterministic summaries. Full native
+tool negotiation, community endpoints, token accounting, and hard deadlines still remain.
+Tests exercise 429 fallback, third-provider success, private-input isolation, shared caps,
+cache/cooldown behavior and truthful response labels with simulated HTTP responses.
+No live provider requests were needed for this change.
