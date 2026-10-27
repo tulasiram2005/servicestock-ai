@@ -2,11 +2,13 @@
 
 ## Gemini
 
-Protocol tests pass with simulated responses. The root `.env` lacks the key and model;
-no live Gemini request has been made. User confirmed billing disabled, but the key's
-location remains unknown. Run `scripts/check_gemini.py` as described in LLM_PROVIDERS.md
-for a safe preflight. Never put keys in commits, reports or chat. Production defaults
-remain Mock and zero quotas.
+Live smoke passed on 2026-10-27 at 16:08 IST using `gemini-3.5-flash-lite`.
+One app-authored public KPI routing prompt returned the expected `get_kpis` selection
+in 1.603 seconds. Evidence: `results/gemini_live_smoke.json`. This validates one routing
+request, not model quality, all tools, or production readiness. The key is privately saved
+in ignored `.env.gemini`; it is absent from reports and commits. Billing-disabled status
+is based on user confirmation and the supplied Free tier screenshot, not a billing API.
+Application defaults remain Mock and zero quotas. No paid service was enabled.
 
 ## SQL Server
 
@@ -38,5 +40,5 @@ method is on file. See [official Actions billing documentation](https://docs.git
 Before enabling one bounded private test, verify the account's remaining allowance and
 no-charge configuration; do not add a card, enable paid usage, or change visibility.
 Account verification could not proceed because local browser use is disabled in Work
-settings. No workflow was enabled or dispatched. Gemini still needs local key/model
-configuration; neither blocker is a completed runtime validation.
+settings. No SQL Server workflow was enabled or dispatched. Gemini single-request validation is
+now complete as documented above; SQL Server runtime validation remains pending.

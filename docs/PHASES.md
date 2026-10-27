@@ -391,3 +391,13 @@ are tracked within the related analytics, data, UI and documentation phases.
   New tests cover permissions, preservation, symlinks and dotenv injection rejection.
 - User screenshot shows Free tier, but user confirms key is only copied, not locally saved.
   No live model request occurred. Browser remains disabled, preventing GitHub allowance check.
+
+## P6 Live Gemini routing validation · 2026-10-27
+
+- User privately configured key/model. Preflight passed and Git ignores the secret file.
+- One live public KPI prompt passed in 1.603 seconds, selecting get_kpis. Recorded only
+  sanitized evidence in results/gemini_live_smoke.json. This does not prove general quality.
+- Setup now handles paste markers, gives redacted diagnostics, and preserves opaque
+  punctuation without executing configuration as shell code.
+- Full backend suite: 166 passed, two dedicated-database integration tests skipped.
+- Mock remains the app default. SQL Server runtime validation is still pending.

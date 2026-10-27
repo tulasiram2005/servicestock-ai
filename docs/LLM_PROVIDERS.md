@@ -105,3 +105,11 @@ that the key was only copied, never saved locally. On 2026-10-27 the official
 [pricing page](https://ai.google.dev/gemini-api/docs/pricing) lists standard text input/output
 for `gemini-3.5-flash-lite` as free on Free tier. Project quota/access still needs a live
 check. Use no grounding, caching, or paid upgrade. The smoke sends only app-authored public text.
+
+### Live result — supersedes earlier missing-key status
+
+On 2026-10-27 at 16:08 IST, one live `gemini-3.5-flash-lite` request passed in 1.603
+seconds using the privately saved `.env.gemini`. The typed response selected `get_kpis`
+for the public smoke prompt. See results/gemini_live_smoke.json. This is one routing
+smoke, not a quality benchmark. No keys were logged or committed. Application defaults
+remain Mock with zero quotas; the saved configuration is used only by the explicit checker.
