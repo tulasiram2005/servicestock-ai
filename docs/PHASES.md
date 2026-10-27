@@ -443,3 +443,18 @@ Targeted staging suite: 28 passed. Full backend suite recorded in current status
 SQL Server run 40534000327 independently verified: four tests passed on f710f6b.
 This import change has not been runtime-tested on SQL Server; physical staging schema and
 external SAP integration are still unfinished.
+
+## P5/JD Live zero-shot comparison · 2026-10-27
+
+One explicitly enabled Gemini request classified 48 built-in synthetic comments, without
+training examples or expected labels in the prompt. Macro-F1: Gemini 1.000, TF-IDF 0.667.
+Only four unique held-out templates underlie the 48 rows; this is not production accuracy.
+The measured artifact records predictions, model, timestamp, dataset hash and limitations.
+Risk flags remain offline. Default invocation performs configuration preflight only.
+The Results page now displays both scores with dataset limitations and missing-data handling.
+
+Validation: 174 backend tests passed, three dedicated-database tests skipped; 13 frontend
+unit tests passed; TypeScript and production build passed. All four browser tests passed
+(two live flows and two mocked error/edit flows), including published comparison evidence.
+Docker Compose services rebuilt and healthy. No new provider request was needed for these
+tests. Historical targeted SQL Server success remains separate from this local test suite.

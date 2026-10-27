@@ -14,7 +14,7 @@ Source: results/analytics.json
 - Regression MAE days: 2.6652541721114136
 - Regression R2: 0.8044132784279832
 - Synthetic NLP macro-F1: 0.6666666666666666
-- Zero-shot classifier comparison: not measured
+- Zero-shot classifier comparison: see nlp_comparison below if present; otherwise not measured
 
 ## bandit
 
@@ -46,6 +46,23 @@ Source: results/benchmark.json
 
 Final six held-out periods only; horizons have decreasing, overlapping samples.
 Coverage is empirical, not guaranteed; target-month bounds are not cumulative lead-time demand.
+
+## gemini_live_smoke
+
+Source: results/gemini_live_smoke.json
+
+```json
+{
+  "status": "passed",
+  "measured_at": "2026-10-27T10:38:20.156797+00:00",
+  "elapsed_seconds": 1.603,
+  "requests_attempted": 1,
+  "scope": "single public routing prompt; not a model quality benchmark",
+  "model": "gemini-3.5-flash-lite",
+  "billing_evidence": "user confirmation and supplied Free tier screenshot; no billing API verification",
+  "application_default": "mock"
+}
+```
 
 ## live_model_smoke
 
@@ -180,11 +197,59 @@ Source: results/login_lockout_postgres.json
 }
 ```
 
+## nlp_comparison
+
+Source: results/nlp_comparison.json
+
+- Model: gemini-3.5-flash-lite
+- Measured at: 2026-10-27T15:56:27.893729+00:00
+- Offline baseline macro-F1: 0.6667
+- Zero-shot macro-F1: 1.0000
+- Test rows: 48; unique held-out templates: 4
+- Requests: 1; elapsed seconds: 20.896
+- Limitation: Four held-out phrase templates repeated with synthetic order/depot suffixes; 48 rows are not 48 independent language examples.
+- Limitation: Zero-shot prompt includes categories but no labeled examples. One batch, one model, no tuning; not production accuracy.
+- Limitation: Risk flags continue to use the offline TF-IDF baseline. HTTP phase timeouts are not a hard process deadline.
+
 ## pip-audit
 
 Source: results/pip-audit.json
 
 - Reported dependency vulnerabilities: 0
+
+## refresh_rotation_postgres
+
+Source: results/refresh_rotation_postgres.json
+
+```json
+{
+  "measured_on": "2026-10-27",
+  "database": "local PostgreSQL 16",
+  "attempts": 4,
+  "successful_rotations": 1,
+  "replay_revoked_family": true,
+  "status": "passed",
+  "sqlserver_runtime_validated": false
+}
+```
+
+## sqlserver_runtime
+
+Source: results/sqlserver_runtime.json
+
+```json
+{
+  "run_url": "https://github.com/tulasiram2005/servicestock-ai/actions/runs/40534000327",
+  "commit": "f710f6b",
+  "status": "passed",
+  "database_setup": "passed",
+  "migrations": "passed",
+  "tests_passed": 4,
+  "tests_failed": 0,
+  "scope": "job exclusivity, atomic model quota, refresh rotation (SQLite and SQL Server)",
+  "full_application_on_sqlserver_validated": false
+}
+```
 
 ## ui
 
@@ -192,7 +257,7 @@ Source: results/ui.json
 
 ```json
 {
-  "measured_at": "2026-10-27T09:57:27.712Z",
+  "measured_at": "2026-10-27T16:02:29.176Z",
   "page": "Configurations",
   "axe_violations": [],
   "lighthouse": {

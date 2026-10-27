@@ -20156,8 +20156,9 @@
       }
     },
     "zero_shot_comparison": {
-      "status": "not measured",
-      "reason": "No external or local zero-shot model configured"
+      "status": "separate opt-in evaluation",
+      "artifact": "nlp_comparison.json",
+      "reason": "Offline baseline does not invoke external models"
     },
     "risk_flags": [
       {

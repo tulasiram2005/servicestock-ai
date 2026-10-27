@@ -28,11 +28,7 @@ def regression(seed=42):
             "parts": per_part}
 
 
-def nlp(seed=42):
-    from sklearn.feature_extraction.text import TfidfVectorizer
-    from sklearn.linear_model import LogisticRegression
-    from sklearn.pipeline import make_pipeline
-    from sklearn.metrics import f1_score, classification_report
+def synthetic_comments():
     templates = {
         "late_delivery": ["shipment arrived late", "delivery delayed by supplier", "part overdue for service", "missed promised delivery"],
         "wrong_part": ["incorrect component received", "wrong part in shipment", "mismatched item code delivered", "ordered part differs from received item"],
@@ -50,13 +46,22 @@ def nlp(seed=42):
                 else:
                     training.append(text)
                     labels.append(label)
+    return training, labels, testing, expected
+
+
+def nlp(seed=42):
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.pipeline import make_pipeline
+    from sklearn.metrics import f1_score, classification_report
+    training, labels, testing, expected = synthetic_comments()
     model = make_pipeline(TfidfVectorizer(ngram_range=(1, 2)), LogisticRegression(max_iter=300, random_state=seed))
     model.fit(training, labels)
     predicted = model.predict(testing)
     return {"synthetic_comments_and_labels": True, "split": "held-out phrase template per category; small artificial task",
             "train_rows": len(training), "test_rows": len(testing), "macro_f1": float(f1_score(expected, predicted, average="macro")),
             "classification_report": classification_report(expected, predicted, output_dict=True, zero_division=0),
-            "zero_shot_comparison": {"status": "not measured", "reason": "No external or local zero-shot model configured"},
+            "zero_shot_comparison": {"status": "separate opt-in evaluation", "artifact": "nlp_comparison.json", "reason": "Offline baseline does not invoke external models"},
             "risk_flags": [{"part_id": f"P{index + 1:04}", "supplier_id": f"SUP-{index % 3}", "category": str(predicted[index % len(predicted)])}
                            for index in range(24)]}
 

@@ -33,7 +33,8 @@ def test_regression_and_nlp_metrics_come_from_heldout_examples():
     assert 0 <= delay["interval_coverage"] <= 1
     comments = nlp()
     assert 0 <= comments["macro_f1"] <= 1
-    assert comments["zero_shot_comparison"]["status"] == "not measured"
+    assert comments["zero_shot_comparison"]["status"] == "separate opt-in evaluation"
+    assert comments["zero_shot_comparison"]["artifact"] == "nlp_comparison.json"
 
 
 def test_finance_zero_consumption_is_undefined_dio():

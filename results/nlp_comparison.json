@@ -1,0 +1,300 @@
+{
+  "status": "measured",
+  "measured_at": "2026-10-27T15:56:27.893729+00:00",
+  "model": "gemini-3.5-flash-lite",
+  "provider": "gemini",
+  "requests_attempted": 1,
+  "synthetic_comments_and_labels": true,
+  "test_rows": 48,
+  "unique_heldout_templates": 4,
+  "dataset_sha256": "b6d761e551f6f424cc529d5fc41f7ca0fd2d77dad1c9d263ca8e6dc263abb71e",
+  "baseline_macro_f1": 0.6666666666666666,
+  "zero_shot_macro_f1": 1.0,
+  "classification_report": {
+    "late_delivery": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 12.0
+    },
+    "wrong_part": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 12.0
+    },
+    "quality_defect": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 12.0
+    },
+    "damaged_in_transit": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 12.0
+    },
+    "accuracy": 1.0,
+    "macro avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 48.0
+    },
+    "weighted avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 48.0
+    }
+  },
+  "predictions": [
+    {
+      "id": 0,
+      "expected": "late_delivery",
+      "predicted": "late_delivery"
+    },
+    {
+      "id": 1,
+      "expected": "late_delivery",
+      "predicted": "late_delivery"
+    },
+    {
+      "id": 2,
+      "expected": "late_delivery",
+      "predicted": "late_delivery"
+    },
+    {
+      "id": 3,
+      "expected": "late_delivery",
+      "predicted": "late_delivery"
+    },
+    {
+      "id": 4,
+      "expected": "late_delivery",
+      "predicted": "late_delivery"
+    },
+    {
+      "id": 5,
+      "expected": "late_delivery",
+      "predicted": "late_delivery"
+    },
+    {
+      "id": 6,
+      "expected": "late_delivery",
+      "predicted": "late_delivery"
+    },
+    {
+      "id": 7,
+      "expected": "late_delivery",
+      "predicted": "late_delivery"
+    },
+    {
+      "id": 8,
+      "expected": "late_delivery",
+      "predicted": "late_delivery"
+    },
+    {
+      "id": 9,
+      "expected": "late_delivery",
+      "predicted": "late_delivery"
+    },
+    {
+      "id": 10,
+      "expected": "late_delivery",
+      "predicted": "late_delivery"
+    },
+    {
+      "id": 11,
+      "expected": "late_delivery",
+      "predicted": "late_delivery"
+    },
+    {
+      "id": 12,
+      "expected": "wrong_part",
+      "predicted": "wrong_part"
+    },
+    {
+      "id": 13,
+      "expected": "wrong_part",
+      "predicted": "wrong_part"
+    },
+    {
+      "id": 14,
+      "expected": "wrong_part",
+      "predicted": "wrong_part"
+    },
+    {
+      "id": 15,
+      "expected": "wrong_part",
+      "predicted": "wrong_part"
+    },
+    {
+      "id": 16,
+      "expected": "wrong_part",
+      "predicted": "wrong_part"
+    },
+    {
+      "id": 17,
+      "expected": "wrong_part",
+      "predicted": "wrong_part"
+    },
+    {
+      "id": 18,
+      "expected": "wrong_part",
+      "predicted": "wrong_part"
+    },
+    {
+      "id": 19,
+      "expected": "wrong_part",
+      "predicted": "wrong_part"
+    },
+    {
+      "id": 20,
+      "expected": "wrong_part",
+      "predicted": "wrong_part"
+    },
+    {
+      "id": 21,
+      "expected": "wrong_part",
+      "predicted": "wrong_part"
+    },
+    {
+      "id": 22,
+      "expected": "wrong_part",
+      "predicted": "wrong_part"
+    },
+    {
+      "id": 23,
+      "expected": "wrong_part",
+      "predicted": "wrong_part"
+    },
+    {
+      "id": 24,
+      "expected": "quality_defect",
+      "predicted": "quality_defect"
+    },
+    {
+      "id": 25,
+      "expected": "quality_defect",
+      "predicted": "quality_defect"
+    },
+    {
+      "id": 26,
+      "expected": "quality_defect",
+      "predicted": "quality_defect"
+    },
+    {
+      "id": 27,
+      "expected": "quality_defect",
+      "predicted": "quality_defect"
+    },
+    {
+      "id": 28,
+      "expected": "quality_defect",
+      "predicted": "quality_defect"
+    },
+    {
+      "id": 29,
+      "expected": "quality_defect",
+      "predicted": "quality_defect"
+    },
+    {
+      "id": 30,
+      "expected": "quality_defect",
+      "predicted": "quality_defect"
+    },
+    {
+      "id": 31,
+      "expected": "quality_defect",
+      "predicted": "quality_defect"
+    },
+    {
+      "id": 32,
+      "expected": "quality_defect",
+      "predicted": "quality_defect"
+    },
+    {
+      "id": 33,
+      "expected": "quality_defect",
+      "predicted": "quality_defect"
+    },
+    {
+      "id": 34,
+      "expected": "quality_defect",
+      "predicted": "quality_defect"
+    },
+    {
+      "id": 35,
+      "expected": "quality_defect",
+      "predicted": "quality_defect"
+    },
+    {
+      "id": 36,
+      "expected": "damaged_in_transit",
+      "predicted": "damaged_in_transit"
+    },
+    {
+      "id": 37,
+      "expected": "damaged_in_transit",
+      "predicted": "damaged_in_transit"
+    },
+    {
+      "id": 38,
+      "expected": "damaged_in_transit",
+      "predicted": "damaged_in_transit"
+    },
+    {
+      "id": 39,
+      "expected": "damaged_in_transit",
+      "predicted": "damaged_in_transit"
+    },
+    {
+      "id": 40,
+      "expected": "damaged_in_transit",
+      "predicted": "damaged_in_transit"
+    },
+    {
+      "id": 41,
+      "expected": "damaged_in_transit",
+      "predicted": "damaged_in_transit"
+    },
+    {
+      "id": 42,
+      "expected": "damaged_in_transit",
+      "predicted": "damaged_in_transit"
+    },
+    {
+      "id": 43,
+      "expected": "damaged_in_transit",
+      "predicted": "damaged_in_transit"
+    },
+    {
+      "id": 44,
+      "expected": "damaged_in_transit",
+      "predicted": "damaged_in_transit"
+    },
+    {
+      "id": 45,
+      "expected": "damaged_in_transit",
+      "predicted": "damaged_in_transit"
+    },
+    {
+      "id": 46,
+      "expected": "damaged_in_transit",
+      "predicted": "damaged_in_transit"
+    },
+    {
+      "id": 47,
+      "expected": "damaged_in_transit",
+      "predicted": "damaged_in_transit"
+    }
+  ],
+  "elapsed_seconds": 20.896,
+  "limitations": [
+    "Four held-out phrase templates repeated with synthetic order/depot suffixes; 48 rows are not 48 independent language examples.",
+    "Zero-shot prompt includes categories but no labeled examples. One batch, one model, no tuning; not production accuracy.",
+    "Risk flags continue to use the offline TF-IDF baseline. HTTP phase timeouts are not a hard process deadline."
+  ]
+}

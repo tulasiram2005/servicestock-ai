@@ -12,7 +12,7 @@ for path in sorted((root / "results").glob("*.json")):
         lines += [f'- Regression MAE days: {artifact["regression"]["mae_days"]}',
                   f'- Regression R2: {artifact["regression"]["r2"]}',
                   f'- Synthetic NLP macro-F1: {artifact["nlp"]["macro_f1"]}',
-                  "- Zero-shot classifier comparison: not measured"]
+                  "- Zero-shot classifier comparison: see nlp_comparison below if present; otherwise not measured"]
     elif path.stem == "benchmark":
         lines += [f'- Parts: {artifact["parts_count"]}', f'- Runtime seconds: {artifact["runtime_seconds"]}']
         for model, values in artifact["model_errors"].items():
@@ -33,6 +33,14 @@ for path in sorted((root / "results").glob("*.json")):
                 lines.append(f"| {horizon} | {n} | {coverage_label} | {width_label} |")
             lines += ["", "Final six held-out periods only; horizons have decreasing, overlapping samples.",
                       "Coverage is empirical, not guaranteed; target-month bounds are not cumulative lead-time demand."]
+    elif path.stem == "nlp_comparison":
+        lines += [f'- Model: {artifact["model"]}',
+                  f'- Measured at: {artifact["measured_at"]}',
+                  f'- Offline baseline macro-F1: {artifact["baseline_macro_f1"]:.4f}',
+                  f'- Zero-shot macro-F1: {artifact["zero_shot_macro_f1"]:.4f}',
+                  f'- Test rows: {artifact["test_rows"]}; unique held-out templates: {artifact["unique_heldout_templates"]}',
+                  f'- Requests: {artifact["requests_attempted"]}; elapsed seconds: {artifact["elapsed_seconds"]}']
+        lines += ['- Limitation: ' + value for value in artifact['limitations']]
     elif path.stem == "pip-audit":
         vulnerabilities = sum(len(item.get("vulns", [])) for item in artifact.get("dependencies", []))
         lines += [f"- Reported dependency vulnerabilities: {vulnerabilities}"]

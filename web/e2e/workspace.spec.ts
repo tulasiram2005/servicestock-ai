@@ -16,6 +16,11 @@ test('login, overview, part, scenario, assistant and configuration',async({page}
   await expect(page.getByRole('table').filter({has:page.getByRole('columnheader',{name:'recommended stock',exact:true})}).getByRole('row')).toHaveCount(11);
   const inventory=JSON.parse(readFileSync('../results/analytics.json','utf8')).kpis.inventory_value;
   await expect(page.getByText(new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(inventory),{exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Results',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'Measured zero-shot comparison'})).toBeVisible();
+  await expect(page.getByRole('region',{name:'Synthetic classifier comparison'})).toContainText('0.667');
+  await expect(page.getByRole('region',{name:'Synthetic classifier comparison'})).toContainText('1.000');
+  await expect(page.getByRole('region',{name:'Synthetic classifier comparison'})).toContainText('do not establish production accuracy');
   await page.getByRole('button',{name:'Parts',exact:true}).click();
   await page.getByLabel('Search parts',{exact:true}).fill('P0001');
   await page.getByRole('button',{name:'Next page',exact:true}).click();

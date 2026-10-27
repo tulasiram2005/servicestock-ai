@@ -10,6 +10,14 @@ in ignored `.env.gemini`; it is absent from reports and commits. Billing-disable
 is based on user confirmation and the supplied Free tier screenshot, not a billing API.
 Application defaults remain Mock and zero quotas. No paid service was enabled.
 
+One additional live request on 2026-10-27 at 15:56 UTC measured synthetic comment
+classification using the same model: macro-F1 1.000 versus TF-IDF 0.667 in 20.896 seconds.
+The 48 rows reuse only four held-out phrase templates; this is not production accuracy.
+Only built-in synthetic comments and category names were sent; no labeled examples or
+user uploads were transmitted. Results: `results/nlp_comparison.json`. Reproduce only
+with explicit opt-in: `PYTHONPATH=api api/.venv/bin/python scripts/compare_nlp.py --live`.
+Without `--live`, this command only checks configuration and makes no network requests.
+
 ## SQL Server
 
 Run [40534000327](https://github.com/tulasiram2005/servicestock-ai/actions/runs/40534000327)
