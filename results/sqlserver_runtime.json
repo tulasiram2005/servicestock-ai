@@ -1,0 +1,13 @@
+{
+  "run_url": "https://github.com/tulasiram2005/servicestock-ai/actions/runs/40533154602",
+  "commit": "ac1a5e6",
+  "status": "failed",
+  "database_setup": "passed",
+  "migrations": "passed",
+  "tests_passed": 3,
+  "tests_failed": 1,
+  "failure": "job claim test obtained 3 distinct jobs from 10 immediate concurrent attempts",
+  "sqlserver_quota_concurrency": "passed",
+  "sqlserver_refresh_concurrency": "passed",
+  "full_compatibility_validated": false
+}

@@ -12,18 +12,16 @@ Application defaults remain Mock and zero quotas. No paid service was enabled.
 
 ## SQL Server
 
-Schema/statement compilation passes offline; runtime has not been validated. This Mac
-is ARM64. Microsoft supports its SQL Server Linux container on Intel/AMD x86-64 Linux;
-Rosetta/QEMU translation is not tested or supported. Verified 2026-10-27 against
-[Microsoft container guidance](https://learn.microsoft.com/en-us/sql/linux/containers/deploy?view=sql-server-linux-ver15).
-No unsupported container run is being presented as compatibility certification.
+Run [40533154602](https://github.com/tulasiram2005/servicestock-ai/actions/runs/40533154602)
+validated database creation, all migrations, quota concurrency and refresh-token concurrency.
+The job-claim test failed; full compatibility remains unvalidated. The test now retries
+transient empty claims with a ten-second deadline while retaining exact-once and complete
+coverage assertions. A new run on the updated commit is required.
 
-The existing `.github/workflows/sqlserver.yml` uses an x86 Linux runner and Developer
-edition for testing. It remains gated to a public repository with the explicit
-`SQLSERVER_TESTS_ENABLED=true` variable and `SQLSERVER_TEST_PASSWORD` secret. It applies
-migrations and runs job-claim, quota-concurrency and refresh-token concurrency integration tests. The private GitHub repository now exists, but the public-only gate deliberately skips
-this workflow; it has not run. No paid VM or database was provisioned.
-A successful workflow is required before claiming SQL Server runtime compatibility.
+The manual-only workflow uses an x86-64 Ubuntu runner, SQL Server Developer, ephemeral
+masked credentials, a 20-minute timeout and cleanup. Private Actions allowance and an
+existing $0 budget were observed on 2026-10-27; the budget was not changed. No paid
+infrastructure was provisioned. This ARM Mac is not used to claim SQL Server runtime support.
 
 ## Local model
 

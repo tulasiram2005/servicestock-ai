@@ -1,6 +1,7 @@
 import os
 from concurrent.futures import ThreadPoolExecutor
 import uuid
+import time
 
 import pytest
 from sqlalchemy import select, delete
@@ -18,9 +19,19 @@ def test_database_job_claims_are_exclusive(settings):
     owner = "integration-" + uuid.uuid4().hex
     identifiers = [queue.enqueue(owner, "whatif", {}, uuid.uuid4().hex)["id"] for index in range(10)]
     try:
+        claimed = []
+        deadline = time.monotonic() + 10
         with ThreadPoolExecutor(max_workers=4) as pool:
-            claimed = list(pool.map(lambda _: queue.claim(), range(10)))
-        assert len({job["id"] for job in claimed if job}) == 10
+            while len(claimed) < len(identifiers) and time.monotonic() < deadline:
+                batch = list(pool.map(lambda _: queue.claim(), range(4)))
+                claimed.extend(job for job in batch if job is not None)
+                # READPAST/SKIP LOCKED can temporarily find no unlocked eligible row.
+                # Production workers also retry via next_due rather than assume empty.
+                if not any(batch):
+                    time.sleep(0.05)
+        ids = [job["id"] for job in claimed]
+        assert len(ids) == len(set(ids)), "Concurrent workers claimed a job more than once"
+        assert set(ids) == set(identifiers), "Queue did not claim every job before the deadline"
         assert all(queue.finish(job, {"status": "tested"}) for job in claimed)
     finally:
         with store.transaction() as connection:

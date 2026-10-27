@@ -424,3 +424,12 @@ were skipped. Logs exposed only "SQL Server did not become ready", so root cause
 unknown. Added explicit IPv4 loopback, three-second login timeout, five-second query
 timeout, twelve attempts, SQLSTATE-only errors and bounded container diagnostics with
 password redaction. The remote fix is not yet validated. The $0 budget is unchanged.
+
+## SQL Server second hosted attempt · 2026-10-27
+
+Run 40533154602 on ac1a5e6 completed in 1m21s. Setup and migrations passed. Quota
+concurrency and both refresh cases passed; job claims failed (three distinct claimed jobs
+from ten immediate attempts). Changed the test to drain with bounded retries for transient
+empty READPAST/SKIP LOCKED results. It still requires every enqueued ID exactly once and
+successful fenced completion for every job. This interpretation needs another SQL Server
+run; no runtime compatibility success is claimed. Evidence: results/sqlserver_runtime.json.
