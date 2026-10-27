@@ -67,7 +67,6 @@ def test_bracketed_paste_markers_are_removed(tmp_path):
     (KEY+'\x1b', 'terminal control'),
     (KEY+'…', 'non-ASCII'),
     ('"'+KEY+'"', 'quotation marks'),
-    (KEY+'!', 'punctuation'),
 ])
 def test_diagnostic_never_includes_secret(tmp_path, key, reason):
     with pytest.raises(ValueError) as error:
@@ -75,3 +74,14 @@ def test_diagnostic_never_includes_secret(tmp_path, key, reason):
     assert reason in str(error.value)
     assert key not in str(error.value)
     assert not (tmp_path / '.env.gemini').exists()
+
+
+def test_opaque_punctuation_round_trips_without_execution(tmp_path):
+    check_spec = importlib.util.spec_from_file_location('check_setup_roundtrip', Path(__file__).resolve().parents[2] / 'scripts/check_gemini.py')
+    check = importlib.util.module_from_spec(check_spec)
+    check_spec.loader.exec_module(check)
+    key = KEY + ':./+=!$()`;#&'
+    path = tmp_path / '.env.gemini'
+    module.save_config(path, key, 'gemini-test-flash')
+    assert check.read_config(path)['GEMINI_API_KEY'] == key
+    assert stat.S_IMODE(path.stat().st_mode) == 0o600

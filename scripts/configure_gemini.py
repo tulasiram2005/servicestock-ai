@@ -10,14 +10,14 @@ DESTINATION = Path(__file__).resolve().parents[1] / '.env.gemini'
 
 
 def save_config(path, key, model):
-    # Trim surrounding clipboard whitespace; reject embedded newlines or shell syntax.
+    # Treat credentials as opaque header values; this file must never be sourced as shell code.
     key = key.strip()
     # Some terminals include bracketed-paste control markers in hidden input.
     if key.startswith('\x1b[200~') and key.endswith('\x1b[201~'):
         key = key[6:-6].strip()
     if not key:
         raise ValueError('No key received. Copy the full key, then paste once at the hidden prompt.')
-    if not re.fullmatch(r'[A-Za-z0-9_-]{20,200}', key):
+    if not re.fullmatch(r'[!-~]{20,200}', key) or any(c in "\"'" for c in key):
         reasons = []
         if len(key) < 20:
             reasons.append('fewer than 20 characters received')
@@ -32,7 +32,7 @@ def save_config(path, key, model):
         if any(c in '\"\'' for c in key):
             reasons.append('contains quotation marks')
         if not reasons:
-            reasons.append('contains punctuation outside letters, digits, underscore and hyphen')
+            reasons.append('unsupported input format')
         raise ValueError('Key format not recognized: ' + '; '.join(reasons) + '. No key content displayed or saved.')
     if not re.fullmatch(r'gemini-[a-z0-9.-]*flash[a-z0-9.-]*', model):
         raise ValueError('Enter a verified free-tier Gemini Flash model ID')
