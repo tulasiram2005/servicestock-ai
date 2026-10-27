@@ -11,7 +11,7 @@ on-demand PDF endpoint and CLI BI export code.
 Latest local continuation (2026-10-27): ten synthetic extract families, inventory/sales
 warehouse migration, 11 CSV/Parquet exports, numeric/reference validation, streamed UI
 tool traces, manual administrator job monitor and configuration option impact comparison.
-139 backend tests passed (two dedicated-database tests skipped), 8 frontend unit tests and
+140 backend tests passed (two dedicated-database tests skipped), 10 frontend unit tests and
 4 browser tests passed (two live flows, plus mocked user-edit and failed-job UI checks).
 TypeScript, production build and Bandit medium/high scan passed.
 Local Compose services are healthy. These checks do not establish full master-spec completion.
@@ -54,8 +54,9 @@ Remaining master-spec gaps:
 - Policy Lab includes baseline/optimized cost tables and a component waterfall for previews
   and completed jobs. Displayed totals were checked against API results; missing cost inputs
   show unavailable. Part Detail now renders forecast intervals with a shaded band and
-  exact-value table, plus signed LightGBM TreeSHAP driver bars. Simulation histograms,
-  lead-time sensitivity and other detailed frontend charts remain missing, along with
+  exact-value table, signed LightGBM TreeSHAP driver bars, a simulation histogram and
+  lead-time sensitivity at fixed service/holding settings. Other detailed frontend charts
+  remain missing, along with
   optimistic feedback. The UI consumes SSE tool/answer events and
   provides a manual-refresh administrator job monitor; the server computes tools before
   emitting events, so this is not incremental model-token streaming.

@@ -271,3 +271,20 @@ are tracked within the related analytics, data, UI and documentation phases.
   the real Part Detail test verifies eight feature rows. API and web containers healthy.
   Full backend: 139 passed, two dedicated-database tests skipped; Bandit medium/high passed.
 - Simulation histogram, lead-time sensitivity and other unfinished charts remain pending.
+
+
+## P7 simulation histogram and lead-time sensitivity · 2026-10-27
+
+- Part Detail now displays the saved remaining-inventory-value histogram and three
+  precomputed lead-time scenarios. API filters scenarios by part, service target and
+  holding rate so only lead time changes; each scenario reoptimizes its stock policy.
+- Tables show all bin counts, total draws, annual costs, stock and fill rate. Labels
+  distinguish simulation counts from a time-series forecast and explain bin boundaries.
+  Invalid bins, non-finite inputs and duplicate sensitivity points show unavailable.
+- Validation: 140 backend tests passed, two dedicated-database tests skipped; 10 frontend
+  tests, TypeScript, production builds and four browser tests passed. Browser verifies
+  12 bins, 10,000 draws and three lead-time rows. Both app containers healthy.
+- Live Gemini remains pending: the user confirmed billing disabled, but the repository
+  root .env has no Gemini key/model and no alternative key file has been identified.
+  No Gemini call or key retrieval occurred. GitHub is separately uncreated; local commits
+  continue, while SQL Server remote runtime validation remains pending.

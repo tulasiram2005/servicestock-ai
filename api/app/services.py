@@ -41,7 +41,14 @@ def part_detail(store, part_id):
     forecast = next((item for item in benchmark["parts"] if item["part_id"] == part_id), None)
     policy = next((item for item in analytics["policies"] if item["part_id"] == part_id), None)
     return {"part": dict(part), "history": [dict(row) for row in history], "forecast": forecast,
-            "policy": policy, "synthetic_cost_assumptions": True, "source_id": "analytics:" + part_id}
+            "policy": policy, "lead_sensitivity": sorted([
+                {"lead_time_multiplier": cell["lead_time_multiplier"],
+                 "annual_cost": cell["optimized"]["expected_annual_cost"],
+                 "stock": cell["optimized"]["stock"], "fill_rate": cell["optimized"]["fill_rate"]}
+                for cell in analytics["grid"] if policy and cell["part_id"] == part_id
+                and cell["target_service_level"] == policy["target_service_level"]
+                and cell["holding_rate"] == policy["holding_rate"]], key=lambda cell: cell["lead_time_multiplier"]),
+            "synthetic_cost_assumptions": True, "source_id": "analytics:" + part_id}
 
 
 def whatif(store, payload):

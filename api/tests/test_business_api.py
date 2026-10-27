@@ -112,3 +112,22 @@ def test_user_access_changes_are_authorized_audited_and_revoke_tokens(settings):
             unchanged = connection.execute(select(db.users).where(db.users.c.id == 'editable')).mappings().one()
         assert unchanged['role_id'] == 'planner'
         assert unchanged['disabled'] is True
+
+
+def test_part_sensitivity_holds_other_policy_inputs_fixed():
+    from app.services import part_detail
+    store=Store('sqlite://')
+    db.metadata.create_all(store.engine)
+    seed(store)
+    publish(store,Path(__file__).resolve().parents[2]/'results')
+    try:
+        detail=part_detail(store,'P0001')
+        policy=detail['policy']
+        expected=sorted([cell for cell in artifact(store,'analytics')['grid'] if cell['part_id']=='P0001'
+            and cell['target_service_level']==policy['target_service_level']
+            and cell['holding_rate']==policy['holding_rate']],key=lambda c:c['lead_time_multiplier'])
+        assert [p['lead_time_multiplier'] for p in detail['lead_sensitivity']]==[0.5,1.0,2.0]
+        assert [p['annual_cost'] for p in detail['lead_sensitivity']]==[p['optimized']['expected_annual_cost'] for p in expected]
+        assert sum(policy['histogram']['counts'])==policy['draws']
+    finally:
+        store.engine.dispose()
