@@ -24,3 +24,12 @@ method, bandwidth exhaustion suspends services and pipeline exhaustion disables 
 Neon advertises no-card Free; this does not confirm this user's account/project state.
 Vercel Hobby is personal/non-commercial only; usage exhaustion usually pauses features.
 No account plan was upgraded, card entered, or hosting resource created during this check.
+
+### Idle-behavior inspection, 2026-10-28
+
+The Neon control-plane read returned endpoint ep-jolly-night-aroqovgo as active,
+fixed 0.25 CU, and suspend_timeout_seconds=0. This does not establish an observed
+idle-to-suspended transition. Official [Free plan documentation](https://github.com/neondatabase/website/blob/main/content/faqs/free-plan-limits-and-quotas.md)
+states five-minute automatic suspension cannot be disabled on Free. The account
+response and observed runtime behavior still need reconciliation; no paid setting
+was enabled and no artificial keep-alive or manual suspension was used as proof.

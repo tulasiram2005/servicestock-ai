@@ -11,6 +11,7 @@ from .llm_budget import DatabaseBudget
 
 from .runtime import TTLCache
 from .token_usage import reported_tokens
+from .provider_backoff import retry_delay
 
 
 class LocalToolRouter:
@@ -24,6 +25,7 @@ class LocalToolRouter:
         self.external_attempts = 0
         self.users = {}
         self.cooldowns = {}
+        self.failures = {}
         self.capabilities = {}
         self.token_observations = {}
         self.selected = ContextVar('selected_provider', default='mock')
@@ -147,11 +149,17 @@ class LocalToolRouter:
                 calls.append((item['tool'], args))
             with self.lock:
                 self.capabilities[provider] = 'validated_json_plan'
+                self.failures[provider] = 0
+                self.cooldowns.pop(provider, None)
             self.cache.put(key, calls)
             return calls, 'Gemini route' if gemini else 'local model route'
-        except (httpx.HTTPError, ValueError, KeyError, TypeError, IndexError):
+        except (httpx.HTTPError, ValueError, KeyError, TypeError, IndexError) as error:
             with self.lock:
-                self.cooldowns[provider] = self.clock() + 60
+                failures = min(self.failures.get(provider, 0) + 1, 7)
+                self.failures[provider] = failures
+                header = (error.response.headers.get('retry-after')
+                          if isinstance(error, httpx.HTTPStatusError) else None)
+                self.cooldowns[provider] = self.clock() + retry_delay(header, self.clock(), failures)
                 self.capabilities[provider] = 'unavailable_or_invalid_output'
             return None, 'model provider unavailable or invalid output'
 
@@ -162,6 +170,7 @@ class LocalToolRouter:
                     'attempts': self.budget.total(day) if self.budget else (self.total if self.day == day else 0),
                     'external_calls': self.external_attempts, 'external_calls_scope': 'current_process_attempts', 'provider': {'ollama': 'ollama-local'}.get(self.settings.llm_provider_order.split(',')[0], self.settings.llm_provider_order.split(',')[0]),
                     'provider_capabilities': {name: self.capabilities.get(name, 'unprobed') for name in self.settings.llm_provider_order.split(',') if name != 'mock'},
+                    'provider_retry_after_seconds': {name: max(0, int(until - self.clock())) for name, until in self.cooldowns.items()},
                     'token_usage_scope': 'current_process_lifetime_provider_reported',
                     'token_usage': json.loads(json.dumps(self.token_observations)),
                     'cost_usd': None, 'cost_status': 'not measured; token metadata is not billing evidence',

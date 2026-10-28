@@ -159,3 +159,12 @@ configuration and environment parsing. Full suite: 221 passed, four skipped. Hum
 screen-reader acceptance is prepared in SCREEN_READER_ACCEPTANCE.md, but not performed.
 Render billing/allowance verification is blocked by disabled browser access; no resources
 were provisioned and no paid services enabled.
+
+Provider backoff continuation (2026-10-28): Retry-After seconds and HTTP dates are
+honored within a 60-second to one-hour cooldown. Repeated failures use exponential
+backoff; a validated response resets the failure count. Cooldown requests immediately
+fall through without spending another attempt. Admin usage exposes remaining cooldown
+seconds without error payloads or secrets. This is not automatic retry or native tool
+negotiation. Community adapters, durable token budgets and native-tool negotiation remain
+unfinished. Hosted HTTP verification is recorded in DEPLOY_FREE.md and hosted_smoke.json;
+human screen-reader acceptance and full hosted browser journeys remain unverified.
