@@ -168,3 +168,14 @@ through admission. This limit is per process, not distributed; use a single API 
 for the free deployment. Admin metrics report the limit, scope and busy-fallback count.
 Existing shared daily attempt limits still apply independently. This does not add native
 tool negotiation or hard cancellation deadlines. No paid or live model calls were made.
+
+### Tool execution deadlines · 2026-10-29
+
+Tool execution now has a five-second per-tool and fifteen-second shared-chain
+budget measured with a monotonic clock. An expired budget prevents dispatch;
+a tool returning after its deadline is rejected with 504 and logged as timeout.
+The remaining chain does not run. Tests inject a clock and slow dispatch functions.
+These are cooperative boundaries, not thread cancellation: a running synchronous
+operation must return (database statement timeouts remain the lower-level guard).
+A report already enqueued is not rolled back. Native tool negotiation and durable
+token budgets remain outstanding; this change does not claim those are complete.

@@ -154,3 +154,35 @@ def test_gemini_fallback_does_not_claim_no_external_request(assistant):
     assert answer['provider']=='mock'
     assert answer['fallback']
     assert 'No external model called' not in answer['notice']
+
+
+def test_slow_tool_result_is_rejected_logged_and_chain_stops(assistant, monkeypatch):
+    now = [0.0]
+    assistant.clock = lambda: now[0]
+    invoked = []
+    def slow(name, args, principal):
+        invoked.append(name)
+        now[0] += 6
+        return {"secret": "late result must not be returned"}
+    monkeypatch.setattr(assistant, "dispatch", slow)
+    with pytest.raises(HTTPException) as error:
+        assistant.conversation(Principal("demo", "viewer"), "KPIs", calls=[("get_kpis", {})]*2)
+    assert error.value.status_code == 504
+    assert invoked == ["get_kpis"]
+    with assistant.store.transaction() as connection:
+        assert connection.scalar(select(db.tool_call_log.c.status)) == "timeout"
+
+
+def test_chain_deadline_prevents_further_dispatch(assistant, monkeypatch):
+    now = [0.0]
+    assistant.clock = lambda: now[0]
+    invoked = []
+    def bounded(name, args, principal):
+        invoked.append(name)
+        now[0] += 4
+        return {}
+    monkeypatch.setattr(assistant, "dispatch", bounded)
+    with pytest.raises(HTTPException) as error:
+        assistant.conversation(Principal("demo", "viewer"), "KPIs", calls=[("get_kpis", {})]*6)
+    assert error.value.status_code == 504
+    assert len(invoked) == 4

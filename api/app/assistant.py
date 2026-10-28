@@ -88,17 +88,21 @@ def sanitize(value):
 
 
 class Assistant:
-    def __init__(self, store, queue, wake, model_router=None):
+    def __init__(self, store, queue, wake, model_router=None, clock=time.monotonic):
         self.store, self.queue, self.wake = store, queue, wake
         self.model_router = model_router
+        self.clock = clock
+        self.tool_seconds = 5
+        self.chain_seconds = 15
 
-    def execute(self, principal, session_id, name, arguments):
+    def execute(self, principal, session_id, name, arguments, deadline=None):
         with self.store.transaction() as connection:
             owner = connection.scalar(select(db.assistant_sessions.c.owner).where(db.assistant_sessions.c.id == session_id))
         if owner != principal.username:
             self.store.audit(principal.username, "tool_session_denied", {})
             raise HTTPException(404, "Session not found")
-        call_id, started, status = uuid.uuid4().hex, time.monotonic(), "rejected"
+        call_id, started, status = uuid.uuid4().hex, self.clock(), "rejected"
+        deadline = min(deadline, started + self.tool_seconds) if deadline is not None else started + self.tool_seconds
         logged_args = {}
         try:
             if name not in REGISTRY:
@@ -110,7 +114,13 @@ class Assistant:
             validated = REGISTRY[name].model_validate(arguments)
             logged_args = validated.model_dump()
             status = "error"
+            if self.clock() >= deadline:
+                status = "timeout"
+                raise HTTPException(504, "Assistant tool deadline exceeded")
             result = self.dispatch(name, validated, principal)
+            if self.clock() >= deadline:
+                status = "timeout"
+                raise HTTPException(504, "Assistant tool deadline exceeded")
             result = sanitize(result)
             serialized = json.dumps(result, default=str)
             if len(serialized.encode()) > 64000:
@@ -122,7 +132,7 @@ class Assistant:
             with self.store.transaction() as connection:
                 connection.execute(db.tool_call_log.insert().values(id=call_id, session_id=session_id,
                     owner=principal.username, tool=name if name in REGISTRY else "unknown", args=logged_args, status=status,
-                    latency_ms=(time.monotonic() - started) * 1000, created_at=time.time()))
+                    latency_ms=(self.clock() - started) * 1000, created_at=time.time()))
 
     def dispatch(self, name, args, principal):
         if isinstance(args, Scope) and args.period:
@@ -192,7 +202,8 @@ class Assistant:
             calls = [(name, args)]
         if not 1 <= len(calls) <= 6:
             raise HTTPException(422, "Tool iteration limit is six")
-        trace = [self.execute(principal, session_id, name, args) for name, args in calls]
+        deadline = self.clock() + self.chain_seconds
+        trace = [self.execute(principal, session_id, name, args, deadline) for name, args in calls]
         statements = []
         for result in trace:
             if result["tool"] == "get_kpis":
