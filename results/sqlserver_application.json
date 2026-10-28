@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-28",
+  "run_url": "https://github.com/tulasiram2005/servicestock-ai/actions/runs/40618520967",
+  "commit": "1360bc0",
+  "status": "success",
+  "duration_seconds": 66,
+  "migration": "0005",
+  "application_tests_passed": 2,
+  "concurrency_tests_passed": 4,
+  "scope": "Four SQL Server cases and two SQLite cases: seeded staging/application, job exclusivity, quota atomicity, refresh concurrency",
+  "full_application_certification": false,
+  "actions_billable_usage_before_run_usd": 0,
+  "included_minutes_used_before_run": 14,
+  "included_minutes_total": 3000,
+  "spending_budget_usd": 0,
+  "container_cleanup": "success"
+}

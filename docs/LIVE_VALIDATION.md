@@ -50,3 +50,15 @@ Account verification succeeded after browser access became available: 3,000 incl
 minutes with 0 used and an existing $0 Actions budget were displayed before the manual
 runs. The budget and repository visibility were not changed. No recurring SQL Server
 workflow was enabled. Gemini and the targeted SQL Server runtime checks have passed.
+
+## Expanded hosted SQL Server verification · 2026-10-28
+
+[Run 40618520967](https://github.com/tulasiram2005/servicestock-ai/actions/runs/40618520967)
+on 1360bc0 succeeded in 1m6s. Migration 0005, typed staging import, seeded application
+authenticated reads, access restrictions, configuration impact and job ownership passed.
+Logs show 2 application tests plus 4 concurrency tests passed (two cases are SQLite).
+The isolated SQL Server container was removed successfully. This supersedes pending
+new-staging runtime status; it does not certify every application path.
+Before dispatch, account UI showed 14/3,000 included minutes, 0/2 GB storage, $0 billable
+usage and the existing $0 Actions budget. No billing or repository visibility changed.
+Nonblocking Node action-runtime and TestClient deprecation warnings remain.

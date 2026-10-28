@@ -524,3 +524,15 @@ zero failures, 29 ms p50, 53 ms p95, approximately 2.12 requests/second. All res
 were HTTP 200. Routes: login, parts and KPIs. This shared-account, short read workload
 is not saturation testing, production capacity, or deployed latency evidence.
 Scripts compile and the actual bounded run exited successfully. No app code changed.
+
+## Expanded hosted SQL Server verification · 2026-10-28
+
+[Run 40618520967](https://github.com/tulasiram2005/servicestock-ai/actions/runs/40618520967)
+on 1360bc0 succeeded in 1m6s. Migration 0005, typed staging import, seeded application
+authenticated reads, access restrictions, configuration impact and job ownership passed.
+Logs show 2 application tests plus 4 concurrency tests passed (two cases are SQLite).
+The isolated SQL Server container was removed successfully. This supersedes pending
+new-staging runtime status; it does not certify every application path.
+Before dispatch, account UI showed 14/3,000 included minutes, 0/2 GB storage, $0 billable
+usage and the existing $0 Actions budget. No billing or repository visibility changed.
+Nonblocking Node action-runtime and TestClient deprecation warnings remain.

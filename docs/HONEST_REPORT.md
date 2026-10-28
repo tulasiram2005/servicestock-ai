@@ -124,3 +124,12 @@ Performance continuation (2026-10-28): a five-user, 30-second local Locust read
 workload completed 61 requests with zero failures and 53 ms p95 latency. HTTP status
 and endpoint breakdowns are recorded in results/load.json. Existing rate limits were
 unchanged. Sustained capacity, mixed writes and deployed latency remain unmeasured.
+
+Hosted SQL Server update (2026-10-28): run 40618520967 on 1360bc0 passed migrations
+through 0005, two seeded application/staging cases and four concurrency cases in 66
+seconds (four SQL Server cases and two SQLite cases overall). This supersedes earlier
+statements that the new staging/application smoke remains unrun. The temporary container
+was removed. Included allowance and the unchanged $0 budget were verified beforehand.
+The smoke covers selected paths, not all application behavior or production certification.
+Remaining work includes manual accessibility, advanced provider features and deployment
+verification; sustained production capacity remains unmeasured.
