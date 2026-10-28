@@ -512,3 +512,15 @@ Local full suite: 186 passed, four environment-dependent cases skipped. On an is
 PostgreSQL database migrated to 0005: six application/concurrency tests passed; temporary
 database removed. Runtime pip-audit and npm audit: zero known vulnerabilities. Bandit
 medium/high: zero findings. No billing or paid infrastructure enabled.
+
+## P8 Bounded local performance measurement · 2026-10-28
+
+The local-only Locust runner now accepts bounded user/duration settings (1–10 users,
+10–60 seconds), defaults to five users for 30 seconds, stops users on failed login,
+and writes results atomically. Evidence includes requested concurrency, duration,
+HTTP status counts and per-endpoint latency instead of the shutdown-time active count.
+Five users ramped at one per second against the unchanged local stack: 61 requests,
+zero failures, 29 ms p50, 53 ms p95, approximately 2.12 requests/second. All responses
+were HTTP 200. Routes: login, parts and KPIs. This shared-account, short read workload
+is not saturation testing, production capacity, or deployed latency evidence.
+Scripts compile and the actual bounded run exited successfully. No app code changed.

@@ -244,14 +244,42 @@ Source: results/load.json
 {
   "environment": "local Docker Compose",
   "tool": "Locust",
-  "requests": 9,
+  "requests": 61,
   "failures": 0,
-  "p50_ms": 24,
-  "p95_ms": 66,
-  "requests_per_second": 0.5183519913800464,
-  "users": 0,
+  "p50_ms": 29,
+  "p95_ms": 53,
+  "requests_per_second": 2.11787863663711,
+  "target_users": 5,
+  "duration_seconds": 30,
+  "measured_at": "2026-10-28T01:59:12.328417+00:00",
+  "http_status_counts": {
+    "200": 61
+  },
+  "endpoints": [
+    {
+      "method": "POST",
+      "name": "/api/auth/login",
+      "requests": 5,
+      "failures": 0,
+      "p95_ms": 79
+    },
+    {
+      "method": "GET",
+      "name": "/api/kpis",
+      "requests": 28,
+      "failures": 0,
+      "p95_ms": 28
+    },
+    {
+      "method": "GET",
+      "name": "/api/parts",
+      "requests": 28,
+      "failures": 0,
+      "p95_ms": 53
+    }
+  ],
   "deployed": "not measured",
-  "note": "Short low-load local smoke; not capacity proof"
+  "note": "Bounded local read workload using a shared demo account and unchanged rate limits; not production capacity proof"
 }
 ```
 

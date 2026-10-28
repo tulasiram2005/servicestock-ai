@@ -119,3 +119,8 @@ Server workflow includes this application test before concurrency checks, but ha
 yet been run. Python runtime dependency audit and npm audit reported zero known
 vulnerabilities; Bandit reported zero medium/high findings. These tools do not establish
 absence of vulnerabilities, production load capacity or complete SQL Server support.
+
+Performance continuation (2026-10-28): a five-user, 30-second local Locust read
+workload completed 61 requests with zero failures and 53 ms p95 latency. HTTP status
+and endpoint breakdowns are recorded in results/load.json. Existing rate limits were
+unchanged. Sustained capacity, mixed writes and deployed latency remain unmeasured.
