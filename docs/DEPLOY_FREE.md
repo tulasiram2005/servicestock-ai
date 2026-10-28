@@ -99,3 +99,17 @@ the original combined seed/publication command ended with OperationalError, and 
 batched retry also failed after 28.5 seconds. A follow-up diagnostic was interrupted and
 its result could not be recovered. Last readback: 24 parts, zero committed MARA staging
 rows, one result entry. Do not treat the hosted database or application as initialized.
+
+## Hosted database recovery — 2026-10-28
+
+Batched staging completed with a 15-second per-statement import timeout; the earlier
+OperationalError's exact cause was not recovered. Runtime defaults remain unchanged.
+Readback verified all 1,258 rows across ten tables and 24 parts. Published 20 JSON
+artifacts, yielding 21 result entries including provenance. Publication and readback
+took 35.55 seconds. Evidence: results/hosted_database.json.
+
+Created Vercel Hobby project servicestock-ai (prj_OVpqjENUMtwo3FFYzQzmbdXwcLed),
+Next.js/root web, without deploying. Render form is prepared for servicestock-ai-api,
+Dockerfile api/Dockerfile, root context, /health, Oregon, Free. No Render service has
+been submitted. Private .env.hosted uses a deliberately nonresolving HTTPS origin
+until the actual frontend domain is known; replace it before browser verification.

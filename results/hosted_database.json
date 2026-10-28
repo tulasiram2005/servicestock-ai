@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-28",
+  "project": "old-dust-65610326",
+  "migration": "0005",
+  "parts": 24,
+  "staging": {
+    "MARA": 24,
+    "MARC": 24,
+    "MARD": 24,
+    "MBEW": 24,
+    "EKKO": 288,
+    "EKPO": 288,
+    "VBAK": 288,
+    "VBAP": 288,
+    "STKO": 5,
+    "STPO": 5
+  },
+  "results": 21,
+  "published_artifacts": 20,
+  "publication_and_verification_seconds": 35.55,
+  "application_deployed": false
+}
