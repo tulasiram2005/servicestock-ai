@@ -33,7 +33,7 @@ Remaining master-spec gaps:
   back; successful model quality is unmeasured. An opt-in Gemini adapter is implemented
   for three app-authored public prompts and tested with simulated responses, and a live public KPI routing check passed. Free-tier status is based on the user
   screenshot and confirmation; billing was not verified through a provider API. Community adapters, general cloud
-  prompting, native-tool capability negotiation, token/cost accounting and tool deadlines
+  prompting, native-tool capability negotiation, durable token budgets/cost accounting and tool deadlines
   remain pending. Ordered fallback across the configured adapters and observed JSON-plan
   capability reporting are implemented; native tool calling remains disabled.
   See LLM_PROVIDERS.md for settings and exact limitations.
@@ -46,8 +46,8 @@ Remaining master-spec gaps:
   Coverage is empirical, not guaranteed; horizons beyond six months remain unvalidated.
 - Ten synthetic extract families now support inventory/sales and purchase/BOM reverse ETL,
   with 11 CSV/Parquet export tables including KPIs/finance. Ten typed tables now use a physical staging schema on PostgreSQL/SQL Server,
-  with a SQLite namespace mapping. Local PostgreSQL migration and ETL passed; new staging
-  SQL Server runtime validation and general external SAP integration remain outstanding. Purchase and BOM transforms now accept
+  with a SQLite namespace mapping. Local PostgreSQL migration and ETL passed; expanded hosted SQL Server staging/application
+  smoke also passed (run 40618520967). General external SAP integration remains outstanding. Purchase and BOM transforms now accept
   multiple numbered details per header, reject duplicate lines, and preserve legacy IDs.
 - Parts Explorer now supports server-side ABC filters, ascending/descending ID order,
   cursor pagination, and five browser-local saved filter views. Saved views are shared by

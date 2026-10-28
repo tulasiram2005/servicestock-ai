@@ -61,3 +61,12 @@ origins; duplicate/conflicting sslmode values are rejected by application config
 Stop if any provider asks for a card, paid upgrade or unavailable free quota. Never add
 a pinger to avoid idle suspension. Record real deployed smoke results before changing
 this document's undeployed status.
+
+## Account discovery — 2026-10-28
+
+Read-only connected-account checks confirmed the Neon organization is on its free plan.
+Its two existing projects are unrelated to ServiceStock; no database was created or reused.
+The user selected Render “My Workspace”. It contains three existing free web services
+and no ServiceStock service. The listing does not establish remaining shared instance
+hours, payment-method state or overage protection. Verify those before provisioning.
+No existing services, billing settings or repository visibility were changed.
