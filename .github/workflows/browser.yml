@@ -44,6 +44,7 @@ jobs:
           retention-days: 7
           path: |
             results/ui.json
+            results/accessibility.json
             results/workspace.png
       - if: always()
         run: docker compose down --volumes

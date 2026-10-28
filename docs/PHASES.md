@@ -486,3 +486,16 @@ PostgreSQL upgraded to 0005 with ten physical tables and 1,258 rows; two success
 runs were identical. New staging SQL Server runtime validation remains outstanding.
 All four browser checks passed against the updated local stack (two live application
 flows and two mocked error/edit flows). No external model or paid service was used.
+
+## P7/P8 Broader accessibility checks · 2026-10-28
+
+Added automated axe scans across Overview, Parts, Policy Lab, Data Quality, Assistant,
+Configurations, Results, Reports and Admin in dark and light themes. The first scan
+found low contrast in light-theme workspace labels and footer text; both now use the
+theme's readable muted color. Rerun: 18 scans, zero automated violations.
+Five browser tests passed against the local stack. Frontend unit suite (13 tests),
+TypeScript and production build passed during the implementation of this change.
+No backend code changed; the previous backend result remains 185 passed, three skipped.
+The browser workflow now preserves the accessibility evidence artifact. Its existing
+private-repository guard is unchanged. This is not manual accessibility certification
+and does not cover all interactive states, mobile layouts or screen readers.

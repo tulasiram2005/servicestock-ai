@@ -1,0 +1,25 @@
+import {test,expect} from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+import {readFileSync,writeFileSync} from 'node:fs';
+const env=Object.fromEntries(readFileSync('../.env','utf8').trim().split('\n').map(line=>line.split('=')));
+test('all workspace pages pass automated WCAG checks in both themes',async({page})=>{
+  test.setTimeout(120000);
+  const checks:{page:string;theme:string;violations:unknown[]}[]=[];
+  await page.goto('/');
+  await page.getByLabel('Username',{exact:true}).fill('admin');
+  await page.getByLabel('Password',{exact:true}).fill(env.ADMIN_PASSWORD);
+  await page.getByRole('button',{name:'Sign in',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'Overview',exact:true})).toBeVisible();
+  for(const theme of ['dark','light']){
+    if(theme==='light') await page.getByRole('button',{name:'Toggle color theme'}).click();
+    for(const name of ['Overview','Parts','Policy Lab','Data Quality','Assistant','Configurations','Results','Reports','Admin']){
+      await page.getByRole('button',{name,exact:true}).click();
+      await expect(page.getByRole('heading',{name,exact:true})).toBeVisible();
+      await expect(page.getByText('Loading verified data…',{exact:true})).toHaveCount(0);
+      const result=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();
+      checks.push({page:name,theme,violations:result.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>({target:n.target,summary:n.failureSummary}))}))});
+    }
+  }
+  writeFileSync('../results/accessibility.json',JSON.stringify({measured_at:new Date().toISOString(),scope:'Automated axe checks on nine initial admin workspace views, two themes; not manual accessibility certification',checks},null,2));
+  expect(checks.filter(row=>row.violations.length)).toEqual([]);
+});

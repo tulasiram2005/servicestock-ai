@@ -2,6 +2,109 @@
 
 Generated from results/*.json. All costs and lead times are synthetic assumptions.
 
+## accessibility
+
+Source: results/accessibility.json
+
+```json
+{
+  "measured_at": "2026-10-28T01:50:02.871Z",
+  "scope": "Automated axe checks on nine initial admin workspace views, two themes; not manual accessibility certification",
+  "checks": [
+    {
+      "page": "Overview",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "page": "Parts",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "page": "Policy Lab",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "page": "Data Quality",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "page": "Assistant",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "page": "Configurations",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "page": "Results",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "page": "Reports",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "page": "Admin",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "page": "Overview",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "page": "Parts",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "page": "Policy Lab",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "page": "Data Quality",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "page": "Assistant",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "page": "Configurations",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "page": "Results",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "page": "Reports",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "page": "Admin",
+      "theme": "light",
+      "violations": []
+    }
+  ]
+}
+```
+
 ## analytics
 
 Source: results/analytics.json
@@ -275,7 +378,7 @@ Source: results/ui.json
 
 ```json
 {
-  "measured_at": "2026-10-27T16:11:44.064Z",
+  "measured_at": "2026-10-28T01:50:05.068Z",
   "page": "Configurations",
   "axe_violations": [],
   "lighthouse": {

@@ -12,7 +12,8 @@ Latest local continuation (2026-10-27): ten synthetic extract families, inventor
 warehouse migration, 11 CSV/Parquet exports, numeric/reference validation, streamed UI
 tool traces, manual administrator job monitor and configuration option impact comparison.
 185 backend tests passed (three dedicated-database tests skipped), 13 frontend unit tests and
-4 browser tests passed (two live flows, plus mocked user-edit and failed-job UI checks).
+5 browser tests passed (two live flows, mocked user-edit and failed-job UI checks,
+and automated accessibility scans of nine initial admin workspace views in both themes).
 TypeScript, production build and Bandit medium/high scan passed.
 Local Compose services are healthy. These checks do not establish full master-spec completion.
 
@@ -103,3 +104,9 @@ not required for the successful manual test. See LIVE_VALIDATION.md.
 
 Refresh rotation now serializes with a portable no-op write. Concurrent one-use/replay
 behavior passed SQLite and live PostgreSQL checks; the targeted SQL Server concurrency test also passed.
+
+Accessibility continuation (2026-10-28): fixed light-theme workspace-label and footer
+contrast. Eighteen axe scans (nine initial admin views × two themes) report zero
+WCAG 2 A/AA and 2.1 AA automated violations. These are automated checks only; manual
+keyboard/screen-reader evaluation, mobile layouts and all interactive states remain
+outside this result. Evidence: results/accessibility.json. All five browser tests passed.
