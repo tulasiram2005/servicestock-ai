@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-28",
+  "method": "Playwright browser keyboard input",
+  "passed": [
+    "first Tab reaches skip link",
+    "Enter focuses login content",
+    "Tab advances username/password/submit",
+    "keyboard-only login",
+    "skip link focuses authenticated workspace"
+  ],
+  "screen_reader_tested": false,
+  "manual_human_audit": false,
+  "browser_suite_passed": 6
+}

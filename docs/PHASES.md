@@ -536,3 +536,12 @@ new-staging runtime status; it does not certify every application path.
 Before dispatch, account UI showed 14/3,000 included minutes, 0/2 GB storage, $0 billable
 usage and the existing $0 Actions budget. No billing or repository visibility changed.
 Nonblocking Node action-runtime and TestClient deprecation warnings remain.
+
+## P7 Keyboard navigation · 2026-10-28
+
+Added Skip to content as the first keyboard target, with visible focus styling and
+focusable login/workspace content. Browser-driven keyboard checks verify Tab order,
+Enter activation, mouse-free sign-in and navigation bypass after authentication.
+Six browser tests, 13 frontend unit tests, TypeScript and production build passed.
+Eighteen axe scans remain free of automated violations. Human screen-reader testing
+and comprehensive manual accessibility evaluation remain outstanding.

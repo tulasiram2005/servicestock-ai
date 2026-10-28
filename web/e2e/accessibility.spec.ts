@@ -23,3 +23,29 @@ test('all workspace pages pass automated WCAG checks in both themes',async({page
   writeFileSync('../results/accessibility.json',JSON.stringify({measured_at:new Date().toISOString(),scope:'Automated axe checks on nine initial admin workspace views, two themes; not manual accessibility certification',checks},null,2));
   expect(checks.filter(row=>row.violations.length)).toEqual([]);
 });
+
+test('keyboard login and skip link bypass repeated workspace navigation',async({page})=>{
+  await page.goto('/');
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('link',{name:'Skip to content'})).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#workspace-content')).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(page.getByLabel('Username',{exact:true})).toBeFocused();
+  await page.keyboard.type('demo');
+  await page.keyboard.press('Tab');
+  await expect(page.getByLabel('Password',{exact:true})).toBeFocused();
+  await page.keyboard.type(env.DEMO_PASSWORD);
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('button',{name:'Sign in',exact:true})).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('heading',{name:'Overview',exact:true})).toBeVisible();
+  // Reach the first link with keyboard only after the login form is removed.
+  for(let step=0;step<30;step++){
+    await page.keyboard.press('Shift+Tab');
+    if(await page.getByRole('link',{name:'Skip to content'}).evaluate(element=>element===document.activeElement)) break;
+  }
+  await expect(page.getByRole('link',{name:'Skip to content'})).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#workspace-content')).toBeFocused();
+});

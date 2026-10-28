@@ -8,7 +8,7 @@ Source: results/accessibility.json
 
 ```json
 {
-  "measured_at": "2026-10-28T01:50:02.871Z",
+  "measured_at": "2026-10-28T02:11:59.518Z",
   "scope": "Automated axe checks on nine initial admin workspace views, two themes; not manual accessibility certification",
   "checks": [
     {
@@ -185,6 +185,27 @@ Source: results/gemini_live_smoke.json
   "model": "gemini-3.5-flash-lite",
   "billing_evidence": "user confirmation and supplied Free tier screenshot; no billing API verification",
   "application_default": "mock"
+}
+```
+
+## keyboard_accessibility
+
+Source: results/keyboard_accessibility.json
+
+```json
+{
+  "date": "2026-10-28",
+  "method": "Playwright browser keyboard input",
+  "passed": [
+    "first Tab reaches skip link",
+    "Enter focuses login content",
+    "Tab advances username/password/submit",
+    "keyboard-only login",
+    "skip link focuses authenticated workspace"
+  ],
+  "screen_reader_tested": false,
+  "manual_human_audit": false,
+  "browser_suite_passed": 6
 }
 ```
 
@@ -480,7 +501,7 @@ Source: results/ui.json
 
 ```json
 {
-  "measured_at": "2026-10-28T01:50:05.068Z",
+  "measured_at": "2026-10-28T02:12:02.250Z",
   "page": "Configurations",
   "axe_violations": [],
   "lighthouse": {
