@@ -31,6 +31,7 @@ class Settings:
     allowed_origins: tuple[str, ...] = ("http://localhost:3000",)
     llm_global_daily_cap: int = 0
     llm_user_daily_cap: int = 0
+    llm_max_concurrent: int = 1
     llm_provider_order: str = 'mock'
     ollama_model: str = ''
     gemini_api_key: str = field(default='', repr=False)
@@ -38,6 +39,8 @@ class Settings:
     gemini_free_tier_confirmed: bool = False
 
     def __post_init__(self):
+        if type(self.llm_max_concurrent) is not int or not 1 <= self.llm_max_concurrent <= 4:
+            raise ValueError("LLM_MAX_CONCURRENT must be an integer from 1 to 4")
         providers = self.llm_provider_order.split(',')
         if (providers[-1] != 'mock' or len(set(providers)) != len(providers)
                 or any(name not in {'mock', 'ollama', 'openai-local', 'gemini'} for name in providers)):
@@ -112,7 +115,7 @@ class Settings:
         for name in ("token_minutes", "rate_limit", "login_rate_limit", "cache_seconds",
                      "cache_entries", "retention_days", "db_target_bytes", "db_limit_bytes",
                      "statement_timeout_ms", "job_lease_seconds", "job_max_attempts",
-                     "job_retry_seconds", "jobs_max_pending", "llm_global_daily_cap", "llm_user_daily_cap"):
+                     "job_retry_seconds", "jobs_max_pending", "llm_global_daily_cap", "llm_user_daily_cap", "llm_max_concurrent"):
             if name.upper() in os.environ:
                 values[name] = int(os.environ[name.upper()])
         return cls(**values)

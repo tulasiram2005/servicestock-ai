@@ -564,3 +564,12 @@ Sixteen regression cases cover accepted TLS and rejected configuration. Backend 
 213 passed, four dedicated-database cases skipped. Updated deployment and budget docs
 with dated official-source checks, private-repository instructions and pre-start database
 migration requirements. Hosted deployment and human screen-reader testing remain unverified.
+
+## P6 Provider concurrency admission · 2026-10-28
+
+Added configurable bounded process-local chain admission, immediate deterministic busy
+fallback without quota reservation, exception-safe slot release and admin metrics.
+Full backend suite: 221 passed, four dedicated-database cases skipped. Tests use simulated
+responses; no live provider call. Added an unexecuted human screen-reader acceptance
+checklist. No frontend change or new browser test result is claimed. Native-tool
+negotiation, hard cancellation deadlines and hosted deployment remain pending.

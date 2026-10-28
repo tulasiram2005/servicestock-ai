@@ -157,3 +157,14 @@ Response field references checked 2026-10-28:
 Tests use synthetic HTTP responses; no extra live model request was sent. Persistent
 token budgets, billing reconciliation, native-tool negotiation and hard deadlines remain
 outside this implementation.
+
+### Concurrent route admission · 2026-10-28
+
+`LLM_MAX_CONCURRENT` defaults to 1 and accepts integers 1–4. One slot covers the whole
+ordered provider chain and is released even on unexpected exceptions. When all slots
+are occupied, routing immediately falls back to the offline assistant, before quota
+reservation or a network request. There is no waiting queue. Cached routes also pass
+through admission. This limit is per process, not distributed; use a single API process
+for the free deployment. Admin metrics report the limit, scope and busy-fallback count.
+Existing shared daily attempt limits still apply independently. This does not add native
+tool negotiation or hard cancellation deadlines. No paid or live model calls were made.

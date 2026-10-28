@@ -3,7 +3,7 @@ from contextvars import ContextVar
 import hashlib
 import json
 import time
-from threading import Lock
+from threading import Lock, BoundedSemaphore
 
 import httpx
 from sqlalchemy.exc import SQLAlchemyError
@@ -17,6 +17,8 @@ class LocalToolRouter:
     def __init__(self, settings, transport=None, clock=time.time, store=None):
         self.settings, self.transport, self.clock = settings, transport, clock
         self.lock = Lock()
+        self.slots = BoundedSemaphore(settings.llm_max_concurrent)
+        self.busy_fallbacks = 0
         self.day = None
         self.total = 0
         self.external_attempts = 0
@@ -33,6 +35,16 @@ class LocalToolRouter:
 
     def route(self, username, question, registry):
         self.selected.set('mock')
+        if not self.slots.acquire(blocking=False):
+            with self.lock:
+                self.busy_fallbacks += 1
+            return None, 'model concurrency limit reached; deterministic fallback'
+        try:
+            return self._route_chain(username, question, registry)
+        finally:
+            self.slots.release()
+
+    def _route_chain(self, username, question, registry):
         notices = []
         for provider in self.settings.llm_provider_order.split(','):
             if provider == 'mock':
@@ -153,4 +165,6 @@ class LocalToolRouter:
                     'token_usage_scope': 'current_process_lifetime_provider_reported',
                     'token_usage': json.loads(json.dumps(self.token_observations)),
                     'cost_usd': None, 'cost_status': 'not measured; token metadata is not billing evidence',
+                    'concurrency_limit': self.settings.llm_max_concurrent,
+                    'concurrency_scope': 'current_process', 'busy_fallbacks': self.busy_fallbacks,
                     'routing_capability': 'validated_json_plan', 'native_tool_calling': False}

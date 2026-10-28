@@ -11,7 +11,7 @@ on-demand PDF endpoint and CLI BI export code.
 Latest local continuation (2026-10-27): ten synthetic extract families, inventory/sales
 warehouse migration, 11 CSV/Parquet exports, numeric/reference validation, streamed UI
 tool traces, manual administrator job monitor and configuration option impact comparison.
-213 backend tests passed (four dedicated-database tests skipped), 13 frontend unit tests and
+221 backend tests passed (four dedicated-database tests skipped), 13 frontend unit tests and
 6 browser tests passed (two live flows, mocked user-edit and failed-job UI checks,
 and automated accessibility scans of nine initial admin workspace views in both themes).
 TypeScript, production build and Bandit medium/high scan passed.
@@ -151,3 +151,11 @@ misleading TLS parameters and malformed HTTPS origins. Sixteen regression cases 
 these guards. Full backend suite: 213 passed, four dedicated-database cases skipped.
 Deployment instructions retain private GitHub visibility and distinguish free-tier
 documentation from account eligibility. No hosted application has been verified.
+
+Provider admission (2026-10-28): configurable process-local concurrency of 1–4
+(default 1) bounds simultaneous provider chains. Busy requests fall back without spending
+a model attempt. Eight new cases cover admission, release after unexpected exceptions,
+configuration and environment parsing. Full suite: 221 passed, four skipped. Human
+screen-reader acceptance is prepared in SCREEN_READER_ACCEPTANCE.md, but not performed.
+Render billing/allowance verification is blocked by disabled browser access; no resources
+were provisioned and no paid services enabled.
