@@ -11,7 +11,7 @@ on-demand PDF endpoint and CLI BI export code.
 Latest local continuation (2026-10-27): ten synthetic extract families, inventory/sales
 warehouse migration, 11 CSV/Parquet exports, numeric/reference validation, streamed UI
 tool traces, manual administrator job monitor and configuration option impact comparison.
-186 backend tests passed (four dedicated-database tests skipped), 13 frontend unit tests and
+197 backend tests passed (four dedicated-database tests skipped), 13 frontend unit tests and
 6 browser tests passed (two live flows, mocked user-edit and failed-job UI checks,
 and automated accessibility scans of nine initial admin workspace views in both themes).
 TypeScript, production build and Bandit medium/high scan passed.
@@ -139,3 +139,9 @@ and focusable content targets on login/workspace views. Browser keyboard input v
 Tab order, Enter activation, sign-in without a mouse and bypassing repeated navigation.
 All six browser tests passed; the 18 theme/page axe scans still show zero violations.
 This is browser-driven keyboard testing, not a human screen-reader audit.
+
+Provider accounting continuation (2026-10-28): admin usage includes provider-reported
+token observations with per-field completeness counts. Missing data is not zero; cached
+routes do not double-count, and invalid plans retain reported usage. These are process-
+lifetime observations, not durable token budgets or billing reconciliation. Cost remains
+unmeasured. Full backend suite: 197 passed, four database-dependent cases skipped.

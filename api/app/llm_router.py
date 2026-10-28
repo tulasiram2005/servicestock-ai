@@ -10,6 +10,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from .llm_budget import DatabaseBudget
 
 from .runtime import TTLCache
+from .token_usage import reported_tokens
 
 
 class LocalToolRouter:
@@ -22,6 +23,7 @@ class LocalToolRouter:
         self.users = {}
         self.cooldowns = {}
         self.capabilities = {}
+        self.token_observations = {}
         self.selected = ContextVar('selected_provider', default='mock')
         self.cache = TTLCache(capacity=settings.cache_entries, ttl=settings.cache_seconds)
         self.budget = DatabaseBudget(store) if store else None
@@ -105,6 +107,16 @@ class LocalToolRouter:
                         if len(content) > 65536 or time.monotonic()-started > 10:
                             raise ValueError('Provider output limit')
             envelope = json.loads(content)
+            if not isinstance(envelope, dict):
+                raise ValueError('Invalid provider envelope')
+            counts = reported_tokens(provider, envelope)
+            with self.lock:
+                observation = self.token_observations.setdefault(provider, {'responses': 0, 'fields': {}})
+                observation['responses'] += 1
+                for name, value in counts.items():
+                    field = observation['fields'].setdefault(name, {'reported_sum': 0, 'responses_with_value': 0})
+                    field['reported_sum'] += value
+                    field['responses_with_value'] += 1
             if gemini:
                 candidate = envelope['candidates'][0]
                 if candidate.get('finishReason') != 'STOP':
@@ -138,4 +150,7 @@ class LocalToolRouter:
                     'attempts': self.budget.total(day) if self.budget else (self.total if self.day == day else 0),
                     'external_calls': self.external_attempts, 'external_calls_scope': 'current_process_attempts', 'provider': {'ollama': 'ollama-local'}.get(self.settings.llm_provider_order.split(',')[0], self.settings.llm_provider_order.split(',')[0]),
                     'provider_capabilities': {name: self.capabilities.get(name, 'unprobed') for name in self.settings.llm_provider_order.split(',') if name != 'mock'},
+                    'token_usage_scope': 'current_process_lifetime_provider_reported',
+                    'token_usage': json.loads(json.dumps(self.token_observations)),
+                    'cost_usd': None, 'cost_status': 'not measured; token metadata is not billing evidence',
                     'routing_capability': 'validated_json_plan', 'native_tool_calling': False}

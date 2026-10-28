@@ -136,3 +136,24 @@ tool negotiation, community endpoints, token accounting, and hard deadlines stil
 Tests exercise 429 fallback, third-provider success, private-input isolation, shared caps,
 cache/cooldown behavior and truthful response labels with simulated HTTP responses.
 No live provider requests were needed for this change.
+
+### Provider-reported token observations · 2026-10-28
+
+Admin usage now includes current-process-lifetime token observations for Gemini, native
+Ollama and local OpenAI-compatible responses. Input/output/total counts are retained when
+reported; Gemini thinking counts are separate. No total is inferred by adding fields.
+Each field records a sum and how many responses supplied a valid value. Missing or invalid
+counts remain absent rather than zero. Cached routes do not add usage. Invalid tool plans
+still contribute usage when the provider response contains valid metadata. Transport errors
+and unparseable envelopes cannot provide token evidence. Counts reset with the process and
+are not shared persistent daily quotas; the existing shared call-attempt limits remain.
+`cost_usd` stays null: token counts cannot establish billing or free-tier eligibility.
+
+Response field references checked 2026-10-28:
+- https://ai.google.dev/api/generate-content
+- https://docs.ollama.com/api/chat
+- https://docs.ollama.com/api/openai-compatibility
+
+Tests use synthetic HTTP responses; no extra live model request was sent. Persistent
+token budgets, billing reconciliation, native-tool negotiation and hard deadlines remain
+outside this implementation.

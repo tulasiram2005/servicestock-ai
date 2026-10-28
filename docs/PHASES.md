@@ -545,3 +545,13 @@ Enter activation, mouse-free sign-in and navigation bypass after authentication.
 Six browser tests, 13 frontend unit tests, TypeScript and production build passed.
 Eighteen axe scans remain free of automated violations. Human screen-reader testing
 and comprehensive manual accessibility evaluation remain outstanding.
+
+## P6 Provider token observations · 2026-10-28
+
+Added validated usage-metadata extraction for the three existing adapters and aggregate
+observations in the admin usage response. Integer/nonnegative bounds exclude malformed
+metadata, missing values remain absent, cache hits do not double-count, and invalid tool
+plans still record returned token counts. Responses are copied to avoid caller mutation.
+Cost remains null; no unverified pricing is applied. Full backend suite: 197 passed, four
+dedicated-database cases skipped. No live provider requests or billing changes occurred.
+Frontend code was unchanged; no new browser result is claimed.
