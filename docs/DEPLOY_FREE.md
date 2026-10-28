@@ -70,3 +70,23 @@ The user selected Render “My Workspace”. It contains three existing free web
 and no ServiceStock service. The listing does not establish remaining shared instance
 hours, payment-method state or overage protection. Verify those before provisioning.
 No existing services, billing settings or repository visibility were changed.
+
+## Hosted preparation — 2026-10-28
+
+Render dashboard verification: Hobby, no card on file, $0 pipeline spend limit and
+$0 accrued charges. At inspection, usage was 24.77/750 instance hours, 51/500 pipeline
+minutes and 16 MB/5 GB bandwidth. These are time-specific shared-workspace readings.
+
+Created dedicated Neon Free project `old-dust-65610326` (servicestock-ai), PostgreSQL 16,
+AWS us-west-2, fixed 0.25 CU, requested logical storage quota 500,000,000 bytes.
+Custom suspension timeout was rejected by the Free account; creation succeeded with
+account-managed defaults. The returned configuration's zero timeout is not proof of
+actual idle behavior; verify scale-to-zero in the console before declaring it tested.
+Migrations reached 0005 and 24 seeded parts were read back through pooled TLS access.
+Staging and result publication remain in progress at this checkpoint.
+
+Hosted credentials are stored only in ignored, owner-readable `.env.hosted`. Never
+print this file or include it in commits/backups. No Render service or Vercel project
+has been created. Vercel team access was approved, but plan eligibility is not yet
+verified. Browser access became disabled again during the check. Render/Neon connectors
+are no longer available in this session. Do not bypass access or secret-output blocks.

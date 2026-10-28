@@ -573,3 +573,14 @@ Full backend suite: 221 passed, four dedicated-database cases skipped. Tests use
 responses; no live provider call. Added an unexecuted human screen-reader acceptance
 checklist. No frontend change or new browser test result is claimed. Native-tool
 negotiation, hard cancellation deadlines and hosted deployment remain pending.
+
+## Hosted preparation and staging batching · 2026-10-28
+
+Read-only account checks verified Render's no-card Hobby workspace and $0 pipeline
+spend limit. A dedicated Neon Free database was created; migration 0005 and 24 seeded
+parts were verified through pooled TLS. Initial staging/publication was still running.
+Grouped typed staging inserts by table to avoid one application-level execute per row,
+while keeping the existing single transaction and validation. Full backend suite:
+221 passed, four dedicated-database cases skipped. This local result does not establish
+hosted staging or deployment completion. Vercel team grant succeeded; free-plan check
+remains blocked by browser access. No paid plan was selected.

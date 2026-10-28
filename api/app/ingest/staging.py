@@ -44,9 +44,11 @@ def generate_and_transform(store):
     with store.transaction() as connection:
         for table in db.sap_staging.values():
             connection.execute(delete(table))
-        for extract in extracts:
-            table = db.sap_staging[extract["sap_table"]]
-            connection.execute(table.insert().values(extract_id=extract["id"], label=LABEL, **extract["payload"]))
+        for name, table in db.sap_staging.items():
+            rows = [dict(extract_id=extract["id"], label=LABEL, **extract["payload"])
+                    for extract in extracts if extract["sap_table"] == name]
+            if rows:
+                connection.execute(table.insert(), rows)
         staged = []
         for name, table in db.sap_staging.items():
             for row in connection.execute(select(table).order_by(table.c.extract_id)).mappings():
