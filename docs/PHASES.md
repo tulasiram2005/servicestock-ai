@@ -555,3 +555,12 @@ plans still record returned token counts. Responses are copied to avoid caller m
 Cost remains null; no unverified pricing is applied. Full backend suite: 197 passed, four
 dedicated-database cases skipped. No live provider requests or billing changes occurred.
 Frontend code was unchanged; no new browser result is claimed.
+
+## P9 Deployment safeguards · 2026-10-28
+
+Production database URLs require exactly one explicit supported sslmode. Production
+origins require HTTPS hostnames without credentials, paths, queries or fragments.
+Sixteen regression cases cover accepted TLS and rejected configuration. Backend suite:
+213 passed, four dedicated-database cases skipped. Updated deployment and budget docs
+with dated official-source checks, private-repository instructions and pre-start database
+migration requirements. Hosted deployment and human screen-reader testing remain unverified.

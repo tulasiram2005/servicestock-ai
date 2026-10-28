@@ -1,7 +1,7 @@
 import os
 import re
 from dataclasses import dataclass, field
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, parse_qs
 
 
 @dataclass(frozen=True)
@@ -80,9 +80,14 @@ class Settings:
             parsed = urlsplit(self.database_url)
             if not parsed.hostname or "-pooler." not in parsed.hostname:
                 raise ValueError("Production requires a Neon pooled hostname")
-            if "sslmode=require" not in parsed.query and "sslmode=verify-full" not in parsed.query:
+            query = parse_qs(parsed.query, keep_blank_values=True)
+            if query.get("sslmode") not in (["require"], ["verify-full"]):
                 raise ValueError("Production database requires TLS")
-            if any(not origin.startswith("https://") for origin in self.allowed_origins):
+            if not self.allowed_origins or any(
+                urlsplit(origin).scheme != "https" or not urlsplit(origin).hostname
+                or urlsplit(origin).username is not None or urlsplit(origin).password is not None
+                or urlsplit(origin).path not in {"", "/"} or urlsplit(origin).query or urlsplit(origin).fragment
+                for origin in self.allowed_origins):
                 raise ValueError("Production origins must use HTTPS")
 
     @classmethod

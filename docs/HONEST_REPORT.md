@@ -11,7 +11,7 @@ on-demand PDF endpoint and CLI BI export code.
 Latest local continuation (2026-10-27): ten synthetic extract families, inventory/sales
 warehouse migration, 11 CSV/Parquet exports, numeric/reference validation, streamed UI
 tool traces, manual administrator job monitor and configuration option impact comparison.
-197 backend tests passed (four dedicated-database tests skipped), 13 frontend unit tests and
+213 backend tests passed (four dedicated-database tests skipped), 13 frontend unit tests and
 6 browser tests passed (two live flows, mocked user-edit and failed-job UI checks,
 and automated accessibility scans of nine initial admin workspace views in both themes).
 TypeScript, production build and Bandit medium/high scan passed.
@@ -145,3 +145,9 @@ token observations with per-field completeness counts. Missing data is not zero;
 routes do not double-count, and invalid plans retain reported usage. These are process-
 lifetime observations, not durable token budgets or billing reconciliation. Cost remains
 unmeasured. Full backend suite: 197 passed, four database-dependent cases skipped.
+
+Deployment safeguards (2026-10-28): production configuration now rejects ambiguous or
+misleading TLS parameters and malformed HTTPS origins. Sixteen regression cases cover
+these guards. Full backend suite: 213 passed, four dedicated-database cases skipped.
+Deployment instructions retain private GitHub visibility and distinguish free-tier
+documentation from account eligibility. No hosted application has been verified.
