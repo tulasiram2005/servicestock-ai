@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-28",
+  "environment": "disposable local PostgreSQL database",
+  "migration": "0005",
+  "tests_passed": 6,
+  "includes": [
+    "SQLite and PostgreSQL seeded application/staging",
+    "PostgreSQL job exclusivity",
+    "PostgreSQL quota atomicity",
+    "SQLite and PostgreSQL refresh concurrency"
+  ],
+  "sqlserver_application_runtime": "not yet run",
+  "test_database_removed": true
+}

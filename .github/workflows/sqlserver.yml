@@ -49,6 +49,8 @@ jobs:
       - name: Apply migrations to isolated SQL Server database
         working-directory: api
         run: python -m alembic upgrade head
+      - name: Run isolated staging and application checks
+        run: TEST_APP_DATABASE_URL="$DATABASE_URL" python -m pytest api/tests/test_application_database.py -q
       - name: Run database integration
         run: python -m pytest api/tests/test_database_integration.py -q
       - name: Diagnose SQL Server startup failure

@@ -11,7 +11,7 @@ on-demand PDF endpoint and CLI BI export code.
 Latest local continuation (2026-10-27): ten synthetic extract families, inventory/sales
 warehouse migration, 11 CSV/Parquet exports, numeric/reference validation, streamed UI
 tool traces, manual administrator job monitor and configuration option impact comparison.
-185 backend tests passed (three dedicated-database tests skipped), 13 frontend unit tests and
+186 backend tests passed (four dedicated-database tests skipped), 13 frontend unit tests and
 5 browser tests passed (two live flows, mocked user-edit and failed-job UI checks,
 and automated accessibility scans of nine initial admin workspace views in both themes).
 TypeScript, production build and Bandit medium/high scan passed.
@@ -110,3 +110,12 @@ contrast. Eighteen axe scans (nine initial admin views × two themes) report zer
 WCAG 2 A/AA and 2.1 AA automated violations. These are automated checks only; manual
 keyboard/screen-reader evaluation, mobile layouts and all interactive states remain
 outside this result. Evidence: results/accessibility.json. All five browser tests passed.
+
+Broader database/security continuation (2026-10-28): disposable PostgreSQL migrations,
+seeded application/staging and concurrency checks passed (six tests including two SQLite
+cases). The test covers authenticated data endpoints, viewer/admin restrictions, job
+ownership and typed staging ETL. The temporary database was removed. The expanded SQL
+Server workflow includes this application test before concurrency checks, but has not
+yet been run. Python runtime dependency audit and npm audit reported zero known
+vulnerabilities; Bandit reported zero medium/high findings. These tools do not establish
+absence of vulnerabilities, production load capacity or complete SQL Server support.

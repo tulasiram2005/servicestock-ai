@@ -119,6 +119,27 @@ Source: results/analytics.json
 - Synthetic NLP macro-F1: 0.6666666666666666
 - Zero-shot classifier comparison: see nlp_comparison below if present; otherwise not measured
 
+## application_database
+
+Source: results/application_database.json
+
+```json
+{
+  "date": "2026-10-28",
+  "environment": "disposable local PostgreSQL database",
+  "migration": "0005",
+  "tests_passed": 6,
+  "includes": [
+    "SQLite and PostgreSQL seeded application/staging",
+    "PostgreSQL job exclusivity",
+    "PostgreSQL quota atomicity",
+    "SQLite and PostgreSQL refresh concurrency"
+  ],
+  "sqlserver_application_runtime": "not yet run",
+  "test_database_removed": true
+}
+```
+
 ## bandit
 
 Source: results/bandit.json
@@ -313,6 +334,35 @@ Source: results/nlp_comparison.json
 - Limitation: Four held-out phrase templates repeated with synthetic order/depot suffixes; 48 rows are not 48 independent language examples.
 - Limitation: Zero-shot prompt includes categories but no labeled examples. One batch, one model, no tuning; not production accuracy.
 - Limitation: Risk flags continue to use the offline TF-IDF baseline. HTTP phase timeouts are not a hard process deadline.
+
+## npm-audit
+
+Source: results/npm-audit.json
+
+```json
+{
+  "auditReportVersion": 2,
+  "vulnerabilities": {},
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "dependencies": {
+      "prod": 61,
+      "dev": 247,
+      "optional": 85,
+      "peer": 44,
+      "peerOptional": 0,
+      "total": 346
+    }
+  }
+}
+```
 
 ## pip-audit
 

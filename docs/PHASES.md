@@ -499,3 +499,16 @@ No backend code changed; the previous backend result remains 185 passed, three s
 The browser workflow now preserves the accessibility evidence artifact. Its existing
 private-repository guard is unchanged. This is not manual accessibility certification
 and does not cover all interactive states, mobile layouts or screen readers.
+
+## P8 Expanded database and security validation · 2026-10-28
+
+Added a seeded application smoke for SQLite and an explicitly configured empty disposable
+database, including physical staging, repeated ETL, published results, authentication,
+viewer/admin restrictions, configuration impact and job ownership. Existing application
+data is rejected before seeding. The manual SQL Server workflow now runs this check before
+the concurrency suite. Its new SQL Server execution remains outstanding.
+
+Local full suite: 186 passed, four environment-dependent cases skipped. On an isolated
+PostgreSQL database migrated to 0005: six application/concurrency tests passed; temporary
+database removed. Runtime pip-audit and npm audit: zero known vulnerabilities. Bandit
+medium/high: zero findings. No billing or paid infrastructure enabled.
