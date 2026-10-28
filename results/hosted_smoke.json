@@ -1,0 +1,21 @@
+{
+  "checked_at": "2026-10-28T13:22:56.484055+00:00",
+  "frontend": "https://servicestock-ai.vercel.app",
+  "backend": "https://servicestock-ai-api.onrender.com",
+  "checks": {
+    "backend_ready": 200,
+    "frontend": 200,
+    "login": 200,
+    "me": 200,
+    "status": 200,
+    "parts": 200,
+    "kpis": 200,
+    "dq": 200,
+    "results": 200,
+    "admin/users": 403,
+    "refresh": 200,
+    "logout": 200
+  },
+  "passed": true,
+  "scope": "HTTP smoke only; not human browser accessibility or load certification"
+}

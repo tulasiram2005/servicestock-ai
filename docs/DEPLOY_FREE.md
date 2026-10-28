@@ -113,3 +113,34 @@ Next.js/root web, without deploying. Render form is prepared for servicestock-ai
 Dockerfile api/Dockerfile, root context, /health, Oregon, Free. No Render service has
 been submitted. Private .env.hosted uses a deliberately nonresolving HTTPS origin
 until the actual frontend domain is known; replace it before browser verification.
+
+## Live deployment verification — 2026-10-28
+
+This checkpoint supersedes the preparation statuses above. Frontend is live at
+https://servicestock-ai.vercel.app on Vercel Hobby; backend is live at
+https://servicestock-ai-api.onrender.com on Render Free with the pooled Neon Free database.
+Deployed application commit: 6eec5954782fc456187f1b2a7a29548356cfc4bb.
+Vercel deployment: dpl_9vwWuMRUyAFNVqRdpxDqm7ji6jXX.
+Render final environment deployment: dep-dbgvdjbvvlss73b9imd0.
+
+After explicit approval, private hosted credentials were imported directly into Render.
+No secrets were printed or committed. API_INTERNAL_URL on Vercel points to the Render
+HTTPS service. ALLOWED_ORIGINS was set through the Render connector to the canonical
+frontend and its team alias. The first browser-saved configuration left refresh/logout
+returning 403; applying the exact value through the connector and redeploying resolved
+both checks without changing authentication code or weakening CSRF checks.
+
+Twelve HTTP checks passed: readiness, frontend, login, identity, status, parts, KPIs,
+data quality, results, expected viewer rejection from admin users (403), refresh and
+logout. Evidence: results/hosted_smoke.json. Repeat only with authorization to transmit
+the private demo password to the hosted frontend:
+`api/.venv/bin/python scripts/check_hosted.py --approved-demo-login`.
+This writes only status codes and non-secret metadata. Hosted credentials are in
+`.env.hosted`, distinct from local `.env`; do not paste them into chat.
+
+No billing, cards, paid instances, persistent disks or keep-alive pingers were enabled.
+Free idle cold starts and shared account quotas still apply. This is a smoke-tested demo,
+not production capacity certification. Human screen-reader acceptance, full browser
+journeys on the hosted deployment, advanced provider requirements and Neon idle-behavior
+verification remain unfinished. Browser access became disabled after deployment; HTTP
+checks were completed using the approved demo login, independently of browser access.
