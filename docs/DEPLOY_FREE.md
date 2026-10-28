@@ -90,3 +90,12 @@ print this file or include it in commits/backups. No Render service or Vercel pr
 has been created. Vercel team access was approved, but plan eligibility is not yet
 verified. Browser access became disabled again during the check. Render/Neon connectors
 are no longer available in this session. Do not bypass access or secret-output blocks.
+
+## Verification update — 2026-10-28
+
+Vercel team access was approved and its billing page directly confirmed Hobby Plan.
+No upgrade or paid add-on was selected. The hosted import is no longer confirmed running:
+the original combined seed/publication command ended with OperationalError, and a bounded
+batched retry also failed after 28.5 seconds. A follow-up diagnostic was interrupted and
+its result could not be recovered. Last readback: 24 parts, zero committed MARA staging
+rows, one result entry. Do not treat the hosted database or application as initialized.
