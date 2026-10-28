@@ -49,3 +49,20 @@ test('keyboard login and skip link bypass repeated workspace navigation',async({
   await page.keyboard.press('Enter');
   await expect(page.locator('#workspace-content')).toBeFocused();
 });
+
+test('workspace navigation and content fit tablet and mobile layouts',async({page})=>{
+  await page.goto('/');
+  await page.getByLabel('Username',{exact:true}).fill('demo');
+  await page.getByLabel('Password',{exact:true}).fill(env.DEMO_PASSWORD);
+  await page.getByRole('button',{name:'Sign in',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'Overview',exact:true})).toBeVisible();
+  for(const width of [1024,768,390]){
+    await page.setViewportSize({width,height:900});
+    for(const name of ['Overview','Parts','Assistant']){
+      await page.getByRole('button',{name,exact:true}).click();
+      await expect(page.getByRole('heading',{name,exact:true})).toBeVisible();
+      await expect(page.getByText('Loading verified data…',{exact:true})).toHaveCount(0);
+      expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
+    }
+  }
+});
