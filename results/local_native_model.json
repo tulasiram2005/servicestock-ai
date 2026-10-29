@@ -1,0 +1,1 @@
+{"measured_at": "2026-10-29T09:44:10.296007+00:00", "model": "mistral:latest", "provider": "ollama-local", "native_tools_requested": true, "elapsed_seconds": 5.034, "validated_tools": [], "fallback": true, "notice": "ollama: model provider unavailable or invalid output", "external_calls": 0, "scope": "single routing prompt, not a quality benchmark"}
