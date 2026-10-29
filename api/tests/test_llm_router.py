@@ -195,3 +195,36 @@ def test_chain_reaches_last_local_provider(settings):
 def test_invalid_chains_rejected(settings,order):
     with pytest.raises(ValueError):
         replace(gemini_settings(settings),llm_provider_order=order,ollama_model='local-test')
+
+
+@pytest.mark.parametrize('provider', ['ollama', 'openai-local'])
+def test_native_tool_capability_validated_before_execution(settings, provider):
+    enabled = replace(configured(settings), llm_provider_order=provider+',mock', llm_native_tools=True)
+    def native(request):
+        body = json.loads(request.content)
+        assert 'tools' in body and 'format' not in body and 'response_format' not in body
+        arguments = '{}' if provider == 'openai-local' else {}
+        message = {'tool_calls': [{'function': {'name':'get_kpis','arguments':arguments}}]}
+        return httpx.Response(200, json={'choices':[{'message':message}]} if provider=='openai-local' else {'message':message})
+    router = LocalToolRouter(enabled, httpx.MockTransport(native))
+    assert router.route('a','KPIs',REGISTRY)[0][0][0] == 'get_kpis'
+    assert router.usage()['provider_capabilities'][provider] == 'validated_native_tools'
+    assert router.usage()['native_tool_calling'] is True
+
+
+def test_native_missing_capability_uses_offline_fallback(settings):
+    router = LocalToolRouter(configured(settings,llm_native_tools=True), httpx.MockTransport(response))
+    assert router.route('a','KPIs',REGISTRY)[0] is None
+    assert router.usage()['native_tool_calling'] is False
+
+
+@pytest.mark.parametrize('function', [
+    {'name':'generate_review_pack','arguments':{}},
+    {'name':'get_kpis','arguments':{'sql':'SELECT secret'}},
+    {'name':'unknown','arguments':{}},
+])
+def test_native_calls_cannot_bypass_tool_guardrails(settings, function):
+    router = LocalToolRouter(configured(settings,llm_native_tools=True),
+        httpx.MockTransport(lambda request:httpx.Response(200,json={'message':{'tool_calls':[{'function':function}]}})))
+    assert router.route('a','KPIs',REGISTRY)[0] is None
+    assert router.usage()['native_tool_calling'] is False

@@ -194,3 +194,18 @@ This conservative allowance excludes input/hidden reasoning tokens and is not a
 billing ceiling. Existing free-tier confirmation and zero default call limits apply.
 No schema migration is needed; hashed token-user subjects fit the existing 64-character
 column. Native tool negotiation and additional adapters remain outstanding.
+
+### Observed native-tool capability · 2026-10-29
+
+LLM_NATIVE_TOOLS=true opts local Ollama and local OpenAI-compatible adapters into
+native tool requests. Only validated response tool calls establish capability;
+a provider name or HTTP 200 does not. Missing/malformed calls trigger the existing
+cooldown/fallback chain. One to six read-only allowlisted calls are validated with
+Pydantic before execution; report-generation tools are excluded. Cached validated
+calls use the same isolated cache and quotas remain in force. Gemini remains on
+its existing restricted public-prompt path. No extra discovery request is made.
+Defaults retain existing JSON routing. Capability evidence is process-local and
+model-specific because the model configuration is immutable for that router.
+Tests use simulated responses; no live local-model native capability is claimed.
+Protocol reference: https://github.com/ollama/ollama/blob/main/docs/capabilities/tool-calling.mdx
+Additional remote community adapters still need verified free quota and a chosen endpoint.

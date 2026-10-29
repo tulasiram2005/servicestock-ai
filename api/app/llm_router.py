@@ -107,6 +107,13 @@ class LocalToolRouter:
                  'response_format': {'type': 'json_object'}, 'temperature': 0, 'max_tokens': 1024}
                 if compatible else {'model': self.settings.ollama_model, 'stream': False, 'format': 'json',
                                     'messages': messages, 'options': {'temperature': 0, 'num_predict': 1024}})
+        native = self.settings.llm_native_tools and not gemini
+        if native:
+            body.pop('format', None)
+            body.pop('response_format', None)
+            body['tools'] = [{'type': 'function', 'function': {'name': name,
+                'description': 'Read verified application data', 'parameters': model.model_json_schema()}}
+                for name, model in allowed.items()]
         headers = {}
         if gemini:
             endpoint = 'https://generativelanguage.googleapis.com/v1beta/models/' + self.settings.gemini_model + ':generateContent'
@@ -142,8 +149,21 @@ class LocalToolRouter:
                     raise ValueError('Incomplete Gemini response')
                 text = ''.join(part['text'] for part in candidate['content']['parts'] if not part.get('thought', False))
             else:
-                text = envelope['choices'][0]['message']['content'] if compatible else envelope['message']['content']
-            payload = json.loads(text)
+                text = envelope['choices'][0]['message'].get('content', '') if compatible else envelope['message'].get('content', '')
+            if native:
+                message = envelope['choices'][0]['message'] if compatible else envelope['message']
+                native_calls = message.get('tool_calls')
+                if not isinstance(native_calls, list) or not 1 <= len(native_calls) <= 6:
+                    raise ValueError('Native tool capability unavailable')
+                payload = {'calls': []}
+                for call in native_calls:
+                    function = call['function']
+                    arguments = function['arguments']
+                    if compatible and isinstance(arguments, str):
+                        arguments = json.loads(arguments)
+                    payload['calls'].append({'tool': function['name'], 'arguments': arguments})
+            else:
+                payload = json.loads(text)
             if set(payload) != {'calls'} or not isinstance(payload['calls'], list) or not 1 <= len(payload['calls']) <= 6:
                 raise ValueError('Invalid tool plan')
             calls = []
@@ -153,7 +173,7 @@ class LocalToolRouter:
                 args = allowed[item['tool']].model_validate(item['arguments']).model_dump()
                 calls.append((item['tool'], args))
             with self.lock:
-                self.capabilities[provider] = 'validated_json_plan'
+                self.capabilities[provider] = 'validated_native_tools' if native else 'validated_json_plan'
                 self.failures[provider] = 0
                 self.cooldowns.pop(provider, None)
             self.cache.put(key, calls)
@@ -183,4 +203,4 @@ class LocalToolRouter:
                     'cost_usd': None, 'cost_status': 'not measured; token metadata is not billing evidence',
                     'concurrency_limit': self.settings.llm_max_concurrent,
                     'concurrency_scope': 'current_process', 'busy_fallbacks': self.busy_fallbacks,
-                    'routing_capability': 'validated_json_plan', 'native_tool_calling': False}
+                    'routing_capability': 'validated_json_plan', 'native_tool_calling': any(value == 'validated_native_tools' for value in self.capabilities.values())}

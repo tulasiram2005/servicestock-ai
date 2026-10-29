@@ -35,6 +35,7 @@ class Settings:
     llm_output_token_global_cap: int = 0
     llm_output_token_user_cap: int = 0
     llm_provider_order: str = 'mock'
+    llm_native_tools: bool = False
     ollama_model: str = ''
     gemini_api_key: str = field(default='', repr=False)
     gemini_model: str = ''
@@ -106,6 +107,7 @@ class Settings:
             "demo_username": os.getenv("DEMO_USERNAME", "demo"),
             "admin_username": os.getenv("ADMIN_USERNAME", "admin"),
             "worker_mode": os.getenv("WORKER_MODE", "embedded"),
+            "llm_native_tools": os.getenv("LLM_NATIVE_TOOLS", "false").lower() == "true",
             "llm_provider_order": os.getenv("LLM_PROVIDER_ORDER", "mock"),
             "ollama_model": os.getenv("OLLAMA_MODEL", ""),
             "gemini_api_key": os.getenv("GEMINI_API_KEY", ""),
