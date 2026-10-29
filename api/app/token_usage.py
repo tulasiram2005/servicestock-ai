@@ -1,6 +1,7 @@
 """Provider-reported observations, never inferred billing or token estimates."""
 FIELDS = {
     'gemini': ('usageMetadata', {'input_tokens':'promptTokenCount','output_tokens':'candidatesTokenCount','thinking_tokens':'thoughtsTokenCount','total_tokens':'totalTokenCount'}),
+    'groq': ('usage', {'input_tokens':'prompt_tokens','output_tokens':'completion_tokens','total_tokens':'total_tokens'}),
     'openai-local': ('usage', {'input_tokens':'prompt_tokens','output_tokens':'completion_tokens','total_tokens':'total_tokens'}),
     'ollama': (None, {'input_tokens':'prompt_eval_count','output_tokens':'eval_count'}),
 }

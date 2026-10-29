@@ -40,17 +40,25 @@ class Settings:
     gemini_api_key: str = field(default='', repr=False)
     gemini_model: str = ''
     gemini_free_tier_confirmed: bool = False
+    groq_api_key: str = field(default='', repr=False)
+    groq_model: str = ''
+    groq_free_tier_confirmed: bool = False
 
     def __post_init__(self):
         if type(self.llm_max_concurrent) is not int or not 1 <= self.llm_max_concurrent <= 4:
             raise ValueError("LLM_MAX_CONCURRENT must be an integer from 1 to 4")
         providers = self.llm_provider_order.split(',')
         if (providers[-1] != 'mock' or len(set(providers)) != len(providers)
-                or any(name not in {'mock', 'ollama', 'openai-local', 'gemini'} for name in providers)):
+                or any(name not in {'mock', 'ollama', 'openai-local', 'gemini', 'groq'} for name in providers)):
             raise ValueError('Provider order must contain unique supported providers and end with mock')
         local = bool({'ollama', 'openai-local'} & set(providers))
         if local and (not self.ollama_model or 'cloud' in self.ollama_model.lower() or len(self.ollama_model) > 120):
             raise ValueError('Ollama requires an explicitly configured local model')
+        if 'groq' in providers:
+            if not self.groq_api_key or not self.groq_free_tier_confirmed or self.uploads_enabled:
+                raise ValueError('Groq requires a key, verified free-tier configuration and disabled uploads')
+            if not re.fullmatch(r'[a-zA-Z0-9][a-zA-Z0-9/_.-]{0,119}', self.groq_model):
+                raise ValueError('Configure an explicit Groq model ID')
         if 'gemini' in providers:
             if not self.gemini_api_key or not self.gemini_free_tier_confirmed or self.uploads_enabled:
                 raise ValueError('Gemini requires a key, verified free-tier configuration and disabled uploads')
@@ -113,6 +121,9 @@ class Settings:
             "gemini_api_key": os.getenv("GEMINI_API_KEY", ""),
             "gemini_model": os.getenv("GEMINI_MODEL", ""),
             "gemini_free_tier_confirmed": os.getenv("GEMINI_FREE_TIER_CONFIRMED", "false").lower() == "true",
+            "groq_api_key": os.getenv("GROQ_API_KEY", ""),
+            "groq_model": os.getenv("GROQ_MODEL", ""),
+            "groq_free_tier_confirmed": os.getenv("GROQ_FREE_TIER_CONFIRMED", "false").lower() == "true",
             "uploads_enabled": os.getenv("UPLOADS_ENABLED", "false").lower() == "true",
             "allowed_origins": tuple(filter(None, (value.strip() for value in os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")))),
         }
