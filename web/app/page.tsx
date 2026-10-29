@@ -22,7 +22,7 @@ const rows = (value: Json | undefined): RecordData[] => Array.isArray(value) ? v
 function Table({data}: {data: RecordData[]}) {
   if (!data.length) return <p className="empty">No records available.</p>;
   const keys = Object.keys(data[0]).filter(key => data.every(row => row[key] === null || typeof row[key] !== 'object'));
-  return <div className="table-wrap"><table><thead><tr>{keys.map(key=><th key={key}>{key.replaceAll('_',' ')}</th>)}</tr></thead><tbody>{data.map((row,index)=><tr key={index}>{keys.map(key=><td key={key}>{typeof row[key] === 'number' ? Number(row[key]).toLocaleString('en-US',{maximumFractionDigits:3}) : String(row[key] ?? 'Not measured')}</td>)}</tr>)}</tbody></table></div>;
+  return <div className="table-wrap" tabIndex={0} role="region" aria-label="Scrollable data table"><table><thead><tr>{keys.map(key=><th key={key}>{key.replaceAll('_',' ')}</th>)}</tr></thead><tbody>{data.map((row,index)=><tr key={index}>{keys.map(key=><td key={key}>{typeof row[key] === 'number' ? Number(row[key]).toLocaleString('en-US',{maximumFractionDigits:3}) : String(row[key] ?? 'Not measured')}</td>)}</tr>)}</tbody></table></div>;
 }
 
 function Details({data}: {data: Json}) {
