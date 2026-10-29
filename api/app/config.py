@@ -32,6 +32,8 @@ class Settings:
     llm_global_daily_cap: int = 0
     llm_user_daily_cap: int = 0
     llm_max_concurrent: int = 1
+    llm_output_token_global_cap: int = 0
+    llm_output_token_user_cap: int = 0
     llm_provider_order: str = 'mock'
     ollama_model: str = ''
     gemini_api_key: str = field(default='', repr=False)
@@ -73,7 +75,7 @@ class Settings:
                 raise ValueError(f"{name} must be positive")
         if self.db_target_bytes >= self.db_limit_bytes:
             raise ValueError("DB target must be smaller than the configured limit")
-        if min(self.llm_global_daily_cap, self.llm_user_daily_cap) < 0:
+        if min(self.llm_global_daily_cap, self.llm_user_daily_cap, self.llm_output_token_global_cap, self.llm_output_token_user_cap) < 0:
             raise ValueError("LLM caps cannot be negative")
         if self.environment == "production":
             if self.uploads_enabled:
@@ -115,7 +117,7 @@ class Settings:
         for name in ("token_minutes", "rate_limit", "login_rate_limit", "cache_seconds",
                      "cache_entries", "retention_days", "db_target_bytes", "db_limit_bytes",
                      "statement_timeout_ms", "job_lease_seconds", "job_max_attempts",
-                     "job_retry_seconds", "jobs_max_pending", "llm_global_daily_cap", "llm_user_daily_cap", "llm_max_concurrent"):
+                     "job_retry_seconds", "jobs_max_pending", "llm_global_daily_cap", "llm_user_daily_cap", "llm_max_concurrent", "llm_output_token_global_cap", "llm_output_token_user_cap"):
             if name.upper() in os.environ:
                 values[name] = int(os.environ[name.upper()])
         return cls(**values)

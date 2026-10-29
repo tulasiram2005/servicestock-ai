@@ -81,10 +81,15 @@ class LocalToolRouter:
                 return None, 'model provider cooling down'
             if self.budget:
                 try:
-                    if not self.budget.reserve(username, day, self.settings.llm_global_daily_cap, self.settings.llm_user_daily_cap):
+                    if not self.budget.reserve(username, day, self.settings.llm_global_daily_cap, self.settings.llm_user_daily_cap,
+                            output_tokens=1024 if self.settings.llm_output_token_global_cap or self.settings.llm_output_token_user_cap else 0,
+                            token_global_cap=self.settings.llm_output_token_global_cap,
+                            token_user_cap=self.settings.llm_output_token_user_cap):
                         return None, 'model daily cap reached'
                 except SQLAlchemyError:
                     return None, 'quota storage unavailable; deterministic fallback'
+            elif self.settings.llm_output_token_global_cap or self.settings.llm_output_token_user_cap:
+                return None, 'persistent token budget requires database storage'
             elif (self.total >= self.settings.llm_global_daily_cap or
                 self.users.get(username, 0) >= self.settings.llm_user_daily_cap or
                 (username not in self.users and len(self.users) >= 1024)):
@@ -171,6 +176,8 @@ class LocalToolRouter:
                     'external_calls': self.external_attempts, 'external_calls_scope': 'current_process_attempts', 'provider': {'ollama': 'ollama-local'}.get(self.settings.llm_provider_order.split(',')[0], self.settings.llm_provider_order.split(',')[0]),
                     'provider_capabilities': {name: self.capabilities.get(name, 'unprobed') for name in self.settings.llm_provider_order.split(',') if name != 'mock'},
                     'provider_retry_after_seconds': {name: max(0, int(until - self.clock())) for name, until in self.cooldowns.items()},
+                    'reserved_output_tokens': self.budget.reserved_output_tokens(day) if self.budget else None,
+                    'output_token_budget_scope': 'shared_database_daily_reservations; excludes input and hidden tokens',
                     'token_usage_scope': 'current_process_lifetime_provider_reported',
                     'token_usage': json.loads(json.dumps(self.token_observations)),
                     'cost_usd': None, 'cost_status': 'not measured; token metadata is not billing evidence',

@@ -54,3 +54,30 @@ def test_missing_quota_storage_falls_back_without_model_call(settings):
     calls, notice = router.route('a','KPIs',REGISTRY)
     assert calls is None
     assert 'quota storage unavailable' in notice
+
+
+def test_output_token_reservations_persist_and_roll_back(tmp_path):
+    url = 'sqlite:///' + str(tmp_path/'tokens.db')
+    store = Store(url)
+    db.metadata.create_all(store.engine)
+    budget = DatabaseBudget(store)
+    assert budget.reserve('a', 1, 10, 10, 1024, 2048, 1024)
+    assert not budget.reserve('a', 1, 10, 10, 1024, 2048, 1024)
+    assert budget.total(1) == 1
+    restarted = DatabaseBudget(Store(url))
+    assert restarted.reserved_output_tokens(1) == 1024
+    assert restarted.reserve('b', 1, 10, 10, 1024, 2048, 1024)
+    assert not restarted.reserve('c', 1, 10, 10, 1024, 2048, 1024)
+    assert restarted.total(1) == 2
+    assert restarted.reserved_output_tokens(1) == 2048
+    assert restarted.reserve('a', 2, 10, 10, 1024, 2048, 1024)
+
+
+def test_token_budget_requires_shared_storage(settings):
+    router = LocalToolRouter(replace(settings, llm_provider_order='ollama,mock',
+        ollama_model='test', llm_global_daily_cap=10, llm_user_daily_cap=10,
+        llm_output_token_global_cap=2048, llm_output_token_user_cap=1024),
+        httpx.MockTransport(lambda request: (_ for _ in ()).throw(AssertionError('No network'))))
+    calls, notice = router.route('a', 'KPIs', REGISTRY)
+    assert calls is None
+    assert 'requires database storage' in notice

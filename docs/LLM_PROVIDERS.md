@@ -179,3 +179,18 @@ These are cooperative boundaries, not thread cancellation: a running synchronous
 operation must return (database statement timeouts remain the lower-level guard).
 A report already enqueued is not rolled back. Native tool negotiation and durable
 token budgets remain outstanding; this change does not claim those are complete.
+
+### Durable output allowances · 2026-10-29
+
+Optional LLM_OUTPUT_TOKEN_GLOBAL_CAP and LLM_OUTPUT_TOKEN_USER_CAP enforce
+shared daily reservations in the existing quota table. Set both to positive
+values to enable this extra guard; both zero preserves existing call-only limits.
+Each uncached provider attempt reserves its maximum 1024 output tokens atomically
+with global/user call counters. Denial rolls back every increment. Reservations
+persist across restarts, reset by UTC day and are never refunded for failed or
+short responses. If either allowance is enabled, a missing database fails closed.
+Usage reports reserved_output_tokens separately from provider-reported consumption.
+This conservative allowance excludes input/hidden reasoning tokens and is not a
+billing ceiling. Existing free-tier confirmation and zero default call limits apply.
+No schema migration is needed; hashed token-user subjects fit the existing 64-character
+column. Native tool negotiation and additional adapters remain outstanding.

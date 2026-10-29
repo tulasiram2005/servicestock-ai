@@ -1,6 +1,6 @@
 # Human screen-reader acceptance
 
-Status: USER-REPORTED CHECK, acceptance evidence pending. On 2026-10-28 the user said they checked, but did not supply platform/version, spoken output or per-task results. The rows below remain unverified. Automated axe and keyboard results do not satisfy this acceptance test.
+Status: USER-REPORTED CHECK, acceptance evidence pending. On 2026-10-29 the user reported trying the app and finding no obvious gap, but explicitly said they were unsure. This is exploratory feedback, not a formal acceptance pass. On 2026-10-28 the user said they checked, but did not supply platform/version, spoken output or per-task results. The rows below remain unverified. Automated axe and keyboard results do not satisfy this acceptance test.
 Use the offline local demo with synthetic data; no external service or purchase is needed.
 A person must listen to the output and report results. Do not record passwords or tokens.
 
